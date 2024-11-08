@@ -77,8 +77,5 @@ crashlytics-build.properties
 # VS Code
 .vscode/
 
-# Packages
-/Packages/
-
 # Build Folder
 /local-build/
