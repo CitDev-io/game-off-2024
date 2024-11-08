@@ -29,7 +29,7 @@ public class GameBoardManager : MonoBehaviour
         UpdateClickGrid();
         InHandTileImg.sprite = Resources.Load<Sprite>("Images/Tile_" + tile.Name);
         InHandTileImg.transform.rotation = Quaternion.Euler(
-            new Vector3(0, 0, -90 * tile.Rotation)
+            new Vector3(0, 0, (-90 * tile.Rotation) + 21.42f)
         );
     }
 
@@ -48,7 +48,7 @@ public class GameBoardManager : MonoBehaviour
         TemporarilyGlobalTileInHand.Rotate();
         UpdateClickGrid();
         InHandTileImg.transform.rotation = Quaternion.Euler(
-            new Vector3(0, 0, -90 * TemporarilyGlobalTileInHand.Rotation)
+            new Vector3(0, 0, -90 * TemporarilyGlobalTileInHand.Rotation + 21.42f)
         );
     }
 

@@ -4,21 +4,21 @@ using UnityEngine.UI;
 public class UI_DotSpot : MonoBehaviour
 {
     GridPosition coords;
-    bool enabled = false;
+    bool visibility = false;
 
     public void OnMouseDown()
     {
-        if (!enabled) return;
+        if (!visibility) return;
         ReportPositionClick();
     }
 
     public void Disable() {
-        enabled = false;
+        visibility = false;
         GetComponent<SpriteRenderer>().color = Color.clear;
     }
 
     public void Enable() {
-        enabled = true;
+        visibility = true;
         GetComponent<SpriteRenderer>().color = Color.black;
     }
 
