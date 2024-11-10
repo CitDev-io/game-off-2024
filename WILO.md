@@ -16,11 +16,10 @@ Grid drops are working. Now need to collect up broken combos. example: `N1 N of 
 
 
 SHOULD BE FALSE
-- N1 N of B3
-- K0 N of V0
-- K0 N of W0
-- U0 W of K0
-- N0 W of V2
-- N0 W of E0
-- N2 E of G1
-- K0 N of W0
+X N1 N of B3
+X K0 N of V0
+X K0 N of W0
+X U0 W of K0
+X N0 W of V2
+X N0 W of E0
+X N2 E of G1

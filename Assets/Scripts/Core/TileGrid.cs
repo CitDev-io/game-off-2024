@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -111,26 +112,33 @@ public class TileGrid {
         return positions.ToList();
     }
 
-    public List<GridPosition> GetEligiblePositions(Tile tile)
+    public List<GridPosition> GetEligiblePositionsAllRotations(Tile tile)
     {
         List<GridPosition> eligiblePositions = new List<GridPosition>();
         List<GridPosition> nearPlacedTiles = GetPositionsNearPlacedTiles();
-        foreach (GridPosition position in nearPlacedTiles)
-        {
-            TileSurvey survey = SurveyPosition(position.x, position.y);
-            if ((survey.NORTH == null || tile.FitsWithOtherToThe(
-                survey.NORTH,
-                CardinalDirection.NORTH))
-                &&
-                (survey.EAST == null || tile.FitsWithOtherToThe(survey.EAST, CardinalDirection.EAST))
-                &&
-                (survey.SOUTH == null || tile.FitsWithOtherToThe(survey.SOUTH, CardinalDirection.SOUTH))
-                &&
-                (survey.WEST == null || tile.FitsWithOtherToThe(survey.WEST, CardinalDirection.WEST))
-            )
+        for (var i=0; i<4; i++) {
+            Tile checkTile = TileFactory.CreateTileWithRotations(
+                (TileType) Enum.Parse(typeof(TileType), tile.Name),
+                i
+            );
+            foreach (GridPosition position in nearPlacedTiles)
             {
-                eligiblePositions.Add(position);
+                TileSurvey survey = SurveyPosition(position.x, position.y);
+                if ((survey.NORTH == null || checkTile.FitsWithOtherToThe(
+                    survey.NORTH,
+                    CardinalDirection.NORTH))
+                    &&
+                    (survey.EAST == null || checkTile.FitsWithOtherToThe(survey.EAST, CardinalDirection.EAST))
+                    &&
+                    (survey.SOUTH == null || checkTile.FitsWithOtherToThe(survey.SOUTH, CardinalDirection.SOUTH))
+                    &&
+                    (survey.WEST == null || checkTile.FitsWithOtherToThe(survey.WEST, CardinalDirection.WEST))
+                )
+                {
+                    eligiblePositions.Add(position);
+                }
             }
+
         }
         return eligiblePositions;
     }
