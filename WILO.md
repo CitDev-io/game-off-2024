@@ -23,3 +23,15 @@ X U0 W of K0
 X N0 W of V2
 X N0 W of E0
 X N2 E of G1
+
+
+### 11/10/24
+What functionality needs to be put together for this to be a shippable MVP?
+- Title Screen
+- Tutorial/Walkthrough
+- End of Game Sequence
+- Scoring
+- Placing meeples
+- backgrounds
+- custom art tiles
+- GUI for main scene

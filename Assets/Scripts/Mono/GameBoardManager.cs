@@ -23,9 +23,6 @@ public class GameBoardManager : MonoBehaviour
         StartGame();
     }
 
-    void Update() {
-    }
-
     void StartGame() {
         PlaceTileInHand(TheBag.DrawTile());
     }
@@ -56,7 +53,7 @@ public class GameBoardManager : MonoBehaviour
     public void RotateTileInHand() {
         if (TemporarilyGlobalTileInHand == null) return;
         TemporarilyGlobalTileInHand.Rotate();
-        //UpdateClickGrid();
+
         InHandTileImg.transform.rotation = Quaternion.Euler(
             new Vector3(0, 0, -90 * TemporarilyGlobalTileInHand.Rotation + 21.42f)
         );
@@ -71,17 +68,7 @@ public class GameBoardManager : MonoBehaviour
     {
         if (TemporarilyGlobalTileInHand == null) return;
 
-        // stage drop
-        // place the tile in stage position
-        // tell it that's in the staging state
         StageUnityTileAt(TemporarilyGlobalTileInHand, coords);
-
-// immediate drop
-        // if (TheGrid.CanPlaceTile(TemporarilyGlobalTileInHand, coords)) {
-        //     TheGrid.PlaceTile(TemporarilyGlobalTileInHand, coords);
-        //     PlaceTileInHand(TheBag.DrawTile());
-        // }
-
     }
 
     List<int> GetWorkableRotations(Tile tile, GridPosition coords) {
@@ -106,16 +93,14 @@ public class GameBoardManager : MonoBehaviour
             (TileType) Enum.Parse(typeof(TileType), tile.Name),
             Workables.Count > 0 ? Workables[0] : 0
         );
-        var UTile = Instantiate(UnityTilePrefab)
-            .GetComponent<UI_UnityTile>();
-        UTile.WorkableRotations = Workables;
-        UTile.RegisterTile(
+        StagedTile = Instantiate(UnityTilePrefab).GetComponent<UI_UnityTile>();
+        StagedTile.RegisterTile(
             tileToDrop,
-            coords
+            coords,
+            Workables
         );
-        UTile.gridPosition = coords;
-        StagedTile = UTile;
-        return UTile;
+        
+        return StagedTile;
     }
 
     void ExitStagingMode() {
@@ -123,9 +108,9 @@ public class GameBoardManager : MonoBehaviour
     }
 
     void InitializeGame() {
-        TheGrid = new TileGrid(TileFactory.CreateTile(TileType.A));
+        TheGrid = new TileGrid(TileFactory.CreateTile(TileType.D));
         var StarterTile = StageUnityTileAt(TheGrid.grid[7, 7], new GridPosition(7, 7));
-        StarterTile.FinalizePlacement();
+        StarterTile.SetStatus(UITileStatus.PLACED);
         ExitStagingMode();
     }
 
@@ -145,7 +130,7 @@ public class GameBoardManager : MonoBehaviour
 
     public void UIINGRESS_OnPlayerAccept() {
         if (StagedTile == null) return;
-        StagedTile.FinalizePlacement();
+        StagedTile.SetStatus(UITileStatus.PLACED);
         TheGrid.PlaceTile(StagedTile.registeredTile, StagedTile.gridPosition);
         PlaceTileInHand(TheBag.DrawTile());
         ExitStagingMode();
