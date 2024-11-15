@@ -14,12 +14,12 @@ public class UI_DotSpot : MonoBehaviour
 
     public void Disable() {
         visibility = false;
-        GetComponent<SpriteRenderer>().enabled = false;
+        GetComponent<MeshRenderer>().enabled = false;
     }
 
     public void Enable() {
         visibility = true;
-        GetComponent<SpriteRenderer>().enabled = true;
+        GetComponent<MeshRenderer>().enabled = true;
     }
 
     public void SetCoords(GridPosition g) {

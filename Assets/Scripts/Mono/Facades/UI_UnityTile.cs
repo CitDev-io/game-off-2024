@@ -20,7 +20,7 @@ public class UI_UnityTile : MonoBehaviour
     public Transform liftableFacePlate;
     public Tile registeredTile;
     public List<int> WorkableRotations = new List<int>();
-    public List<Transform> DoodadAnchors = new List<Transform>();
+    public List<Transform> GamepieceAnchors = new List<Transform>();
     public SpriteRenderer RotationIcon;
     public GridPosition gridPosition;
 
@@ -53,7 +53,9 @@ public class UI_UnityTile : MonoBehaviour
         spriteRenderer.sprite = Resources.Load<Sprite>("Images/Tile_" + tile.Name);
         OnTileRotated();
     }
-
+    public UITileStatus GetStatus() {
+        return currentStatus;
+    }
     public void SetStatus(UITileStatus status) {
         if (currentStatus == status) {
             return;
@@ -77,10 +79,17 @@ public class UI_UnityTile : MonoBehaviour
 
     void ClearStagingUI() {
         RotationIcon.gameObject.SetActive(false);
+        foreach (var anchor in GamepieceAnchors) {
+            anchor.gameObject.SetActive(false);
+        }
     }
 
     void SetupTerraformerStep() {
-        // show the terraformer layer
+        for (var i = 0; i < registeredTile.Placements.Length; i++) {
+            GamepieceAnchors[
+                registeredTile.Placements[i]
+            ].gameObject.SetActive(true);
+        }
     }
 
     void Start() {

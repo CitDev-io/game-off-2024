@@ -4,16 +4,18 @@ public delegate void TileRotated();
 public class Tile
 {
     public TileRotated OnTileRotated;
-    public Tile(string name, List<MicroEdge> edges, List<Road> roads)
+    public Tile(string name, List<MicroEdge> edges, List<Road> roads, int[] placements)
     {
         Name = name;
         Edges = edges;
         Roads = roads;
+        Placements = placements;
     }
 
     public string Name;
     List<MicroEdge> Edges = new List<MicroEdge>();
     List<Road> Roads = new List<Road>();
+    public int[] Placements = new int[]{};
     public int Rotation = 0;
 
     public void Rotate()
