@@ -82,6 +82,6 @@ public class DragCamera : MonoBehaviour
     void Zoom(float increment)
     {
         gbm.OnUserCameraMovement();
-        _camera.fieldOfView = Mathf.Clamp(_camera.fieldOfView - increment, 30f, 70f);
+        _camera.fieldOfView = Mathf.Clamp(_camera.fieldOfView - increment, 20f, 70f);
     }
 }

@@ -167,6 +167,7 @@ public class GameBoardManager : MonoBehaviour
             //**** TODO: check if they have terraformers to place
             //if so, set it up
             TilePlacementUserInput.SetActive(true);
+            StagedTile.CancelGamepiecePlacement();
             StagedTile.SetStatus(UITileStatus.CONFIGURE_TERRAFORMER);
             CameraControlTo(
                 new Vector3(

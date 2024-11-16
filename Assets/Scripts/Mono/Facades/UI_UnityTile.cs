@@ -20,6 +20,7 @@ public class GamepieceTileAssignment {
     public int Anchor;
     public int Team;
     public GamepieceType Type;
+    public GameObject OnBoard;
 }
 
 public class UI_UnityTile : MonoBehaviour
@@ -127,6 +128,11 @@ public class UI_UnityTile : MonoBehaviour
         HighlightChosenTerraformer();
     }
 
+    public void CancelGamepiecePlacement() {
+        GamepieceAssignments.Clear();
+        HighlightChosenTerraformer();
+    }
+
     void Start() {
         if (currentStatus == UITileStatus.NOT_SET) {
             SetStatus(STARTING_STATUS);
@@ -151,6 +157,14 @@ public class UI_UnityTile : MonoBehaviour
 
     void FinalizePlacement() {
         liftableFacePlate.position = new Vector3(transform.position.x, transform.position.y, PLACED_ELEVATION);
+        foreach(GamepieceTileAssignment gamepiece in GamepieceAssignments) {
+            gamepiece.OnBoard = Instantiate(
+                Resources.Load<GameObject>("Gamepiece_" + gamepiece.Type.ToString())
+            );
+            gamepiece.OnBoard.transform.position = GamepieceAnchors[gamepiece.Anchor].position + new Vector3(0, 0.1f, 0f);
+            gamepiece.OnBoard.transform.rotation = Quaternion.Euler(0f, 0, -12.5f);
+            gamepiece.OnBoard.transform.SetParent(transform);
+        }
     }
 
     void OnDestroy() {
