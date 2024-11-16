@@ -35,3 +35,20 @@ What functionality needs to be put together for this to be a shippable MVP?
 - backgrounds
 - custom art tiles
 - GUI for main scene
+
+
+### 11/16/24
+Can select from eligible terraformer locations and place one
+- Need a player inventory
+    - count of TFs
+    - points
+    - secret missions
+- Find if thye have a terraformer before offering that step
+- Need a scoring algorithm that crawls the tiles
+    - Need a way for a Tile to query out every feature of .CanSitNextTo checks to see if the feature is occupied
+
+- Maybe when you place a card, it adds it to any connected features in a formal registry or registers a new one
+    - Also register to neighbors? then they could count vicinity..
+- need to add real game pieces to the board/tile
+- need Obelisk to be a location of interest like streets. no effect on can-i-place
+

@@ -164,8 +164,7 @@ public class GameBoardManager : MonoBehaviour
             );
         }
         if (Confirmations == 1) {
-            //todo
-            //check if they have terraformers to place
+            //**** TODO: check if they have terraformers to place
             //if so, set it up
             TilePlacementUserInput.SetActive(true);
             StagedTile.SetStatus(UITileStatus.CONFIGURE_TERRAFORMER);
@@ -176,12 +175,28 @@ public class GameBoardManager : MonoBehaviour
                     -8),
                 ZOOMED_CAMERA_FOV
             );
-            // if not, skip to the next step
+            // ************* if not, skip to the next step
         }
         if (Confirmations == 2 && StagedTile.GetStatus() != UITileStatus.PLACED) {
             Confirmations = 0;
+            if (StagedTile.GamepieceAssignments.Count > 0) {
+                // Attach a for-real game piece to the tile's assigned anchor
+                // Subtract it from the player's inventory
+                foreach(GamepieceTileAssignment assignment in StagedTile.GamepieceAssignments) {
+                    Debug.Log("CA CHING");
+                }
+            }
             StagedTile.SetStatus(UITileStatus.PLACED);
             TheGrid.PlaceTile(StagedTile.registeredTile, StagedTile.gridPosition);
+
+
+            // extend this area here.
+            // may need to be multi-step and synchronous
+            
+            // Evaluate any newly scored points
+            // Change player's turn
+            
+            // this is basically kicking to the next turn
             PlaceTileInHand(TheBag.DrawTile());
             CameraControlTo(Camera.main.transform.position, DEFAULT_CAMERA_FOV);
         }
@@ -237,5 +252,10 @@ public class GameBoardManager : MonoBehaviour
         if (TemporarilyGlobalTileInHand == null) return;
 
         StageUnityTileAt(TemporarilyGlobalTileInHand, coords);
+    }
+
+    public void UserAssignsTerraformerToAnchor(int anchorIndex) {
+        if (StagedTile == null) return;
+        StagedTile.AssignTerraformerToAnchor(anchorIndex);
     }
 }
