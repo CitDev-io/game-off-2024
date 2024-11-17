@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -33,10 +34,19 @@ public class GameBoardManager : MonoBehaviour
     }
 
     void StartGame() {
-        PlaceTileInHand(TheBag.DrawTile());
+        DrawNewTile();
     }
 
-    void PlaceTileInHand(Tile tile) {
+    void DrawNewTile() {
+        Tile tile = null;;
+        while (tile == null) {
+            Tile checkTile = TheBag.DrawTile();
+            var eligiblePositions = TheGrid.GetEligiblePositionsAllRotations(checkTile);
+            if (eligiblePositions.Count > 0) {
+                tile = checkTile;
+            }
+        }
+
         TemporarilyGlobalTileInHand = tile;
         UpdateClickGrid();
         InHandTileImg.sprite = Resources.Load<Sprite>("Images/Tile_" + tile.Name);
@@ -98,6 +108,7 @@ public class GameBoardManager : MonoBehaviour
         TheGrid = new TileGrid(TileFactory.CreateTile(TileType.D));
         var StarterTile = StageUnityTileAt(TheGrid.grid[7, 7], new GridPosition(7, 7));
         StarterTile.SetStatus(UITileStatus.PLACED);
+
         ClearStagingUI();
     }
 
@@ -179,26 +190,34 @@ public class GameBoardManager : MonoBehaviour
             // ************* if not, skip to the next step
         }
         if (Confirmations == 2 && StagedTile.GetStatus() != UITileStatus.PLACED) {
-            Confirmations = 0;
-            if (StagedTile.GamepieceAssignments.Count > 0) {
-                // Attach a for-real game piece to the tile's assigned anchor
-                // Subtract it from the player's inventory
-                foreach(GamepieceTileAssignment assignment in StagedTile.GamepieceAssignments) {
-                    Debug.Log("CA CHING");
-                }
-            }
+            
+
             StagedTile.SetStatus(UITileStatus.PLACED);
-            TheGrid.PlaceTile(StagedTile.registeredTile, StagedTile.gridPosition);
+            bool PlacedSuccessfully = TheGrid
+                .PlaceTile(
+                    StagedTile.registeredTile,
+                    StagedTile.gridPosition
+                );
+
+            if (!PlacedSuccessfully) {
+                Debug.Log("Tile placement failed");
+                Confirmations--;
+                EvaluateStagingPhase();
+                return;
+            }
+
+            foreach(AssembledRoad ar in TheGrid.inventory.AssembledRoads) {
+                Debug.Log("Assembled Road: " + ar.ToString());
+                Debug.Log("Road Length: " + ar.GetTileCount());
+                Debug.Log("Unique Tiles" + ar.tilePis.Select(o => o.tile).Distinct().ToList().Count);
+                Debug.Log("Is Complete: " + ar.IsComplete());
+            }
+
+            // Look for scoring events that are queued and clear them out
 
 
-            // extend this area here.
-            // may need to be multi-step and synchronous
-            
-            // Evaluate any newly scored points
-            // Change player's turn
-            
-            // this is basically kicking to the next turn
-            PlaceTileInHand(TheBag.DrawTile());
+            Confirmations = 0;
+            DrawNewTile();
             CameraControlTo(Camera.main.transform.position, DEFAULT_CAMERA_FOV);
         }
     }

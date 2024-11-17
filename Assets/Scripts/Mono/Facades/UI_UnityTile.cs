@@ -99,6 +99,7 @@ public class UI_UnityTile : MonoBehaviour
     }
 
     void SetupTerraformerStep() {
+        GamepieceAnchors[4].gameObject.SetActive(registeredTile.obelisk != null);
         for (var i = 0; i < registeredTile.Placements.Length; i++) {
             GamepieceAnchors[
                 registeredTile.Placements[i]

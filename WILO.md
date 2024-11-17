@@ -52,3 +52,11 @@ Can select from eligible terraformer locations and place one
 - need to add real game pieces to the board/tile
 - need Obelisk to be a location of interest like streets. no effect on can-i-place
 
+
+### 11/17/24 (early)
+- Roads are now good to go.
+- WILO: UI_UnityTile is creating an object called "GamepieceTileAssignmnet"
+    - This should be in the CORE and located on the base tile, not the facade
+    - The BOARDINVENTORY class that lives inside of the TileGrid is responsible for keeping track of existing POIs and incorporating new tiles or merging multiple together
+        - This should have the ability to be questioned on what things are now complete that have not been previously marked as complete. This is where our completion events will come from. **THINK carefully about the order that you want to check for scorable events at this point in the game. it's going to be a major topic in the late stages.
+        

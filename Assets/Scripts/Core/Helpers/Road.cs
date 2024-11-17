@@ -1,10 +1,10 @@
 public class Road {
-    public CardinalDirection direction;
+    public CardinalDirection localizedDirection;
     public int RoadGroupId;
 
     public Road(CardinalDirection direction, int roadGroupId)
     {
-        this.direction = direction;
+        this.localizedDirection = direction;
         RoadGroupId = roadGroupId;
     }
 }

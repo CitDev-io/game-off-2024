@@ -1,17 +1,18 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 public class TileGrid {
     public static readonly int GRID_LENGTH = 15;
     public static readonly int MIDPOINT = 7;
     public Tile[,] grid;
+    public BoardInventory inventory = new BoardInventory();
 
     public TileGrid(Tile startingTile)
     {
         grid = new Tile[15, 15];
-        grid[MIDPOINT, MIDPOINT] = startingTile;
+        PlaceTile(startingTile, new GridPosition(MIDPOINT, MIDPOINT));
+        // grid[MIDPOINT, MIDPOINT] = startingTile;
     }
 
     public bool CanPlaceTile(Tile tileToPlace, GridPosition pos) {
@@ -43,10 +44,30 @@ public class TileGrid {
 
     public bool PlaceTile(Tile tileToPlace, GridPosition pos) {
         if (!CanPlaceTile(tileToPlace, pos)) {
+            // UnityEngine.Debug.Log("Cannot place tile at " + pos.x + ", " + pos.y + " for " + tileToPlace.Name);
             return false;
         }
 
         grid[pos.x, pos.y] = tileToPlace;
+
+        // TODO: check if gp are ok
+        bool gamepiecePlacementsAreValid = true;
+
+        if (!gamepiecePlacementsAreValid) {
+            grid[pos.x, pos.y] = null;
+            return false;
+        }
+
+        TileSurvey tileSurvey = SurveyPosition(pos);
+        tileToPlace.NormalizedSurvey = tileSurvey;
+        tileSurvey.ApplyToOtherSurveys(tileToPlace);
+
+        List<RoadJoint> a = inventory.GetRoadJoints(tileToPlace);
+        inventory.MergeRoadJoints(a);
+
+        // run scoring checks against inventory
+
+
         return true;
     }
     #nullable enable

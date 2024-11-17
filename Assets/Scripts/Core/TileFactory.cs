@@ -10,7 +10,7 @@ public class TileFactory {
     }
     public static Tile CreateTile(TileType type) {
         switch(type) {
-            case TileType.A: // todo: monastery
+            case TileType.A:
                 return new Tile(
                     type.ToString(),
                     new List<MicroEdge> {
@@ -26,9 +26,10 @@ public class TileFactory {
                     new List<Road> {
                         new Road(CardinalDirection.SOUTH, 0),
                     },
-                    new int[] { 7, 5 }
+                    new int[] { 7, 5, 4 },
+                    new Obelisk(2)
                 );
-            case TileType.B: // todo: monastery
+            case TileType.B:
                 return new Tile(
                     type.ToString(),
                     new List<MicroEdge> {
@@ -42,7 +43,8 @@ public class TileFactory {
                         new MicroEdge(MicroEdgeType.FARM, 0)
                     },
                     new List<Road>(),
-                    new int[] { 5 }
+                    new int[] { 5, 4 },
+                    new Obelisk(1)
                 );
             case TileType.C:
                 return new Tile(

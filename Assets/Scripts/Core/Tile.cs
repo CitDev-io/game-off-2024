@@ -4,19 +4,22 @@ public delegate void TileRotated();
 public class Tile
 {
     public TileRotated OnTileRotated;
-    public Tile(string name, List<MicroEdge> edges, List<Road> roads, int[] placements)
+    public Tile(string name, List<MicroEdge> edges, List<Road> roads, int[] placements, Obelisk o = null)
     {
         Name = name;
         Edges = edges;
         Roads = roads;
         Placements = placements;
+        obelisk = o;
     }
 
     public string Name;
+    public TileSurvey NormalizedSurvey = new TileSurvey();
     List<MicroEdge> Edges = new List<MicroEdge>();
-    List<Road> Roads = new List<Road>();
+    public List<Road> Roads = new List<Road>();
     public int[] Placements = new int[]{};
     public int Rotation = 0;
+    public Obelisk obelisk;
 
     public void Rotate()
     {
@@ -50,12 +53,12 @@ public class Tile
         rotation 2     rotation 3
     */
 
-    public CardinalDirection TranslateDirection(CardinalDirection direction)
+    public CardinalDirection LocalToNormalizedDirection(CardinalDirection direction)
     {
         return (CardinalDirection)(((int)direction + Rotation) % 4);
     }
 
-    public CardinalDirection DecodeDirection(CardinalDirection? direction)
+    public CardinalDirection NormalizedToLocalDirection(CardinalDirection? direction)
     {
         if (direction == null)
         {
@@ -66,7 +69,7 @@ public class Tile
 
     public MicroEdgeSpot DecodeDirectionToTrueMicroEdgeSpot(CardinalDirection direction)
     {
-        switch (DecodeDirection(direction))
+        switch (NormalizedToLocalDirection(direction))
         {
             case CardinalDirection.NORTH:
                 return MicroEdgeSpot.NORTH_LEFT;
@@ -82,7 +85,7 @@ public class Tile
     }
 
     public EdgeType GetEdgeType(CardinalDirection direction) {
-        if (Roads.Exists(r =>TranslateDirection(r.direction) == direction)) {
+        if (Roads.Exists(r =>LocalToNormalizedDirection(r.localizedDirection) == direction)) {
             return EdgeType.ROAD;
         }
 
@@ -99,9 +102,9 @@ public class Tile
 
     #nullable enable
     public RoadCheck? GetRoadCheck(CardinalDirection dir) {
-        CardinalDirection decodedDirection = DecodeDirection(dir);
+        CardinalDirection decodedDirection = NormalizedToLocalDirection(dir);
         
-        Road? road = Roads.Find(r => r.direction == decodedDirection);
+        Road? road = Roads.Find(r => r.localizedDirection == decodedDirection);
 
         if (road == null) {
             return null;
@@ -110,8 +113,8 @@ public class Tile
         CardinalDirection? attachment = null;
         bool terminates = matches.Count == 1;
         if (!terminates) {
-            attachment = matches.Find(r => r.direction != decodedDirection)?.direction;
+            attachment = matches.Find(r => r.localizedDirection != decodedDirection)?.localizedDirection;
         }
-        return new RoadCheck(dir, terminates, DecodeDirection(attachment));
+        return new RoadCheck(dir, terminates, NormalizedToLocalDirection(attachment));
     }
 }
