@@ -11,7 +11,7 @@ public class GameBoardManager : MonoBehaviour
     public GameObject UnityTilePrefab;
     public Image InHandTileImg;
     TileGrid TheGrid;
-    TileBag TheBag = new TileBag();
+    
     public Tile TemporarilyGlobalTileInHand;
     public UI_UnityTile StagedTile;
     int Confirmations = 0;
@@ -38,20 +38,13 @@ public class GameBoardManager : MonoBehaviour
     }
 
     void DrawNewTile() {
-        Tile tile = null;;
-        while (tile == null) {
-            Tile checkTile = TheBag.DrawTile();
-            var eligiblePositions = TheGrid.GetEligiblePositionsAllRotations(checkTile);
-            if (eligiblePositions.Count > 0) {
-                tile = checkTile;
-            }
-        }
+        Tile newTile = TheGrid.DrawNewTile();
 
-        TemporarilyGlobalTileInHand = tile;
+        TemporarilyGlobalTileInHand = newTile;
         UpdateClickGrid();
-        InHandTileImg.sprite = Resources.Load<Sprite>("Images/Tile_" + tile.Name);
+        InHandTileImg.sprite = Resources.Load<Sprite>("Images/Tile_" + newTile.Name);
         InHandTileImg.transform.rotation = Quaternion.Euler(
-            new Vector3(0, 0, (-90 * tile.Rotation) + 21.42f)
+            new Vector3(0, 0, (-90 * newTile.Rotation) + 21.42f)
         );
     }
 
@@ -105,7 +98,10 @@ public class GameBoardManager : MonoBehaviour
     }
 
     void InitializeGame() {
+        // THINK: starter tile passed, can add player config, tile bag config, theme/board etc
         TheGrid = new TileGrid(TileFactory.CreateTile(TileType.D));
+
+
         var StarterTile = StageUnityTileAt(TheGrid.grid[7, 7], new GridPosition(7, 7));
         StarterTile.SetStatus(UITileStatus.PLACED);
 
@@ -206,19 +202,42 @@ public class GameBoardManager : MonoBehaviour
                 return;
             }
 
-            foreach(AssembledRoad ar in TheGrid.inventory.AssembledRoads) {
-                Debug.Log("Assembled Road: " + ar.ToString());
-                Debug.Log("Road Length: " + ar.GetTileCount());
-                Debug.Log("Unique Tiles" + ar.tilePis.Select(o => o.tile).Distinct().ToList().Count);
-                Debug.Log("Is Complete: " + ar.IsComplete());
-            }
+
+
 
             // Look for scoring events that are queued and clear them out
+            List<ScoringEvent> ScoringEvents = TheGrid.GetScoringEvents();
+            EnactScoringEvents(ScoringEvents);
+
+            foreach(AssembledCity ac in TheGrid.inventory.AssembledCities) {
+                Debug.Log("Assembled: " + ac.ToString());
+                Debug.Log("Tiles Count: " + ac.tilePis.Count);
+                Debug.Log("Unique Tiles" + ac.GetUniqueTileCount());
+                Debug.Log("Is Complete: " + ac.IsComplete());
+            }
+
+            // anything to do after scoring but before we move to the next turn
 
 
             Confirmations = 0;
             DrawNewTile();
             CameraControlTo(Camera.main.transform.position, DEFAULT_CAMERA_FOV);
+        }
+    }
+
+    void EnactScoringEvents(List<ScoringEvent> events) {
+        foreach(ScoringEvent e in events) {
+            Debug.Log("PROCESSING " + e.EventType + " EVENT:");
+            Debug.Log(e.Description);
+
+            switch(e.EventType) {
+                case ScoringEventType.ROADCOMPLETED:
+                    // do RoadComplete performance
+                    break;
+                default:
+                    break;
+            }
+            e.ScoringAction.Invoke();
         }
     }
 

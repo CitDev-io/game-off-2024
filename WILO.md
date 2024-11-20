@@ -59,4 +59,33 @@ Can select from eligible terraformer locations and place one
     - This should be in the CORE and located on the base tile, not the facade
     - The BOARDINVENTORY class that lives inside of the TileGrid is responsible for keeping track of existing POIs and incorporating new tiles or merging multiple together
         - This should have the ability to be questioned on what things are now complete that have not been previously marked as complete. This is where our completion events will come from. **THINK carefully about the order that you want to check for scorable events at this point in the game. it's going to be a major topic in the late stages.
-        
+        - This should act as a locator. Here's a tile. i have the road on it, give me the assembled version so i can query it or its associated tiles
+
+## 11/18/24 (laaaate)
+- Scoring system that is performable and fires pre-built Actions when the UI decides is online
+- Create ScoringEvents during the "GetScoringEvents" public interface call in the TileGrid. Create re-usable converters on assembled products. Use re-usable L<GTA> to L<PS> to get players that will be awarded points if compared tf population.
+- Choose order of evaluation in GetScoringEvents
+- Do NOT count on state to already evaluate. Count "complete" items, not "collected" during evaluation steps
+- This will absolutely litter the TileGrid class. keep sectioned off for refactor.
+- WILO:
+    - Craft a scorer's table with scores by player
+    - Create TileGrid by specifying which players will participate and their type CPU/PLAYER
+    - Swap turns. Start with just making the player acts as both. (local multi!)
+    - Build the scoreboard
+    - Build a placeholder performance that happens and enacts the scoring
+- WILO ETC:
+    - Identify completed CITIES
+        - Create scoring evaluation
+        - Create scoring performance
+    - Identify completed FARMS
+        - Create scoring evaluation
+        - Create scoring performance
+    - Identify completed OBELISKS
+        - Create scoring evaluation
+        - Create scoring performance
+    - Identify completed SECRET MISSION
+        - Create scoring evaluation
+        - Create scoring performance
+    - WIN/LOSS Performance
+    - Title Screen
+    - JUICE

@@ -15,11 +15,12 @@ public class Tile
 
     public string Name;
     public TileSurvey NormalizedSurvey = new TileSurvey();
-    List<MicroEdge> Edges = new List<MicroEdge>();
+    public List<MicroEdge> Edges = new List<MicroEdge>();
     public List<Road> Roads = new List<Road>();
     public int[] Placements = new int[]{};
     public int Rotation = 0;
     public Obelisk obelisk;
+    public List<GamepieceTileAssignment> GamepieceAssignments = new List<GamepieceTileAssignment>();
 
     public void Rotate()
     {
@@ -30,9 +31,22 @@ public class Tile
     public bool FitsWithOtherToThe(Tile otherTile, CardinalDirection direction)
     {
         CardinalDirection oppositeDirection = (CardinalDirection)(((int)direction + 2) % 4);
-        EdgeType thisEdge = GetEdgeType(direction);
-        EdgeType otherEdge = otherTile.GetEdgeType(oppositeDirection);
+        EdgeType thisEdge = GetEdgeTypeByNormalizedDir(direction);
+        EdgeType otherEdge = otherTile.GetEdgeTypeByNormalizedDir(oppositeDirection);
         return thisEdge == otherEdge;
+    }
+
+    public void AssignTerraformerToAnchor(int anchor) {
+        GamepieceAssignments.Clear(); // TODO: May need to preserve old ones in weird scenarios
+        GamepieceAssignments.Add(new GamepieceTileAssignment {
+            Anchor = anchor,
+            Team = 0,
+            Type = GamepieceType.TERRAFORMER
+        });
+    }
+
+    public void ClearGamepiecePlacement() {
+        GamepieceAssignments.Clear();
     }
     /*
         0   1           6   7
@@ -84,18 +98,18 @@ public class Tile
         }
     }
 
-    public EdgeType GetEdgeType(CardinalDirection direction) {
+    public EdgeType GetEdgeTypeByNormalizedDir(CardinalDirection direction) {
         if (Roads.Exists(r =>LocalToNormalizedDirection(r.localizedDirection) == direction)) {
             return EdgeType.ROAD;
         }
 
         MicroEdgeSpot spotToCheck = DecodeDirectionToTrueMicroEdgeSpot(direction);
-        return GetMicroEdgeByTrueSpot(spotToCheck).type == MicroEdgeType.FARM
+        return FindMicroEdgeFromLocalizedEdgeSpot(spotToCheck).type == MicroEdgeType.FARM
                 ? EdgeType.FARM
                 : EdgeType.CITY;
     }
 
-    public MicroEdge GetMicroEdgeByTrueSpot(MicroEdgeSpot spot)
+    public MicroEdge FindMicroEdgeFromLocalizedEdgeSpot(MicroEdgeSpot spot)
     {
         return Edges[(int) spot];
     }

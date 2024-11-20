@@ -37,6 +37,14 @@ public class TileBag {
         }
     }
 
+    public void ReturnTile(Tile tile) {
+        if (tiles.Count > 0) {
+            tiles.Add(tile);
+        } else {
+            AddTileTimes((TileType) Enum.Parse(typeof(TileType), "D"), 1);
+        }
+    }
+
     public Tile DrawTile() {
         Random rand = new Random();
         int index = rand.Next(0, tiles.Count);

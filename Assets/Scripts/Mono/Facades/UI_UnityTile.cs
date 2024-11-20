@@ -18,9 +18,8 @@ public enum GamepieceType {
 
 public class GamepieceTileAssignment {
     public int Anchor;
-    public int Team;
+    public PlayerSlot Team;
     public GamepieceType Type;
-    public GameObject OnBoard;
 }
 
 public class UI_UnityTile : MonoBehaviour
@@ -34,7 +33,6 @@ public class UI_UnityTile : MonoBehaviour
     public Tile registeredTile;
     public List<int> WorkableRotations = new List<int>();
     public List<Transform> GamepieceAnchors = new List<Transform>();
-    public List<GamepieceTileAssignment> GamepieceAssignments = new List<GamepieceTileAssignment>();
     public SpriteRenderer RotationIcon;
     public GridPosition gridPosition;
 
@@ -110,7 +108,7 @@ public class UI_UnityTile : MonoBehaviour
 
     void HighlightChosenTerraformer() {
         for (var i = 0; i < registeredTile.Placements.Length; i++) {
-            bool thereIsATerraformerHere = GamepieceAssignments.Exists(
+            bool thereIsATerraformerHere = registeredTile.GamepieceAssignments.Exists(
                 assignment => assignment.Anchor == registeredTile.Placements[i]
             );
             GamepieceAnchors[
@@ -120,17 +118,12 @@ public class UI_UnityTile : MonoBehaviour
     }
 
     public void AssignTerraformerToAnchor(int anchor) {
-        GamepieceAssignments.Clear(); // TODO: May need to preserve old ones in weird scenarios
-        GamepieceAssignments.Add(new GamepieceTileAssignment {
-            Anchor = anchor,
-            Team = 0,
-            Type = GamepieceType.TERRAFORMER
-        });
+        registeredTile.AssignTerraformerToAnchor(anchor);
         HighlightChosenTerraformer();
     }
 
     public void CancelGamepiecePlacement() {
-        GamepieceAssignments.Clear();
+        registeredTile.ClearGamepiecePlacement();
         HighlightChosenTerraformer();
     }
 
@@ -158,13 +151,13 @@ public class UI_UnityTile : MonoBehaviour
 
     void FinalizePlacement() {
         liftableFacePlate.position = new Vector3(transform.position.x, transform.position.y, PLACED_ELEVATION);
-        foreach(GamepieceTileAssignment gamepiece in GamepieceAssignments) {
-            gamepiece.OnBoard = Instantiate(
+        foreach(GamepieceTileAssignment gamepiece in registeredTile.GamepieceAssignments) {
+            var Gamepiece = Instantiate(
                 Resources.Load<GameObject>("Gamepiece_" + gamepiece.Type.ToString())
             );
-            gamepiece.OnBoard.transform.position = GamepieceAnchors[gamepiece.Anchor].position + new Vector3(0, 0.1f, 0f);
-            gamepiece.OnBoard.transform.rotation = Quaternion.Euler(0f, 0, -12.5f);
-            gamepiece.OnBoard.transform.SetParent(transform);
+            Gamepiece.transform.position = GamepieceAnchors[gamepiece.Anchor].position + new Vector3(0, 0.1f, 0f);
+            Gamepiece.transform.rotation = Quaternion.Euler(0f, 0, -12.5f);
+            Gamepiece.transform.SetParent(transform);
         }
     }
 

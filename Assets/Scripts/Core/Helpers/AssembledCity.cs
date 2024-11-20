@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class AssembledRoad {
+public class AssembledCity {
     int index = 0;
     bool collected = false;
     public List<TileAndPlacementGroupIndex> tilePis = new List<TileAndPlacementGroupIndex>();
 
-    public AssembledRoad(int i) {
+    public AssembledCity(int i) {
         index = i;
     }
 
@@ -22,24 +22,24 @@ public class AssembledRoad {
     public bool IsComplete() {
         if (tilePis.Count < 1) return false;
 
-        return tilePis.All(tpi => tpi.isConnectedAtAllRoadJoints());
+        return tilePis.All(tpi => tpi.isConnectedAtAllCityJoints());
     }
 
     public void AddTilePlacementIndex(TileAndPlacementGroupIndex tpi) {
         tilePis.Add(tpi);
     }
 
-    public bool ContainsRoad(Road r) {
+    public bool ContainsTile(Tile t) {
         foreach (TileAndPlacementGroupIndex tpi in tilePis) {
-            if (tpi.tile.Roads.Contains(r) && tpi.placementIndex == r.RoadGroupId) {
+            if (tpi.tile == t) {
                 return true;
             }
         }
         return false;
     }
 
-    public void Merge(AssembledRoad ar) {
-        tilePis = tilePis.Union(ar.tilePis).ToList();
+    public void Merge(AssembledCity ac) {
+        tilePis = tilePis.Union(ac.tilePis).ToList();
     }
 
     public int GetUniqueTileCount() {
