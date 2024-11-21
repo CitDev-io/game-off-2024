@@ -109,3 +109,11 @@ Game is instantiated with Settings item (can be just default, vanilla)
 - User can use callback on the events to execute them in state
 !!!! MISSING: If user doesn't call the callbacks, the inventory changes (points/game pieces) will not update -- maybe we store it/clear it and on Ack, we fully commit any uncommitted events so user can opt out of timing events
 - When everything is caught up, User can .Ack() to kick the Cartridge to advance
+
+## WILO FO SHO
+- RelatedGamepieces is NOT every piece found on the related tiles. Let the scoring methods know that.
+- apply points to scoreboard and let owners "collect" relatedgamepieces in callback
+- All UI work from here until we need to write end-of-game scoring
+- add secret missions/scoring
+- title screen
+- ship it
