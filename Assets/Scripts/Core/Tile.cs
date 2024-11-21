@@ -36,11 +36,11 @@ public class Tile
         return thisEdge == otherEdge;
     }
 
-    public void AssignTerraformerToAnchor(int anchor) {
+    public void AssignTerraformerToAnchor(int anchor, PlayerSlot slot) {
         GamepieceAssignments.Clear(); // TODO: May need to preserve old ones in weird scenarios
         GamepieceAssignments.Add(new GamepieceTileAssignment {
             Anchor = anchor,
-            Team = 0,
+            Team = slot,
             Type = GamepieceType.TERRAFORMER
         });
     }

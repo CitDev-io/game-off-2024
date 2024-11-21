@@ -89,3 +89,23 @@ Can select from eligible terraformer locations and place one
     - WIN/LOSS Performance
     - Title Screen
     - JUICE
+
+
+## 11/20/24 late
+- Points are wired and need to be given to the scoreboard in the callback action
+- Current setup for player v player local. works great.
+- CPU wired for logic portion, currently acking out of turn
+- Performance Layer wired to do performances
+- UI Layer ready to start rendering state
+- Hook up events across the Bridge in GBM
+- Tilebag can become a config item
+
+## Game Flow
+Game is instantiated with Settings item (can be just default, vanilla)
+- Visual layer can inspect state: current tile, turn order etc
+- Can call .PlaceTile() to do their move, subsequent calls with throw
+- Invalid tile placement will throw
+- User can get list of events now that a tile is placed.
+- User can use callback on the events to execute them in state
+!!!! MISSING: If user doesn't call the callbacks, the inventory changes (points/game pieces) will not update -- maybe we store it/clear it and on Ack, we fully commit any uncommitted events so user can opt out of timing events
+- When everything is caught up, User can .Ack() to kick the Cartridge to advance

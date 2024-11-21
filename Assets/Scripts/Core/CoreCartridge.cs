@@ -2,18 +2,60 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class TileGrid {
-    public static readonly int GRID_LENGTH = 15;
-    public static readonly int MIDPOINT = 7;
+public delegate void PlayerAssignmentDelegate(PlayerAssignment p);
+
+public class CoreCartridge {
     public Tile[,] grid;
     public BoardInventory inventory = new BoardInventory();
     TileBag TheBag = new TileBag();
+    public Scoreboard scoreboard;
+    public GameSettings gs = new GameSettings();
+    public PlayerAssignmentDelegate OnPlayerTurnChange;
+    bool TilePlacedThisTurn = false;
+    public Tile CurrentTile;
 
-    public TileGrid(Tile startingTile)
+    public CoreCartridge(Tile startingTile, GameSettings gs)
     {
-        grid = new Tile[15, 15];
-        PlaceTile(startingTile, new GridPosition(MIDPOINT, MIDPOINT));
+        // can add tilebag to this
+        grid = new Tile[gs.OddGameBoardWidth, gs.OddGameBoardWidth];
+
+
+        PlaceTile(startingTile, new GridPosition(gs.BoardMidPoint, gs.BoardMidPoint));
+        scoreboard = new Scoreboard(gs.playerManifest);
+
+        // set the table
+        CurrentTile = DrawNewTile();
+        TilePlacedThisTurn = false;
+
+        // hook in the AI spy
+        OnPlayerTurnChange += OnTurnStart_AISpy;
     }
+
+    void OnTurnStart_AISpy(PlayerAssignment pa) {
+        if (pa.type != PlayerType.CPU) {
+            return;
+        }
+
+        // its the CPU's turn. lock things up from player input, do the logic and wait for ack
+    }
+
+    // player calls this: acknowledges turn details and we move on.
+    public void Ack() {
+        if (!TilePlacedThisTurn && scoreboard.GetCurrentTurnPlayer().type == PlayerType.HUMAN) {
+            // do need this enforced on CPU turn when it has logic
+            throw new Exception("Player must place a tile before ending turn");
+        }
+
+        NextTurn();
+    }
+
+    void NextTurn() {
+        TilePlacedThisTurn = false;
+        scoreboard.AdvanceToNextTurn();
+        CurrentTile = DrawNewTile();
+        OnPlayerTurnChange?.Invoke(scoreboard.GetCurrentTurnPlayer());
+    }
+
 /* SCORING STUFF */
     public List<ScoringEvent> GetScoringEvents() {
         List<ScoringEvent> Events = new List<ScoringEvent>();
@@ -21,6 +63,7 @@ public class TileGrid {
         Events.AddRange(SCORE_CompletedRoads);
         Events.AddRange(SCORE_CompletedObelisks);
         Events.AddRange(SCORE_CompletedCities);
+
         return Events;
     }
 
@@ -265,9 +308,14 @@ public class TileGrid {
 
     public bool PlaceTile(Tile tileToPlace, GridPosition pos) {
         if (!CanPlaceTile(tileToPlace, pos)) {
-            // UnityEngine.Debug.Log("Cannot place tile at " + pos.x + ", " + pos.y + " for " + tileToPlace.Name);
-            return false;
+            throw new Exception("Invalid Tile Placement Attempted");
         }
+
+        if (TilePlacedThisTurn) {
+            throw new Exception("Only one tile can be placed per turn");
+        }
+
+        TilePlacedThisTurn = true;
 
         grid[pos.x, pos.y] = tileToPlace;
 
@@ -285,11 +333,6 @@ public class TileGrid {
 
         inventory.AddTileToInventory(tileToPlace);
 
-        
-
-        // run scoring checks against inventory
-
-
         return true;
     }
     #nullable enable
@@ -300,8 +343,8 @@ public class TileGrid {
 
     public List<Tile> GetPlacedTiles() {
         List<Tile> tiles = new List<Tile>();
-        for (int x = 0; x < GRID_LENGTH; x++) {
-            for (int y = 0; y < GRID_LENGTH; y++) {
+        for (int x = 0; x < gs.OddGameBoardWidth; x++) {
+            for (int y = 0; y < gs.OddGameBoardWidth; y++) {
                 if (grid[x, y] != null) {
                     tiles.Add(grid[x, y]);
                 }
@@ -318,9 +361,9 @@ public class TileGrid {
     {
         TileSurvey survey = new TileSurvey();
         bool westAvailable = x > 0;
-        bool eastAvailable = x < GRID_LENGTH - 1;
+        bool eastAvailable = x < gs.OddGameBoardWidth - 1;
         bool southAvailable = y > 0;
-        bool northAvailable = y < GRID_LENGTH - 1;
+        bool northAvailable = y < gs.OddGameBoardWidth - 1;
 
         if (westAvailable) {
             survey.WEST = grid[x - 1, y];
@@ -351,19 +394,19 @@ public class TileGrid {
 
     public List<GridPosition> GetPositionsNearPlacedTiles() {
         HashSet<GridPosition> positions = new HashSet<GridPosition>();
-        for (int x = 0; x < GRID_LENGTH; x++) {
-            for (int y = 0; y < GRID_LENGTH; y++) {
+        for (int x = 0; x < gs.OddGameBoardWidth; x++) {
+            for (int y = 0; y < gs.OddGameBoardWidth; y++) {
                 if (grid[x, y] != null) {
                     if (x > 0 && grid[x - 1, y] == null) {
                         positions.Add(new GridPosition(x - 1, y));
                     }
-                    if (x < GRID_LENGTH - 1 && grid[x + 1, y] == null) {
+                    if (x < gs.OddGameBoardWidth - 1 && grid[x + 1, y] == null) {
                         positions.Add(new GridPosition(x + 1, y));
                     }
                     if (y > 0 && grid[x, y - 1] == null) {
                         positions.Add(new GridPosition(x, y - 1));
                     }
-                    if (y < GRID_LENGTH - 1 && grid[x, y + 1] == null) {
+                    if (y < gs.OddGameBoardWidth - 1 && grid[x, y + 1] == null) {
                         positions.Add(new GridPosition(x, y + 1));
                     }
                 }

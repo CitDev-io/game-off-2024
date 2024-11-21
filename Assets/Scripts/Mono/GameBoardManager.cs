@@ -10,7 +10,7 @@ public class GameBoardManager : MonoBehaviour
     public GameObject DotPrefab;
     public GameObject UnityTilePrefab;
     public Image InHandTileImg;
-    TileGrid TheGrid;
+    CoreCartridge GridGameInstance;
     
     public Tile TemporarilyGlobalTileInHand;
     public UI_UnityTile StagedTile;
@@ -28,17 +28,46 @@ public class GameBoardManager : MonoBehaviour
     
     void Start()
     {
-        InitializeGame();
-        InitializeClickGrid();
-        StartGame();
+        BootSequence();
     }
 
-    void StartGame() {
-        DrawNewTile();
+    void OnDestroy() {
+        EndGameBridge();
     }
 
-    void DrawNewTile() {
-        Tile newTile = TheGrid.DrawNewTile();
+    void StartGameBridge() {
+        GridGameInstance.OnPlayerTurnChange += StartTurnPerformanceForPlayer;
+    }
+
+    void EndGameBridge() {
+        GridGameInstance.OnPlayerTurnChange -= StartTurnPerformanceForPlayer;
+    }
+
+    void BootSequence() {
+        GameSettings settings = new GameSettings();
+        InitCoreCartridge(settings);
+        InitUnityCartridge(settings);
+        StartGameBridge();
+
+        // game intro stuff
+        // setup scoreboard etc
+
+        // ok and when you're ready....
+        StartTurnPerformanceForPlayer(GridGameInstance.scoreboard.GetCurrentTurnPlayer());
+    }
+
+    void StartTurnPerformanceForPlayer(PlayerAssignment pa) {
+        // now's your chance. here's who's turn is starting right now
+        Debug.Log("STARTING TURN FOR PLAYER: " + pa.slot + " - " + pa.type);
+        UpdateDrawnTile();
+        
+        if (pa.type == PlayerType.CPU) {
+            PerformScoringEventsAndAck(); // likely a series of coroutines later
+        }
+    }
+
+    void UpdateDrawnTile() {
+        Tile newTile = GridGameInstance.CurrentTile;
 
         TemporarilyGlobalTileInHand = newTile;
         UpdateClickGrid();
@@ -51,7 +80,7 @@ public class GameBoardManager : MonoBehaviour
     void UpdateClickGrid() {
         ClearClickGrid();
 
-        foreach (GridPosition pos in TheGrid.GetEligiblePositionsAllRotations(TemporarilyGlobalTileInHand)) {
+        foreach (GridPosition pos in GridGameInstance.GetEligiblePositionsAllRotations(TemporarilyGlobalTileInHand)) {
             ClickGrid[pos].Enable();
         }
     }
@@ -69,7 +98,7 @@ public class GameBoardManager : MonoBehaviour
                 (TileType) Enum.Parse(typeof(TileType), tile.Name),
                 i
             );
-            if (TheGrid.CanPlaceTile(checkTile, coords)) {
+            if (GridGameInstance.CanPlaceTile(checkTile, coords)) {
                 workableRotations.Add(i);
             }
         }
@@ -89,7 +118,7 @@ public class GameBoardManager : MonoBehaviour
             coords,
             Workables
         );
-        EvaluateStagingPhase();
+        TripAckCheck();
         return StagedTile;
     }
 
@@ -97,21 +126,22 @@ public class GameBoardManager : MonoBehaviour
         TilePlacementUserInput.SetActive(false);
     }
 
-    void InitializeGame() {
-        // THINK: starter tile passed, can add player config, tile bag config, theme/board etc
-        TheGrid = new TileGrid(TileFactory.CreateTile(TileType.D));
+    void InitCoreCartridge(GameSettings settings) {
+        
+        GridGameInstance = new CoreCartridge(
+            TileFactory.CreateTile(TileType.D),
+            settings
+        );
+    }
 
-
-        var StarterTile = StageUnityTileAt(TheGrid.grid[7, 7], new GridPosition(7, 7));
+    void InitUnityCartridge(GameSettings settings) {
+        var StarterTile = StageUnityTileAt(GridGameInstance.grid[settings.BoardMidPoint, settings.BoardMidPoint], new GridPosition(settings.BoardMidPoint, settings.BoardMidPoint));
         StarterTile.SetStatus(UITileStatus.PLACED);
 
         ClearStagingUI();
-    }
-
-    void InitializeClickGrid() {
-        for (int x = 0; x < 15; x++) {
-            for (int y = 0; y < 15; y++) {
-                GameObject dot = Instantiate(DotPrefab, new Vector3(x - 7, y - 7, 0.2f), Quaternion.Euler(-90f, 0, 0));
+        for (int x = 0; x < settings.OddGameBoardWidth; x++) {
+            for (int y = 0; y < settings.OddGameBoardWidth; y++) {
+                GameObject dot = Instantiate(DotPrefab, new Vector3(x - settings.BoardMidPoint, y - settings.BoardMidPoint, 0.2f), Quaternion.Euler(-90f, 0, 0));
                 dot.transform.parent = transform;
 
                 GridPosition coords = new GridPosition(x, y);
@@ -119,7 +149,7 @@ public class GameBoardManager : MonoBehaviour
                 dotSpot.SetCoords(coords);
                 ClickGrid[coords] = dotSpot;
             }
-        }   
+        }
     }
 
     void CameraControlTo(Vector3 target, float cameraFov) {
@@ -157,7 +187,7 @@ public class GameBoardManager : MonoBehaviour
         Camera.main.fieldOfView = cameraFov;
     }
 
-    void EvaluateStagingPhase() {
+    void TripAckCheck() {
         ClearStagingUI();
         if (Confirmations == 0) {
             TilePlacementUserInput.SetActive(true);
@@ -186,10 +216,7 @@ public class GameBoardManager : MonoBehaviour
             // ************* if not, skip to the next step
         }
         if (Confirmations == 2 && StagedTile.GetStatus() != UITileStatus.PLACED) {
-            
-
-            StagedTile.SetStatus(UITileStatus.PLACED);
-            bool PlacedSuccessfully = TheGrid
+            bool PlacedSuccessfully = GridGameInstance
                 .PlaceTile(
                     StagedTile.registeredTile,
                     StagedTile.gridPosition
@@ -198,31 +225,22 @@ public class GameBoardManager : MonoBehaviour
             if (!PlacedSuccessfully) {
                 Debug.Log("Tile placement failed");
                 Confirmations--;
-                EvaluateStagingPhase();
+                TripAckCheck();
                 return;
+            } else {
+                StagedTile.SetStatus(UITileStatus.PLACED);
             }
 
-
-
-
-            // Look for scoring events that are queued and clear them out
-            List<ScoringEvent> ScoringEvents = TheGrid.GetScoringEvents();
-            EnactScoringEvents(ScoringEvents);
-
-            foreach(AssembledCity ac in TheGrid.inventory.AssembledCities) {
-                Debug.Log("Assembled: " + ac.ToString());
-                Debug.Log("Tiles Count: " + ac.tilePis.Count);
-                Debug.Log("Unique Tiles" + ac.GetUniqueTileCount());
-                Debug.Log("Is Complete: " + ac.IsComplete());
-            }
-
-            // anything to do after scoring but before we move to the next turn
-
-
-            Confirmations = 0;
-            DrawNewTile();
+            PerformScoringEventsAndAck();
             CameraControlTo(Camera.main.transform.position, DEFAULT_CAMERA_FOV);
         }
+    }
+
+    void PerformScoringEventsAndAck() {
+        List<ScoringEvent> ScoringEvents = GridGameInstance.GetScoringEvents();
+        EnactScoringEvents(ScoringEvents);
+        Confirmations = 0;
+        GridGameInstance.Ack();
     }
 
     void EnactScoringEvents(List<ScoringEvent> events) {
@@ -258,7 +276,7 @@ public class GameBoardManager : MonoBehaviour
         if (StagedTile == null) return;
         Confirmations++;
 
-        EvaluateStagingPhase();
+        TripAckCheck();
     }
 
     public void UIINGRESS_OnPlayerBackStep() {
@@ -266,7 +284,7 @@ public class GameBoardManager : MonoBehaviour
         Confirmations--;
 
         if (Confirmations > -1) {
-            EvaluateStagingPhase();
+            TripAckCheck();
         } else {
             CancelStagingInput();
         }
@@ -295,6 +313,9 @@ public class GameBoardManager : MonoBehaviour
 
     public void UserAssignsTerraformerToAnchor(int anchorIndex) {
         if (StagedTile == null) return;
-        StagedTile.AssignTerraformerToAnchor(anchorIndex);
+        StagedTile.AssignTerraformerToAnchorFacade(
+            anchorIndex,
+            GridGameInstance.scoreboard.GetCurrentTurnPlayer().slot
+        );
     }
 }

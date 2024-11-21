@@ -11,17 +11,6 @@ public enum UITileStatus {
     NOT_SET
 };
 
-public enum GamepieceType {
-    TERRAFORMER,
-    PIG
-};
-
-public class GamepieceTileAssignment {
-    public int Anchor;
-    public PlayerSlot Team;
-    public GamepieceType Type;
-}
-
 public class UI_UnityTile : MonoBehaviour
 {
     public readonly UITileStatus STARTING_STATUS = UITileStatus.CONFIGURE_TRANSFORM;
@@ -117,8 +106,8 @@ public class UI_UnityTile : MonoBehaviour
         }
     }
 
-    public void AssignTerraformerToAnchor(int anchor) {
-        registeredTile.AssignTerraformerToAnchor(anchor);
+    public void AssignTerraformerToAnchorFacade(int anchor, PlayerSlot slot) {
+        registeredTile.AssignTerraformerToAnchor(anchor, slot);
         HighlightChosenTerraformer();
     }
 
