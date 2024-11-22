@@ -21,6 +21,6 @@ public class AssembledObelisk {
     }
 
     public bool IsOccupied() {
-        return tilePi.tile.obelisk?.GroupId == tilePi.placementIndex;
+        return tilePi.tile.obelisk?.GroupId == tilePi.groupIndexId;
     }
 };

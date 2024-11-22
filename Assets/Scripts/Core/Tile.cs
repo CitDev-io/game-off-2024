@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 public delegate void TileRotated();
 
 public class Tile
@@ -66,6 +67,12 @@ public class Tile
         1   0           7   6
         rotation 2     rotation 3
     */
+
+    public List<GamepieceTileAssignment> GetAllGamepiecesInGroupId(int groupIndexId) {
+        return GamepieceAssignments
+            .Where(gpa => gpa.Anchor == Placements[groupIndexId])
+            .ToList();
+    }
 
     public CardinalDirection LocalToNormalizedDirection(CardinalDirection direction)
     {

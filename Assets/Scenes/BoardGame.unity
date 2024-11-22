@@ -1982,7 +1982,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 0.9481132, g: 0.95659286, b: 1, a: 1}
-  m_Intensity: 1.68
+  m_Intensity: 3
   m_Range: 6.12
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -2059,11 +2059,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b5fb29449b984b6fbe96ac57eb44ae8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RANGE_X: 5
+  RANGE_X: 5.5
   RANGE_Y: 1.5
   RANGE_Z: 8
-  INTENSITY_X: 3
-  INTENSITY_Y: 1
 --- !u!1 &1334022988
 GameObject:
   m_ObjectHideFlags: 0

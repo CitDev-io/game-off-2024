@@ -31,7 +31,7 @@ public class AssembledRoad {
 
     public bool ContainsRoad(Road r) {
         foreach (TileAndPlacementGroupIndex tpi in tilePis) {
-            if (tpi.tile.Roads.Contains(r) && tpi.placementIndex == r.RoadGroupId) {
+            if (tpi.tile.Roads.Contains(r) && tpi.groupIndexId == r.RoadGroupId) {
                 return true;
             }
         }

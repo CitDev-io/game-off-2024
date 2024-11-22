@@ -97,8 +97,9 @@ public class CoreCartridge {
             .Select(tpi => tpi.tile)
             .ToList();
 
+        
         List<GamepieceTileAssignment> RelatedGamepieces = ac.tilePis
-            .SelectMany(tpi => tpi.tile.GamepieceAssignments)
+            .SelectMany(tpi => tpi.tile.GetAllGamepiecesInGroupId(tpi.groupIndexId))
             .ToList();
 
         int shieldBonus = 0; // TODO: !

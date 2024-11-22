@@ -3,10 +3,10 @@ using System.Linq;
 
 public class TileAndPlacementGroupIndex {
     public Tile tile;
-    public int placementIndex;
+    public int groupIndexId;
     public TileAndPlacementGroupIndex(Tile t, int pi) {
         tile = t;
-        placementIndex = pi;
+        groupIndexId = pi;
     }
 
     public bool isConnectedAtAllCityJoints() {
@@ -14,7 +14,7 @@ public class TileAndPlacementGroupIndex {
             bool isACityJoint = tile.GetEdgeTypeByNormalizedDir(dir) == EdgeType.CITY;
             MicroEdgeSpot mespot = tile.DecodeDirectionToTrueMicroEdgeSpot(dir);
             bool isInThisGroup = tile
-                .FindMicroEdgeFromLocalizedEdgeSpot(mespot).EdgeGroupId == placementIndex;
+                .FindMicroEdgeFromLocalizedEdgeSpot(mespot).EdgeGroupId == groupIndexId;
             bool isNotConnected = tile.NormalizedSurvey.TileInDirection(dir) == null;
             if (isInThisGroup && isACityJoint && isNotConnected) {
                 return false;
@@ -25,7 +25,7 @@ public class TileAndPlacementGroupIndex {
 
     public bool isConnectedAtAllRoadJoints() {
         List<Road> roadsOnTPI = tile.Roads
-            .FindAll(r => r.RoadGroupId == placementIndex);
+            .FindAll(r => r.RoadGroupId == groupIndexId);
         List<CardinalDirection> NormalizedJointDirs = roadsOnTPI
             .Select(r => tile.LocalToNormalizedDirection(r.localizedDirection))
             .ToList();

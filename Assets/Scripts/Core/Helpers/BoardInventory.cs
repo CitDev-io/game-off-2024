@@ -41,7 +41,7 @@ public class BoardInventory {
                     int oppoGroupId = neighborTile.FindMicroEdgeFromLocalizedEdgeSpot(oppoSpot).EdgeGroupId;
 
                     AssembledCity existingCity = AssembledCities
-                        .Find(ac => ac.tilePis.Any(tpi => tpi.placementIndex == oppoGroupId && tpi.tile == neighborTile));
+                        .Find(ac => ac.tilePis.Any(tpi => tpi.groupIndexId == oppoGroupId && tpi.tile == neighborTile));
 
                     if (!existingCities.Contains(existingCity)) {
                         existingCities.Add(existingCity);
