@@ -71,7 +71,7 @@ public class GameBoardManager : MonoBehaviour
 
         TemporarilyGlobalTileInHand = newTile;
         UpdateClickGrid();
-        InHandTileImg.sprite = Resources.Load<Sprite>("Images/Tile_" + newTile.Name);
+        InHandTileImg.sprite = Resources.Load<Sprite>("Images/Tiles/Tile_" + newTile.Name);
         InHandTileImg.transform.rotation = Quaternion.Euler(
             new Vector3(0, 0, (-90 * newTile.Rotation) + 21.42f)
         );

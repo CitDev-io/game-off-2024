@@ -16,7 +16,7 @@ public class UI_UnityTile : MonoBehaviour
     public readonly UITileStatus STARTING_STATUS = UITileStatus.CONFIGURE_TRANSFORM;
 
     UITileStatus currentStatus = UITileStatus.NOT_SET;
-    public TMPro.TextMeshPro DebugText;
+    // public TMPro.TextMeshPro DebugText;
     public SpriteRenderer spriteRenderer;
     public Transform liftableFacePlate;
     public Tile registeredTile;
@@ -28,7 +28,7 @@ public class UI_UnityTile : MonoBehaviour
     float FLOATING_ELEVATION_START = -0.55f;
     float FLOATING_ELEVATION_SPEED = 2f;
     float FLOATING_ELEVATION_ARCH = 0.001f;
-    float PLACED_ELEVATION = 0f;
+    float PLACED_ELEVATION = 0.4f;
 
     public void RotateWorkableOnly() {
         if (currentStatus == UITileStatus.CONFIGURE_TRANSFORM) {
@@ -51,7 +51,7 @@ public class UI_UnityTile : MonoBehaviour
             worldSpot.y - 7f,
             PLACED_ELEVATION
         );
-        spriteRenderer.sprite = Resources.Load<Sprite>("Images/Tile_" + tile.Name);
+        spriteRenderer.sprite = Resources.Load<Sprite>("Images/Tiles/Tile_" + tile.Name);
         OnTileRotated();
     }
     public UITileStatus GetStatus() {
@@ -156,7 +156,7 @@ public class UI_UnityTile : MonoBehaviour
 
     void OnTileRotated()
     {
-        DebugText.text = registeredTile.Name + registeredTile.Rotation.ToString();
+        // DebugText.text = registeredTile.Name + registeredTile.Rotation.ToString();
         spriteRenderer.transform.rotation = Quaternion.identity;
         spriteRenderer.transform.Rotate(0, 0, -90*registeredTile.Rotation);
 

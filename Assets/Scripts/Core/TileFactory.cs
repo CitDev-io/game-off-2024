@@ -225,15 +225,15 @@ public class TileFactory {
                     new List<MicroEdge> {
                         new MicroEdge(MicroEdgeType.CITY, 0),
                         new MicroEdge(MicroEdgeType.CITY, 0),
+                        new MicroEdge(MicroEdgeType.FARM, 1),
+                        new MicroEdge(MicroEdgeType.FARM, 1),
+                        new MicroEdge(MicroEdgeType.FARM, 1),
+                        new MicroEdge(MicroEdgeType.FARM, 1),
                         new MicroEdge(MicroEdgeType.CITY, 0),
-                        new MicroEdge(MicroEdgeType.CITY, 0),
-                        new MicroEdge(MicroEdgeType.FARM, 1),
-                        new MicroEdge(MicroEdgeType.FARM, 1),
-                        new MicroEdge(MicroEdgeType.FARM, 1),
-                        new MicroEdge(MicroEdgeType.FARM, 1),
+                        new MicroEdge(MicroEdgeType.CITY, 0)
                     },
                     new List<Road>(),
-                    new int[] { 10, 11 }
+                    new int[] { 9, 12 }
                 );
             case TileType.N:
                 return new Tile(
@@ -241,15 +241,15 @@ public class TileFactory {
                     new List<MicroEdge> {
                         new MicroEdge(MicroEdgeType.CITY, 1),
                         new MicroEdge(MicroEdgeType.CITY, 1),
+                        new MicroEdge(MicroEdgeType.FARM, 0),
+                        new MicroEdge(MicroEdgeType.FARM, 0),
+                        new MicroEdge(MicroEdgeType.FARM, 0),
+                        new MicroEdge(MicroEdgeType.FARM, 0),
                         new MicroEdge(MicroEdgeType.CITY, 1),
-                        new MicroEdge(MicroEdgeType.CITY, 1),
-                        new MicroEdge(MicroEdgeType.FARM, 0),
-                        new MicroEdge(MicroEdgeType.FARM, 0),
-                        new MicroEdge(MicroEdgeType.FARM, 0),
-                        new MicroEdge(MicroEdgeType.FARM, 0),
+                        new MicroEdge(MicroEdgeType.CITY, 1)
                     },
                     new List<Road>(),
-                    new int[] { 11, 10 }
+                    new int[] { 9, 12 }
                 );
             case TileType.O:        // todo: SHIELD
                 return new Tile(
