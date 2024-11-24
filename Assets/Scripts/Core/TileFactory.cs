@@ -50,14 +50,14 @@ public class TileFactory {
                 return new Tile(
                     type.ToString(),
                     new List<MicroEdge> {
-                        new MicroEdge(MicroEdgeType.CITY, 1),
-                        new MicroEdge(MicroEdgeType.CITY, 1),
-                        new MicroEdge(MicroEdgeType.CITY, 1),
-                        new MicroEdge(MicroEdgeType.CITY, 1),
-                        new MicroEdge(MicroEdgeType.CITY, 1),
-                        new MicroEdge(MicroEdgeType.CITY, 1),
-                        new MicroEdge(MicroEdgeType.CITY, 1),
-                        new MicroEdge(MicroEdgeType.CITY, 1)
+                        new MicroEdge(MicroEdgeType.CITY, 0),
+                        new MicroEdge(MicroEdgeType.CITY, 0),
+                        new MicroEdge(MicroEdgeType.CITY, 0),
+                        new MicroEdge(MicroEdgeType.CITY, 0),
+                        new MicroEdge(MicroEdgeType.CITY, 0),
+                        new MicroEdge(MicroEdgeType.CITY, 0),
+                        new MicroEdge(MicroEdgeType.CITY, 0),
+                        new MicroEdge(MicroEdgeType.CITY, 0)
                     },
                     new List<Road>(),
                     new int[] { 4 }
@@ -440,14 +440,14 @@ public class TileFactory {
                 return new Tile(
                     "blanksies",
                     new List<MicroEdge> {
-                        new MicroEdge(MicroEdgeType.FARM, 1),
-                        new MicroEdge(MicroEdgeType.FARM, 1),
-                        new MicroEdge(MicroEdgeType.FARM, 1),
-                        new MicroEdge(MicroEdgeType.FARM, 1),
-                        new MicroEdge(MicroEdgeType.FARM, 1),
-                        new MicroEdge(MicroEdgeType.FARM, 1),
-                        new MicroEdge(MicroEdgeType.FARM, 1),
-                        new MicroEdge(MicroEdgeType.FARM, 1)
+                        new MicroEdge(MicroEdgeType.FARM, 0),
+                        new MicroEdge(MicroEdgeType.FARM, 0),
+                        new MicroEdge(MicroEdgeType.FARM, 0),
+                        new MicroEdge(MicroEdgeType.FARM, 0),
+                        new MicroEdge(MicroEdgeType.FARM, 0),
+                        new MicroEdge(MicroEdgeType.FARM, 0),
+                        new MicroEdge(MicroEdgeType.FARM, 0),
+                        new MicroEdge(MicroEdgeType.FARM, 0)
                     },
                     new List<Road>(),
                     new int[] { 4 }

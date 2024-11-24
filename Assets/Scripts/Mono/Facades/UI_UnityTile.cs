@@ -194,6 +194,7 @@ public class UI_UnityTile : MonoBehaviour
             );
             Gamepiece.GetComponent<UI_AnchorTag>().AnchorId = gamepiece.Anchor;
             Gamepiece.GetComponent<UI_AnchorTag>().gridPosition = gridPosition;
+            Gamepiece.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Terraformer" + "Pink" + "Glow"); //TODO: how tf will i figure out who's turn it is???
             Gamepiece.transform.position = GamepieceAnchors[gamepiece.Anchor].position + new Vector3(0, 0.1f, 0f);
             Gamepiece.transform.rotation = Quaternion.Euler(0f, 0, -12.5f);
             Gamepiece.transform.SetParent(transform);
