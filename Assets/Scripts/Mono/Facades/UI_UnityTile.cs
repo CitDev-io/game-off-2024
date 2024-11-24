@@ -60,7 +60,7 @@ public class UI_UnityTile : MonoBehaviour
     public UITileStatus GetStatus() {
         return currentStatus;
     }
-    public void SetStatus(UITileStatus status) {
+    public void SetStatus(UITileStatus status, PlayerSlot player) {
         if (currentStatus == status) {
             return;
         }
@@ -76,7 +76,7 @@ public class UI_UnityTile : MonoBehaviour
                 SetupTerraformerStep();
                 break;
             case UITileStatus.PLACED:
-                FinalizePlacement();
+                FinalizePlacement(player);
                 break;
         }
     }
@@ -166,7 +166,7 @@ public class UI_UnityTile : MonoBehaviour
 
     void Start() {
         if (currentStatus == UITileStatus.NOT_SET) {
-            SetStatus(STARTING_STATUS);
+            SetStatus(STARTING_STATUS, PlayerSlot.PLAYER1);
         }
     }
 
@@ -186,7 +186,7 @@ public class UI_UnityTile : MonoBehaviour
         }
     }
 
-    void FinalizePlacement() {
+    void FinalizePlacement(PlayerSlot player) {
         liftableFacePlate.position = new Vector3(transform.position.x, transform.position.y, PLACED_ELEVATION);
         foreach(GamepieceTileAssignment gamepiece in registeredTile.GamepieceAssignments) {
             var Gamepiece = Instantiate(
@@ -194,7 +194,11 @@ public class UI_UnityTile : MonoBehaviour
             );
             Gamepiece.GetComponent<UI_AnchorTag>().AnchorId = gamepiece.Anchor;
             Gamepiece.GetComponent<UI_AnchorTag>().gridPosition = gridPosition;
-            Gamepiece.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Terraformer" + "Pink" + "Glow"); //TODO: how tf will i figure out who's turn it is???
+            Gamepiece.GetComponent<SpriteRenderer>().sprite =
+                Resources.Load<Sprite>(
+                    "Terraformer" + 
+                    (player == PlayerSlot.PLAYER1 ? "Blue" : "Pink")
+                    + "Glow");
             Gamepiece.transform.position = GamepieceAnchors[gamepiece.Anchor].position + new Vector3(0, 0.1f, 0f);
             Gamepiece.transform.rotation = Quaternion.Euler(0f, 0, -12.5f);
             Gamepiece.transform.SetParent(transform);

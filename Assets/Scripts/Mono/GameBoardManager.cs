@@ -144,7 +144,7 @@ public class GameBoardManager : MonoBehaviour
 
     void InitUnityCartridge(GameSettings settings) {
         var StarterTile = StageUnityTileAt(GridGameInstance.grid[settings.BoardMidPoint, settings.BoardMidPoint], new GridPosition(settings.BoardMidPoint, settings.BoardMidPoint));
-        StarterTile.SetStatus(UITileStatus.PLACED);
+        StarterTile.SetStatus(UITileStatus.PLACED, PlayerSlot.PLAYER1);
 
         ClearStagingUI();
         for (int x = 0; x < settings.OddGameBoardWidth; x++) {
@@ -199,7 +199,7 @@ public class GameBoardManager : MonoBehaviour
         ClearStagingUI();
         if (Confirmations == 0) {
             TilePlacementUserInput.SetActive(true);
-            StagedTile.SetStatus(UITileStatus.CONFIGURE_TRANSFORM);
+            StagedTile.SetStatus(UITileStatus.CONFIGURE_TRANSFORM, GridGameInstance.scoreboard.GetCurrentTurnPlayer().slot);
             CameraControlTo(
                 new Vector3(
                     StagedTile.transform.position.x,
@@ -209,18 +209,23 @@ public class GameBoardManager : MonoBehaviour
             );
         }
         if (Confirmations == 1) {
-            //**** TODO: check if they have terraformers to place
-            //if so, set it up
-            TilePlacementUserInput.SetActive(true);
-            StagedTile.CancelGamepiecePlacement();
-            StagedTile.SetStatus(UITileStatus.CONFIGURE_TERRAFORMER);
-            CameraControlTo(
-                new Vector3(
-                    StagedTile.transform.position.x,
-                    StagedTile.transform.position.y,
-                    -8),
-                ZOOMED_CAMERA_FOV
-            );
+            if (GridGameInstance.scoreboard.CurrentTerraformerCount[
+                GridGameInstance.scoreboard.GetCurrentTurnPlayer().slot
+            ] > 0
+            ) {
+                TilePlacementUserInput.SetActive(true);
+                StagedTile.CancelGamepiecePlacement();
+                StagedTile.SetStatus(UITileStatus.CONFIGURE_TERRAFORMER, GridGameInstance.scoreboard.GetCurrentTurnPlayer().slot);
+                CameraControlTo(
+                    new Vector3(
+                        StagedTile.transform.position.x,
+                        StagedTile.transform.position.y,
+                        -8),
+                    ZOOMED_CAMERA_FOV
+                );
+            } else {
+                Confirmations++;
+         }
             // ************* if not, skip to the next step
         }
         if (Confirmations == 2 && StagedTile.GetStatus() != UITileStatus.PLACED) {
@@ -236,7 +241,7 @@ public class GameBoardManager : MonoBehaviour
                 TripAckCheck();
                 return;
             } else {
-                StagedTile.SetStatus(UITileStatus.PLACED);
+                StagedTile.SetStatus(UITileStatus.PLACED, GridGameInstance.scoreboard.GetCurrentTurnPlayer().slot);
             }
 
             PerformScoringEventsAndAck();
