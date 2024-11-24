@@ -124,11 +124,11 @@ public class CoreCartridge {
         Action ScoringAction = () => { 
             // do NOT reference local variables if you can help it. trying read-only jic
             foreach(PlayerSlot ps in PlayersWithMostTerraformers) {
-                // WILO
-                // give them some pointses!!
+                scoreboard.AddScoreForPlayerSlot(ps, ScoreEarned);
             }
-            // return terraformers
-            // update player inventories for tf's
+            foreach(GamepieceTileAssignment gta in RelatedGamepieces) {
+                scoreboard.CollectGamepiece(gta.Type, gta.Team);
+            }
             ac.MarkAsCollected();
         };
         
@@ -181,11 +181,11 @@ public class CoreCartridge {
         Action ScoringAction = () => { 
             // do NOT reference local variables if you can help it. trying read-only jic
             foreach(PlayerSlot ps in PlayersWithMostTerraformers) {
-                // WILO
-                // give them some pointses!!
+                scoreboard.AddScoreForPlayerSlot(ps, ScoreEarned);
             }
-            // return terraformers
-            // update player inventories for tf's
+            foreach(GamepieceTileAssignment gta in RelatedGamepieces) {
+                scoreboard.CollectGamepiece(gta.Type, gta.Team);
+            }
             ao.MarkAsCollected();
         };
         
@@ -205,7 +205,7 @@ public class CoreCartridge {
             .ToList();
 
         List<GamepieceTileAssignment> RelatedGamepieces = ar.tilePis
-            .SelectMany(tpi => tpi.tile.GamepieceAssignments)
+            .SelectMany(tpi => tpi.tile.GetAllGamepiecesInGroupId(tpi.groupIndexId))
             .ToList();
 
         Dictionary<PlayerSlot, int> NetScoreChangeByPlayer = new();
@@ -228,11 +228,11 @@ public class CoreCartridge {
         Action ScoringAction = () => { 
             // do NOT reference local variables if you can help it. trying read-only jic
             foreach(PlayerSlot ps in PlayersWithMostTerraformers) {
-                // WILO
-                // give them some pointses!!
+                scoreboard.AddScoreForPlayerSlot(ps, ScoreEarned);
             }
-            // return terraformers
-            // update player inventories for tf's
+            foreach(GamepieceTileAssignment gta in RelatedGamepieces) {
+                scoreboard.CollectGamepiece(gta.Type, gta.Team);
+            }
             ar.MarkAsCollected();
         };
         
@@ -327,11 +327,14 @@ public class CoreCartridge {
             grid[pos.x, pos.y] = null;
             return false;
         }
-
         TileSurvey tileSurvey = SurveyPosition(pos);
         tileToPlace.NormalizedSurvey = tileSurvey;
-        tileSurvey.ApplyToOtherSurveys(tileToPlace);
 
+        tileToPlace.GamepieceAssignments.ForEach(gta => {
+            scoreboard.RemoveGamepieceFromStash(gta.Type, gta.Team);
+        });
+
+        tileSurvey.ApplyToOtherSurveys(tileToPlace);
         inventory.AddTileToInventory(tileToPlace);
 
         return true;

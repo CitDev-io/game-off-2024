@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -40,9 +42,10 @@ public class UI_UnityTile : MonoBehaviour
         }
     }
 
-    public void RegisterTile(Tile tile, GridPosition worldSpot, List<int> workableRotations)
+    public void RegisterTile(Tile tile, GridPosition worldSpot, List<int> workableRotations, TileSurvey ts)
     {
         registeredTile = tile;
+        registeredTile.NormalizedSurvey = ts;
         WorkableRotations = workableRotations;
         gridPosition = worldSpot;
         tile.OnTileRotated += OnTileRotated;
@@ -87,10 +90,55 @@ public class UI_UnityTile : MonoBehaviour
 
     void SetupTerraformerStep() {
         GamepieceAnchors[4].gameObject.SetActive(registeredTile.obelisk != null);
-        for (var i = 0; i < registeredTile.Placements.Length; i++) {
-            GamepieceAnchors[
-                registeredTile.Placements[i]
-            ].gameObject.SetActive(true);
+
+        
+        
+        // we have a list of placements int[]{ 1, 6, 9 }
+        // need to cut that list down based on whether or not that tile is eligible for a terraformer
+        // GamepieceAnchor[anchorid] not groups
+
+        //foreach placement
+        // index within placements array is the group id
+
+        // gamepieceanchors are a filled 15 array. won't have nulls.
+        for (var groupId = 0; groupId < registeredTile.Placements.Length; groupId++) {
+            int anchorIdForGroup = registeredTile.Placements[groupId];
+   
+            Debug.Log("Anchor ID: " + anchorIdForGroup);
+// ******** NO anchors found for the full city tile!!!
+            
+            // need to call tile or board and get the opposing first tpi/components to make the lookup
+            List<CardinalDirection> DirectionOfExistingTile = registeredTile.GetCardinalDirectionsForGroupIndexId(groupId);
+            foreach (var dir in DirectionOfExistingTile) {
+                Debug.Log("Direction Found: " + dir);
+            }
+            bool GroupIdIsEligibleForTerraformer = true;
+            foreach(CardinalDirection cdirPossible in DirectionOfExistingTile) {
+                CardinalDirection OppositeDirection = (CardinalDirection)(((int)cdirPossible + 2) % 4);
+                Tile NeighborTile = registeredTile.NormalizedSurvey.TileInDirection(cdirPossible);
+    
+                if (NeighborTile == null) {
+                    Debug.Log("no neighbor");
+                    continue;
+                }
+                int NeighborGroupId = NeighborTile.GetGroupIndexIdForNormalizedDirectionalSide(OppositeDirection);
+                Debug.Log("Neighbor Group ID: " + NeighborGroupId + " to the " + cdirPossible);
+
+                bool eligibleToPlaceTf = GameObject
+                    .Find("GameBoard")
+                    .GetComponent<GameBoardManager>()
+                    .LookupTFEligibilityForTileAndGroupId(
+                        NeighborTile,
+                        NeighborGroupId
+                    );
+
+                Debug.Log("Eligible to place terraformer: " + eligibleToPlaceTf);
+
+                if (!eligibleToPlaceTf) {
+                    GroupIdIsEligibleForTerraformer = false;
+                }
+            }
+            GamepieceAnchors[anchorIdForGroup].gameObject.SetActive(GroupIdIsEligibleForTerraformer);
         }
         HighlightChosenTerraformer();
     }
@@ -107,7 +155,7 @@ public class UI_UnityTile : MonoBehaviour
     }
 
     public void AssignTerraformerToAnchorFacade(int anchor, PlayerSlot slot) {
-        registeredTile.AssignTerraformerToAnchor(anchor, slot);
+        registeredTile.AssignTerraformerToAnchor(anchor, slot, gridPosition);
         HighlightChosenTerraformer();
     }
 
@@ -144,6 +192,8 @@ public class UI_UnityTile : MonoBehaviour
             var Gamepiece = Instantiate(
                 Resources.Load<GameObject>("Gamepiece_" + gamepiece.Type.ToString())
             );
+            Gamepiece.GetComponent<UI_AnchorTag>().AnchorId = gamepiece.Anchor;
+            Gamepiece.GetComponent<UI_AnchorTag>().gridPosition = gridPosition;
             Gamepiece.transform.position = GamepieceAnchors[gamepiece.Anchor].position + new Vector3(0, 0.1f, 0f);
             Gamepiece.transform.rotation = Quaternion.Euler(0f, 0, -12.5f);
             Gamepiece.transform.SetParent(transform);

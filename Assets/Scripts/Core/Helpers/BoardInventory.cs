@@ -7,6 +7,43 @@ public class BoardInventory {
     public List<AssembledObelisk> AssembledObelisks = new();
     public List<AssembledCity> AssembledCities = new();
 
+    public List<GamepieceTileAssignment> FindAllGTAsFromTileAndGroupId(Tile t, int groupId) {
+        List<TileAndPlacementGroupIndex> theTPIsINeed = new();
+
+        AssembledCity matchingAc = AssembledCities.Where(ac => ac
+            .tilePis
+            .Exists(tpi => tpi.groupIndexId == groupId && tpi.tile == t))
+            .FirstOrDefault();
+
+        if (matchingAc != null) {
+            theTPIsINeed = matchingAc.tilePis;
+            
+            return theTPIsINeed
+                .SelectMany(tpi => tpi.tile.GetAllGamepiecesInGroupId(tpi.groupIndexId))
+                .ToList();
+        }
+
+        AssembledRoad matchingAr = AssembledRoads.Where(ar => ar.tilePis.Exists(tpi => tpi.groupIndexId == groupId && tpi.tile == t)).FirstOrDefault();
+        if (matchingAr != null) {
+            theTPIsINeed = matchingAr.tilePis;
+
+            return theTPIsINeed
+                .SelectMany(tpi => tpi.tile.GetAllGamepiecesInGroupId(tpi.groupIndexId))
+                .ToList();
+        }
+
+        AssembledObelisk matchingOb = AssembledObelisks.Where(ao => ao.tilePi.groupIndexId == groupId && ao.tilePi.tile == t).FirstOrDefault();
+        if (matchingOb != null) {
+            theTPIsINeed = new List<TileAndPlacementGroupIndex>{ matchingOb.tilePi };
+
+            return theTPIsINeed
+                .SelectMany(tpi => tpi.tile.GetAllGamepiecesInGroupId(tpi.groupIndexId))
+                .ToList();
+        }
+
+        return new List<GamepieceTileAssignment>();
+    }
+
     public void AddTileToInventory(Tile t) {
         IndexRoadsForTile(t);
         IndexObelisksForTile(t);

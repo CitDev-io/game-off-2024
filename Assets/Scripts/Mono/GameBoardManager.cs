@@ -10,7 +10,7 @@ public class GameBoardManager : MonoBehaviour
     public GameObject DotPrefab;
     public GameObject UnityTilePrefab;
     public Image InHandTileImg;
-    CoreCartridge GridGameInstance;
+    public CoreCartridge GridGameInstance;
     
     public Tile TemporarilyGlobalTileInHand;
     public UI_UnityTile StagedTile;
@@ -25,7 +25,14 @@ public class GameBoardManager : MonoBehaviour
     public float AUTO_PAN_SPEED = 3f;
     public float AUTO_PAN_SNAP_DISTANCE = 0.1f;
     public float AUTO_ZOOM_SNAP_DISTANCE = 0.1f;
-    
+
+    public bool LookupTFEligibilityForTileAndGroupId(Tile t, int groupId) {
+        List<GamepieceTileAssignment> GTAs = GridGameInstance.inventory.FindAllGTAsFromTileAndGroupId(t, groupId);
+        Debug.Log(GTAs.Count + " GTAs found for " + t.Name + " and group " + groupId);
+        GTAs.ForEach(gta => Debug.Log(gta.Type));
+        return GTAs.All(gta => gta.Type != GamepieceType.TERRAFORMER);
+    }
+
     void Start()
     {
         BootSequence();
@@ -116,7 +123,8 @@ public class GameBoardManager : MonoBehaviour
         StagedTile.RegisterTile(
             tileToDrop,
             coords,
-            Workables
+            Workables,
+            GridGameInstance.SurveyPosition(coords)
         );
         TripAckCheck();
         return StagedTile;
@@ -255,6 +263,19 @@ public class GameBoardManager : MonoBehaviour
                 default:
                     break;
             }
+
+            e.RelatedGamepieces.ForEach(gp => {
+                if (gp.Type == GamepieceType.TERRAFORMER) {
+                    // do terraformer performance
+                    List<UI_AnchorTag> ats = FindObjectsOfType<UI_AnchorTag>()
+                            .Where(anchor => anchor.AnchorId == gp.Anchor
+                                && anchor.gridPosition == gp.Position
+                            ).ToList();
+                    foreach (UI_AnchorTag at in ats) {
+                        Destroy(at.gameObject);
+                    }
+                }
+            });
             e.ScoringAction.Invoke();
         }
     }

@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using UnityEngine;
+
 public delegate void TileRotated();
 
 public class Tile
@@ -37,36 +40,93 @@ public class Tile
         return thisEdge == otherEdge;
     }
 
-    public void AssignTerraformerToAnchor(int anchor, PlayerSlot slot) {
+    public void AssignTerraformerToAnchor(int anchor, PlayerSlot slot, GridPosition gridPositionForThisCluelessFuckingTile) {
         GamepieceAssignments.Clear(); // TODO: May need to preserve old ones in weird scenarios
         GamepieceAssignments.Add(new GamepieceTileAssignment {
             Anchor = anchor,
             Team = slot,
-            Type = GamepieceType.TERRAFORMER
+            Type = GamepieceType.TERRAFORMER,
+            Position = gridPositionForThisCluelessFuckingTile
         });
     }
 
     public void ClearGamepiecePlacement() {
         GamepieceAssignments.Clear();
     }
-    /*
-        0   1           6   7
-        -   -           -   -
-     7  -   -  2    5   -   -  0
-     6  -   -  3    4   -   -  1
-        -   -           -   -
-        5   4           3   2
-        rotation 0     rotation 1
 
+    // warning: revisit for fields
+    public int GetGroupIndexIdForNormalizedDirectionalSide(CardinalDirection cDir) {
+        EdgeType edgeType = GetEdgeTypeByNormalizedDir(cDir);
+        if (edgeType == EdgeType.ROAD) {
+            Road road = Roads.Find(r => LocalToNormalizedDirection(r.localizedDirection) == cDir);
+            return road.RoadGroupId;
+        } else {
+            MicroEdgeSpot spot = DecodeDirectionToTrueMicroEdgeSpot(cDir);
+            return FindMicroEdgeFromLocalizedEdgeSpot(spot).EdgeGroupId;
+        }
 
-        4   5           2   3
-        -   -           -   -
-    3  -   -  6    1   -   -  4
-    2  -   -  7    0   -   -  5
-        -   -           -   -
-        1   0           7   6
-        rotation 2     rotation 3
-    */
+    }
+
+    public bool IsGroupIdEligibleForTerraformer(int groupIndexId) {
+        List<CardinalDirection> NeighborDirections = GetCardinalDirectionsForGroupIndexId(groupIndexId);
+        UnityEngine.Debug.Log("Neighbor Directions: " + string.Join(", ", NeighborDirections));
+        foreach(CardinalDirection NeighborCardinalAddress in NeighborDirections) {
+            CardinalDirection oppositeDirection = (CardinalDirection)(((int)NeighborCardinalAddress + 2) % 4);
+            Tile Neighbor = NormalizedSurvey.TileInDirection(NeighborCardinalAddress);
+            
+            if (Neighbor == null) {
+                UnityEngine.Debug.Log("NO NEIGHBOR TO THE " + NeighborCardinalAddress.ToString());
+                continue;
+            }
+            UnityEngine.Debug.Log("Neighbor: " + Neighbor.Name);
+            List<GamepieceTileAssignment> gamepieces = Neighbor.GetAllGamepiecesInGroupId(
+                Neighbor.GetGroupIndexIdForNormalizedDirectionalSide(oppositeDirection)
+            );
+
+            if (gamepieces.Exists(gpa => gpa.Type == GamepieceType.TERRAFORMER)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public List<CardinalDirection> GetCardinalDirectionsForGroupIndexId(int groupIndexId) {
+        if (Roads.Exists(r => r.RoadGroupId == groupIndexId)) {
+            return Roads
+                .FindAll(r => r.RoadGroupId == groupIndexId)
+                .Select(r => LocalToNormalizedDirection(r.localizedDirection))
+                .ToList();
+        }
+        if (Edges.Exists(e => e.EdgeGroupId == groupIndexId)) {
+            return Edges
+                .FindAll(e => e.EdgeGroupId == groupIndexId)
+                .Select(e => GetCardinalDirectionFromEdgeIndexPosition(e))
+                .Distinct()
+                .ToList();
+        }
+        // nothing here for farmses
+        return new List<CardinalDirection>();
+    }
+
+    CardinalDirection GetCardinalDirectionFromEdgeIndexPosition(MicroEdge lostEdge) {
+        int indexPosition = Edges.IndexOf(lostEdge);
+        switch (indexPosition) {
+            case 0:
+            case 1:
+                return LocalToNormalizedDirection(CardinalDirection.NORTH);
+            case 2:
+            case 3:
+                return LocalToNormalizedDirection(CardinalDirection.EAST);
+            case 4:
+            case 5:
+                return LocalToNormalizedDirection(CardinalDirection.SOUTH);
+            case 6:
+            case 7:
+                return LocalToNormalizedDirection(CardinalDirection.WEST);
+            default:
+                return CardinalDirection.NORTH;
+        }
+    }
 
     public List<GamepieceTileAssignment> GetAllGamepiecesInGroupId(int groupIndexId) {
         return GamepieceAssignments
