@@ -31,6 +31,10 @@ public class CoreCartridge {
         OnPlayerTurnChange += OnTurnStart_AISpy;
     }
 
+    public int TilesLeft() {
+        return TheBag.TilesRemaining();
+    }
+
     void OnTurnStart_AISpy(PlayerAssignment pa) {
         if (pa.type != PlayerType.CPU) {
             return;

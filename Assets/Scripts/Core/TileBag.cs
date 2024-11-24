@@ -31,6 +31,10 @@ public class TileBag {
         AddTileTimes(TileType.X, 1);
     }
 
+    public int TilesRemaining() {
+        return tiles.Count;
+    }
+
     void AddTileTimes(TileType type, int times) {
         for (int i = 0; i < times; i++) {
             tiles.Add(TileFactory.CreateTile(type));

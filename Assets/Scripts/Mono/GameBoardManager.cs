@@ -18,6 +18,7 @@ public class GameBoardManager : MonoBehaviour
     Dictionary<GridPosition, UI_DotSpot> ClickGrid = new Dictionary<GridPosition, UI_DotSpot>();
     public GameObject TilePlacementUserInput;
     Coroutine CameraOperator;
+    public PlayerSlot CurrentPlayer = PlayerSlot.PLAYER1;
 
     public float DEFAULT_CAMERA_FOV = 45f;
     public float ZOOMED_CAMERA_FOV = 25f;
@@ -65,6 +66,7 @@ public class GameBoardManager : MonoBehaviour
 
     void StartTurnPerformanceForPlayer(PlayerAssignment pa) {
         // now's your chance. here's who's turn is starting right now
+        CurrentPlayer = pa.slot;
         Debug.Log("STARTING TURN FOR PLAYER: " + pa.slot + " - " + pa.type);
         UpdateDrawnTile();
         

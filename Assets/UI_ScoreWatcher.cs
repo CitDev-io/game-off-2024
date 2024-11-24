@@ -32,5 +32,13 @@ public class UI_ScoreWatcher : MonoBehaviour
         TF5.sprite = (tfCount >= 5) ? Resources.Load<Sprite>("Images/Terraformer") : Resources.Load<Sprite>("Images/TerraformerGreyed");
         TF6.sprite = (tfCount >= 6) ? Resources.Load<Sprite>("Images/Terraformer") : Resources.Load<Sprite>("Images/TerraformerGreyed");
         TF7.sprite = (tfCount >= 7) ? Resources.Load<Sprite>("Images/Terraformer") : Resources.Load<Sprite>("Images/TerraformerGreyed");
+        if (gameBoardManager.CurrentPlayer == slotWatch)
+        {
+            transform.parent.localPosition = new Vector3(50f, transform.parent.localPosition.y, transform.parent.localPosition.z);
+        }
+        else
+        {
+            transform.parent.localPosition = new Vector3(0f, transform.parent.localPosition.y, transform.parent.localPosition.z);
+        }
     }
 }
