@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using UnityEngine;
 
 public delegate void TileRotated();
 
@@ -54,7 +52,8 @@ public class Tile
         GamepieceAssignments.Clear();
     }
 
-    // warning: revisit for fields
+    
+
     public int GetGroupIndexIdForNormalizedDirectionalSide(CardinalDirection cDir) {
         EdgeType edgeType = GetEdgeTypeByNormalizedDir(cDir);
         if (edgeType == EdgeType.ROAD) {
@@ -67,27 +66,59 @@ public class Tile
 
     }
 
-    public bool IsGroupIdEligibleForTerraformer(int groupIndexId) {
-        List<CardinalDirection> NeighborDirections = GetCardinalDirectionsForGroupIndexId(groupIndexId);
-        UnityEngine.Debug.Log("Neighbor Directions: " + string.Join(", ", NeighborDirections));
-        foreach(CardinalDirection NeighborCardinalAddress in NeighborDirections) {
-            CardinalDirection oppositeDirection = (CardinalDirection)(((int)NeighborCardinalAddress + 2) % 4);
-            Tile Neighbor = NormalizedSurvey.TileInDirection(NeighborCardinalAddress);
-            
-            if (Neighbor == null) {
-                UnityEngine.Debug.Log("NO NEIGHBOR TO THE " + NeighborCardinalAddress.ToString());
-                continue;
-            }
-            UnityEngine.Debug.Log("Neighbor: " + Neighbor.Name);
-            List<GamepieceTileAssignment> gamepieces = Neighbor.GetAllGamepiecesInGroupId(
-                Neighbor.GetGroupIndexIdForNormalizedDirectionalSide(oppositeDirection)
-            );
+    // warning: revisit for fields
+    // public List<int> GetGroupIndexIdsForNormalizedDirectionalSide(CardinalDirection cDir) {
+    //     List<int> GroupIndexIds = new();
+    //     EdgeType edgeType = GetEdgeTypeByNormalizedDir(cDir);
+    //     if (edgeType == EdgeType.ROAD) {
+    //         Road road = Roads.Find(r => LocalToNormalizedDirection(r.localizedDirection) == cDir);
+    //         GroupIndexIds.Add(road.RoadGroupId);
+    //     } else if (edgeType == EdgeType.CITY) {
+    //         MicroEdgeSpot spot = DecodeDirectionToTrueMicroEdgeSpot(cDir);
+    //         GroupIndexIds.Add(FindMicroEdgeFromLocalizedEdgeSpot(spot).EdgeGroupId);
+    //     }
+        
+    //     edgeType = GetEdgeTypeByNormalizedDirNoRoads(cDir);
 
-            if (gamepieces.Exists(gpa => gpa.Type == GamepieceType.TERRAFORMER)) {
-                return false;
-            }
-        }
-        return true;
+    //     if (edgeType == EdgeType.FARM) {
+    //         MicroEdgeSpot spot1 = DecodeDirectionToTrueMicroEdgeSpot(cDir);
+    //         MicroEdgeSpot spot2 = (MicroEdgeSpot)(((int)spot1 + 1) % 8);
+            
+    //         GroupIndexIds.Add(FindMicroEdgeFromLocalizedEdgeSpot(spot1).EdgeGroupId);
+    //         GroupIndexIds.Add(FindMicroEdgeFromLocalizedEdgeSpot(spot2).EdgeGroupId);
+    //     }
+    //     return GroupIndexIds.Distinct().ToList();
+    // }
+
+    // public bool IsGroupIdEligibleForTerraformer(int groupIndexId) {
+    //     List<CardinalDirection> NeighborDirections = GetCardinalDirectionsForGroupIndexId(groupIndexId);
+    //     // UnityEngine.Debug.Log("Neighbor Directions: " + string.Join(", ", NeighborDirections));
+    //     foreach(CardinalDirection NeighborCardinalAddress in NeighborDirections) {
+    //         CardinalDirection oppositeDirection = (CardinalDirection)(((int)NeighborCardinalAddress + 2) % 4);
+    //         Tile Neighbor = NormalizedSurvey.TileInDirection(NeighborCardinalAddress);
+            
+    //         if (Neighbor == null) {
+    //             // UnityEngine.Debug.Log("NO NEIGHBOR TO THE " + NeighborCardinalAddress.ToString());
+    //             continue;
+    //         }
+    //         // UnityEngine.Debug.Log("Neighbor: " + Neighbor.Name);
+    //         List<GamepieceTileAssignment> gamepieces = Neighbor.GetAllGamepiecesInGroupId(
+    //             Neighbor.GetGroupIndexIdForNormalizedDirectionalSide(oppositeDirection)
+    //         );
+
+    //         if (gamepieces.Exists(gpa => gpa.Type == GamepieceType.TERRAFORMER)) {
+    //             return false;
+    //         }
+    //     }
+    //     return true;
+    // }
+
+    public List<CardinalDirection> GetCardinalDirectionsForGroupIndexId_Farms(int groupIndexId) {
+        return Edges
+            .FindAll(e => e.EdgeGroupId == groupIndexId && e.type == MicroEdgeType.FARM)
+            .Select(e => GetCardinalizedDirectionFromLocalizedEdgeIndexPosition(e))
+            .Distinct()
+            .ToList();
     }
     
     public List<CardinalDirection> GetCardinalDirectionsForGroupIndexId(int groupIndexId) {
@@ -100,7 +131,7 @@ public class Tile
         if (Edges.Exists(e => e.EdgeGroupId == groupIndexId)) {
             return Edges
                 .FindAll(e => e.EdgeGroupId == groupIndexId)
-                .Select(e => GetCardinalDirectionFromEdgeIndexPosition(e))
+                .Select(e => GetCardinalDirectionFromLocalizedEdgeIndexPosition(e))
                 .Distinct()
                 .ToList();
         }
@@ -108,7 +139,52 @@ public class Tile
         return new List<CardinalDirection>();
     }
 
-    CardinalDirection GetCardinalDirectionFromEdgeIndexPosition(MicroEdge lostEdge) {
+    public CardinalDirection GetCardinalDirectionForRotatedEdge(MicroEdge edge) {
+        int indexPosition = (Edges.IndexOf(edge) + (Rotation * 2)) % 8;
+        switch (indexPosition) {
+            case 0:
+                return CardinalDirection.NORTH;
+            case 1:
+                return CardinalDirection.NORTH;
+            case 2:
+                return (CardinalDirection.EAST);
+            case 3:
+                return (CardinalDirection.EAST);
+            case 4:
+                return (CardinalDirection.SOUTH);
+            case 5:
+                return (CardinalDirection.SOUTH);
+            case 6:
+                return (CardinalDirection.WEST);
+            case 7:
+                return (CardinalDirection.WEST);
+            default:
+                return CardinalDirection.NORTH;
+        }
+    }
+
+    public CardinalDirection GetCardinalizedDirectionFromLocalizedEdgeIndexPosition(MicroEdge edge) {
+        int indexPosition = Edges.IndexOf(edge);
+        indexPosition = (indexPosition + (Rotation * 2)) % 8;
+        switch (indexPosition) {
+            case 0:
+            case 1:
+                return CardinalDirection.NORTH;
+            case 2:
+            case 3:
+                return CardinalDirection.EAST;
+            case 4:
+            case 5:
+                return CardinalDirection.SOUTH;
+            case 6:
+            case 7:
+                return CardinalDirection.WEST;
+            default:
+                return CardinalDirection.NORTH;
+        }
+    }
+
+    public CardinalDirection GetCardinalDirectionFromLocalizedEdgeIndexPosition(MicroEdge lostEdge) {
         int indexPosition = Edges.IndexOf(lostEdge);
         switch (indexPosition) {
             case 0:
@@ -163,6 +239,13 @@ public class Tile
             default:
                 return MicroEdgeSpot.NORTH_LEFT;
         }
+    }
+
+    public EdgeType GetEdgeTypeByNormalizedDirNoRoads(CardinalDirection direction) {
+        MicroEdgeSpot spotToCheck = DecodeDirectionToTrueMicroEdgeSpot(direction);
+        return FindMicroEdgeFromLocalizedEdgeSpot(spotToCheck).type == MicroEdgeType.FARM
+                ? EdgeType.FARM
+                : EdgeType.CITY;
     }
 
     public EdgeType GetEdgeTypeByNormalizedDir(CardinalDirection direction) {

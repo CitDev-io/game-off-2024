@@ -103,42 +103,69 @@ public class UI_UnityTile : MonoBehaviour
         // gamepieceanchors are a filled 15 array. won't have nulls.
         for (var groupId = 0; groupId < registeredTile.Placements.Length; groupId++) {
             int anchorIdForGroup = registeredTile.Placements[groupId];
-   
-            Debug.Log("Anchor ID: " + anchorIdForGroup);
+
 // ******** NO anchors found for the full city tile!!!
             
             // need to call tile or board and get the opposing first tpi/components to make the lookup
             List<CardinalDirection> DirectionOfExistingTile = registeredTile.GetCardinalDirectionsForGroupIndexId(groupId);
-            foreach (var dir in DirectionOfExistingTile) {
-                Debug.Log("Direction Found: " + dir);
-            }
-            bool GroupIdIsEligibleForTerraformer = true;
+
+            bool eligibleToPlaceTf = true;
             foreach(CardinalDirection cdirPossible in DirectionOfExistingTile) {
-                CardinalDirection OppositeDirection = (CardinalDirection)(((int)cdirPossible + 2) % 4);
+                bool AnchorIsForRoad = registeredTile.Roads
+                    .Any(e => e.RoadGroupId == groupId && registeredTile.LocalToNormalizedDirection(e.localizedDirection) == cdirPossible);
+
+
                 Tile NeighborTile = registeredTile.NormalizedSurvey.TileInDirection(cdirPossible);
     
                 if (NeighborTile == null) {
-                    Debug.Log("no neighbor");
                     continue;
                 }
-                int NeighborGroupId = NeighborTile.GetGroupIndexIdForNormalizedDirectionalSide(OppositeDirection);
-                Debug.Log("Neighbor Group ID: " + NeighborGroupId + " to the " + cdirPossible);
+                
+                if (AnchorIsForRoad) {
+                    CardinalDirection OppositeDirection = (CardinalDirection)(((int)cdirPossible + 2) % 4);
+                    int GroupId = NeighborTile.GetGroupIndexIdForNormalizedDirectionalSide(OppositeDirection);
 
-                bool eligibleToPlaceTf = GameObject
-                    .Find("GameBoard")
-                    .GetComponent<GameBoardManager>()
-                    .LookupTFEligibilityForTileAndGroupId(
-                        NeighborTile,
-                        NeighborGroupId
-                    );
+                    eligibleToPlaceTf = eligibleToPlaceTf && GameObject
+                        .Find("GameBoard")
+                        .GetComponent<GameBoardManager>()
+                        .LookupTFEligibilityForTileAndGroupId(
+                            NeighborTile,
+                            GroupId
+                        );
+                } else {
+                    List<MicroEdge> microEdgesInThisDirection = registeredTile.Edges
+                        .Where(e => e.EdgeGroupId == groupId && registeredTile.GetCardinalDirectionForRotatedEdge(e) == cdirPossible)
+                        .ToList();
 
-                Debug.Log("Eligible to place terraformer: " + eligibleToPlaceTf);
+                    // repeating unneccessarily honestly
+                    foreach(MicroEdge me in microEdgesInThisDirection) {
+                        // find the opposing microedge in the neighbor tile
+                        // i ultimatiely want to get whatever is currently in the opposite normalized spot id
+                        int thisLocalizedIndex = (registeredTile.Edges.IndexOf(me) + (registeredTile.Rotation * 2))% 8;
+                        int thisLocalizedOpponentIndex = (thisLocalizedIndex + (thisLocalizedIndex % 2 == 0 ? 5 : 3)) % 8;
 
-                if (!eligibleToPlaceTf) {
-                    GroupIdIsEligibleForTerraformer = false;
+                        // remove rotations to normalize
+                        int normalizedOppoSpotId = (thisLocalizedOpponentIndex + (NeighborTile.Rotation * 6)) % 8;
+                        // if oppo weren't rotated, we would just grab the ME at normalizedOppoSpotId
+                        // UnityEngine.Debug.Log("my oppo localized index is: " + oppoLocalizedIndex);
+                        MicroEdge oppoSpot = NeighborTile.Edges[normalizedOppoSpotId];
+                        
+                        // find the group id of the opposing microedge
+                        int oppoGroupId = oppoSpot.EdgeGroupId;
+                        
+                        int GroupId = oppoGroupId;
+                        eligibleToPlaceTf = eligibleToPlaceTf && GameObject
+                        .Find("GameBoard")
+                        .GetComponent<GameBoardManager>()
+                        .LookupTFEligibilityForTileAndGroupId(
+                            NeighborTile,
+                            GroupId
+                        );
+                    }
                 }
             }
-            GamepieceAnchors[anchorIdForGroup].gameObject.SetActive(GroupIdIsEligibleForTerraformer);
+
+            GamepieceAnchors[anchorIdForGroup].gameObject.SetActive(eligibleToPlaceTf);
         }
         HighlightChosenTerraformer();
     }
@@ -199,6 +226,7 @@ public class UI_UnityTile : MonoBehaviour
                     "Terraformer" + 
                     (player == PlayerSlot.PLAYER1 ? "Blue" : "Pink")
                     + "Glow");
+            Debug.Log("***** GAMEPIECE DROPPED");
             Gamepiece.transform.position = GamepieceAnchors[gamepiece.Anchor].position + new Vector3(0, 0.1f, 0f);
             Gamepiece.transform.rotation = Quaternion.Euler(0f, 0, -12.5f);
             Gamepiece.transform.SetParent(transform);

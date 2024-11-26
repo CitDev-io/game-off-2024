@@ -61,7 +61,7 @@ public class CoreCartridge {
     }
 
 /* SCORING STUFF */
-    public List<ScoringEvent> GetScoringEvents() {
+    public List<ScoringEvent> GetTilePlacedScoringEvents() {
         List<ScoringEvent> Events = new List<ScoringEvent>();
 
         Events.AddRange(SCORE_CompletedRoads);
@@ -70,6 +70,20 @@ public class CoreCartridge {
 
         return Events;
     }
+
+    public List<ScoringEvent> GetEndGameScoringEvents() {
+        List<ScoringEvent> Events = new List<ScoringEvent>();
+
+        Events.AddRange(SCORE_OwnedFarms);
+
+        return Events;
+    }
+
+    public List<ScoringEvent> SCORE_OwnedFarms =>
+        inventory.OwnedFarms
+        .Select(OFConvert_OwnedFarmToScoringEvent)
+        .ToList();
+
 
     public List<PlayerSlot> GetPlayersWithMostTerraformers(
         List<GamepieceTileAssignment> GTAs
@@ -95,6 +109,77 @@ public class CoreCartridge {
     Predicate<AssembledRoad> ARFilter_CompleteUncollected = (ar) => ar.IsCompleteAndUncollected();
 
     Predicate<AssembledCity> ACFilter_CompleteUncollected = (ac) => ac.IsCompleteAndUncollected();
+
+    ScoringEvent OFConvert_OwnedFarmToScoringEvent(OwnedFarm of) {
+        List<Tile> RelatedTiles = of.tilePis
+            .Select(tpi => tpi.tile)
+            .ToList();
+
+        
+        List<GamepieceTileAssignment> RelatedGamepieces = of.tilePis
+            .SelectMany(tpi => tpi.tile.GetAllGamepiecesInGroupId(tpi.groupIndexId))
+            .ToList();
+
+        Dictionary<PlayerSlot, int> NetScoreChangeByPlayer = new();
+        
+        List<PlayerSlot> PlayersWithMostTerraformers = GetPlayersWithMostTerraformers(RelatedGamepieces);
+
+        List<AssembledCity> completedCitiesTouchingTPGIs = new List<AssembledCity>();
+        foreach(TileAndPlacementGroupIndex tpgi in of.tilePis) {
+            // here we know the tile and the group index
+            List<MicroEdge> edgesInFarmGroupFound = tpgi.tile.Edges
+                .FindAll(e => e.EdgeGroupId == tpgi.groupIndexId);
+
+            foreach (MicroEdge edge in edgesInFarmGroupFound) {
+                int edgeIndex = tpgi.tile.Edges.IndexOf(edge);
+                MicroEdge edgeBefore = tpgi.tile.Edges[(edgeIndex + 7) % 8];
+                MicroEdge edgeAfter = tpgi.tile.Edges[(edgeIndex + 1) % 8];
+
+                if (edgeBefore.type == MicroEdgeType.CITY) {
+                    List<AssembledCity> citiesTouchingEdge = inventory.AssembledCities
+                        .FindAll(ac => ac.IsComplete() && ac.tilePis.Exists(tpi => tpi.tile.Edges.Contains(edgeBefore)));
+                    completedCitiesTouchingTPGIs.AddRange(citiesTouchingEdge);
+                }
+
+                if (edgeAfter.type == MicroEdgeType.CITY) {
+                    List<AssembledCity> citiesTouchingEdge = inventory.AssembledCities
+                        .FindAll(ac => ac.IsComplete() && ac.tilePis.Exists(tpi => tpi.tile.Edges.Contains(edgeAfter)));
+                    completedCitiesTouchingTPGIs.AddRange(citiesTouchingEdge);
+                }
+            }
+        }
+        int ScoreEarned = completedCitiesTouchingTPGIs.Distinct().Count() * 3;
+        string Earners = string.Join(
+            " and ",
+            PlayersWithMostTerraformers.Select(s => s.ToString())
+        );
+
+        string Description = $"Farm Scored: {Earners} earned {ScoreEarned} points!";
+        if (PlayersWithMostTerraformers.Count == 0) {
+            Description = "Farm Worth " + ScoreEarned + " Unclaimed!";
+        }
+        foreach(PlayerSlot ps in PlayersWithMostTerraformers) {
+            NetScoreChangeByPlayer.Add(ps, ScoreEarned);
+        }
+        Action ScoringAction = () => { 
+            // do NOT reference local variables if you can help it. trying read-only jic
+            foreach(PlayerSlot ps in PlayersWithMostTerraformers) {
+                scoreboard.AddScoreForPlayerSlot(ps, ScoreEarned);
+            }
+            foreach(GamepieceTileAssignment gta in RelatedGamepieces) {
+                scoreboard.CollectGamepiece(gta.Type, gta.Team);
+            }
+        };
+        
+        return new ScoringEvent(
+            ScoringAction,
+            RelatedTiles,
+            RelatedGamepieces,
+            ScoringEventType.FARMSCORED,
+            NetScoreChangeByPlayer,
+            Description
+        );
+    }
 
     ScoringEvent ACConvert_CompletedCityToScoringEvent(AssembledCity ac) {
         List<Tile> RelatedTiles = ac.tilePis
@@ -266,7 +351,6 @@ public class CoreCartridge {
         inventory.AssembledRoads
             .FindAll(ARFilter_CompleteUncollected)
             .Select(ARConvert_CompletedRoadToScoringEvent).ToList();
-
 
 
 /* END SCORING STUFF */

@@ -1,5 +1,7 @@
 public enum ScoringEventType {
     ROADCOMPLETED,
     OBELISKCOMPLETED,
-    CITYCOMPLETED
+    CITYCOMPLETED,
+    FARMSCORED,
+    INCOMPLETE
 }

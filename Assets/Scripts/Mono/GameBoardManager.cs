@@ -29,8 +29,6 @@ public class GameBoardManager : MonoBehaviour
 
     public bool LookupTFEligibilityForTileAndGroupId(Tile t, int groupId) {
         List<GamepieceTileAssignment> GTAs = GridGameInstance.inventory.FindAllGTAsFromTileAndGroupId(t, groupId);
-        Debug.Log(GTAs.Count + " GTAs found for " + t.Name + " and group " + groupId);
-        GTAs.ForEach(gta => Debug.Log(gta.Type));
         return GTAs.All(gta => gta.Type != GamepieceType.TERRAFORMER);
     }
 
@@ -71,7 +69,7 @@ public class GameBoardManager : MonoBehaviour
         UpdateDrawnTile();
         
         if (pa.type == PlayerType.CPU) {
-            PerformScoringEventsAndAck(); // likely a series of coroutines later
+            PerformTurnScoringEventsAndAck(); // likely a series of coroutines later
         }
     }
 
@@ -246,19 +244,26 @@ public class GameBoardManager : MonoBehaviour
                 StagedTile.SetStatus(UITileStatus.PLACED, GridGameInstance.scoreboard.GetCurrentTurnPlayer().slot);
             }
 
-            PerformScoringEventsAndAck();
-            CameraControlTo(Camera.main.transform.position, DEFAULT_CAMERA_FOV);
+            PerformTurnScoringEventsAndAck();
         }
     }
 
-    void PerformScoringEventsAndAck() {
-        List<ScoringEvent> ScoringEvents = GridGameInstance.GetScoringEvents();
-        EnactScoringEvents(ScoringEvents);
-        Confirmations = 0;
-        GridGameInstance.Ack();
+    void PerformTurnScoringEventsAndAck() {
+        List<ScoringEvent> EndOfTurnEvents = GridGameInstance.GetTilePlacedScoringEvents();
+        Action OnPerformanceComplete = () => {
+            GridGameInstance.Ack();
+            Confirmations = 0;
+            CameraControlTo(Camera.main.transform.position, DEFAULT_CAMERA_FOV);
+        };
+        StartCoroutine(EnactScoringEvents(EndOfTurnEvents, OnPerformanceComplete));
+
+       // ready to take elsewhere! 
+        // List<ScoringEvent> EndOfGameScoringEvents = GridGameInstance.GetEndGameScoringEvents();
+        // EnactScoringEvents(EndOfGameScoringEvents);
     }
 
-    void EnactScoringEvents(List<ScoringEvent> events) {
+    IEnumerator EnactScoringEvents(List<ScoringEvent> events, Action OnComplete) {
+        
         foreach(ScoringEvent e in events) {
             Debug.Log("PROCESSING " + e.EventType + " EVENT:");
             Debug.Log(e.Description);
@@ -278,13 +283,22 @@ public class GameBoardManager : MonoBehaviour
                             .Where(anchor => anchor.AnchorId == gp.Anchor
                                 && anchor.gridPosition == gp.Position
                             ).ToList();
-                    foreach (UI_AnchorTag at in ats) {
-                        Destroy(at.gameObject);
-                    }
+
+                    // doesn't honestly go here, does it? i'll add if()
+                    if (
+                        e.EventType == ScoringEventType.ROADCOMPLETED
+                        || e.EventType == ScoringEventType.CITYCOMPLETED
+                        || e.EventType == ScoringEventType.OBELISKCOMPLETED) {
+                            foreach (UI_AnchorTag at in ats) {
+                                Destroy(at.gameObject);
+                            }
+                        }
                 }
             });
             e.ScoringAction.Invoke();
         }
+        yield return new WaitForSeconds(1.5f);
+        OnComplete.Invoke();
     }
 
     void CancelStagingInput() {
