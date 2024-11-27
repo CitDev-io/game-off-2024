@@ -11,8 +11,8 @@ public class OwnedFarm {
     }
 
     public void Merge(OwnedFarm of) {
-        if (of == null) UnityEngine.Debug.Log("NULL OF???");
-        if (of.tilePis == null) UnityEngine.Debug.Log("NULL OF TILEPIS???");
+        //if (of == null) UnityEngine.Debug.Log("NULL OF???");
+        //if (of.tilePis == null) UnityEngine.Debug.Log("NULL OF TILEPIS???");
         tilePis = tilePis.Union(of.tilePis).ToList();
     }
 
@@ -97,62 +97,62 @@ public class BoardInventory {
 
             //foreach MicroEdge for this group
             List<CardinalDirection> dirsToCheck = t.GetCardinalDirectionsForGroupIndexId_Farms(farmEdgeGroupId);
-            UnityEngine.Debug.Log("Found " + dirsToCheck.Count + " directions to check");
+            //UnityEngine.Debug.Log("Found " + dirsToCheck.Count + " directions to check");
             foreach(CardinalDirection cardinalDirection in dirsToCheck) {
-                UnityEngine.Debug.Log("Checking direction: " + cardinalDirection.ToString());
+                //UnityEngine.Debug.Log("Checking direction: " + cardinalDirection.ToString());
             }
             foreach(CardinalDirection dir in dirsToCheck) {
                 Tile NeighborInDir = t.NormalizedSurvey.TileInDirection(dir);
                 if (NeighborInDir == null) {
                     continue;
                 }
-                UnityEngine.Debug.Log("Found neighbor in direction " + dir.ToString());
+                //UnityEngine.Debug.Log("Found neighbor in direction " + dir.ToString());
                 // now look through the two microedges in that direction
                 // each of which that is represented in this group, specifically.
                 List<MicroEdge> microEdgesInThisDirection = t.Edges
                     .Where(e => e.EdgeGroupId == farmEdgeGroupId && t.GetCardinalDirectionForRotatedEdge(e) == dir)
                     .ToList();
 
-                UnityEngine.Debug.Log("Found " + microEdgesInThisDirection.Count + " microedges in direction " + dir.ToString());
+                //UnityEngine.Debug.Log("Found " + microEdgesInThisDirection.Count + " microedges in direction " + dir.ToString());
                 foreach(MicroEdge me in microEdgesInThisDirection) {
                     // find the opposing microedge in the neighbor tile
                     // my spot id = meIndex
                     // i ultimatiely want to get whatever is currently in the opposite normalized spot id
                     int thisLocalizedIndex = (t.Edges.IndexOf(me) + (t.Rotation * 2))% 8;
-                    UnityEngine.Debug.Log("i'm " + t.Edges.IndexOf(me) + " at: " + thisLocalizedIndex + " from " + t.Rotation + " rotations");
+                    //UnityEngine.Debug.Log("i'm " + t.Edges.IndexOf(me) + " at: " + thisLocalizedIndex + " from " + t.Rotation + " rotations");
 
                     if (dir == CardinalDirection.NORTH && (thisLocalizedIndex != 0 && thisLocalizedIndex != 1)) {
-                        UnityEngine.Debug.Log("ok i'm not on the border to the north. nevermind.");
+                        // UnityEngine.Debug.Log("ok i'm not on the border to the north. nevermind.");
                         continue;
                     }
 
                     if (dir == CardinalDirection.WEST && (thisLocalizedIndex != 6 && thisLocalizedIndex != 7)) {
-                        UnityEngine.Debug.Log("ok i'm not on the border to the west. nevermind.");
+                        // UnityEngine.Debug.Log("ok i'm not on the border to the west. nevermind.");
                         continue;
                     }
 
                     if (dir == CardinalDirection.EAST && (thisLocalizedIndex != 2 && thisLocalizedIndex != 3)) {
-                        UnityEngine.Debug.Log("ok i'm not on the border to the east. nevermind.");
+                        // UnityEngine.Debug.Log("ok i'm not on the border to the east. nevermind.");
                         continue;
                     }
                     if (dir == CardinalDirection.SOUTH && (thisLocalizedIndex != 4 && thisLocalizedIndex != 5)) {
-                        UnityEngine.Debug.Log("ok i'm not on the border to the south. nevermind.");
+                        // UnityEngine.Debug.Log("ok i'm not on the border to the south. nevermind.");
                         continue;
                     }
 
 
 
                     int thisLocalizedOpponentIndex = (thisLocalizedIndex + (thisLocalizedIndex % 2 == 0 ? 5 : 3)) % 8;
-                    UnityEngine.Debug.Log("my opponent spot is: " + thisLocalizedOpponentIndex);
+                    // UnityEngine.Debug.Log("my opponent spot is: " + thisLocalizedOpponentIndex);
                     // remove rotations to normalize
 
                     int normalizedOppoSpotId = (thisLocalizedOpponentIndex + (NeighborInDir.Rotation * 6)) % 8;
-                    UnityEngine.Debug.Log("my normalized opponent spot is: " + normalizedOppoSpotId + " from " + NeighborInDir.Rotation + " rotations");
+                    // UnityEngine.Debug.Log("my normalized opponent spot is: " + normalizedOppoSpotId + " from " + NeighborInDir.Rotation + " rotations");
                     // if oppo weren't rotated, we would just grab the ME at normalizedOppoSpotId
                     // int oppoLocalizedIndex = (normalizedOppoSpotId + (NeighborInDir.Rotation * 6)) % 8;
                     // UnityEngine.Debug.Log("my oppo localized index is: " + oppoLocalizedIndex);
                     MicroEdge oppoSpot = NeighborInDir.Edges[normalizedOppoSpotId];
-                    UnityEngine.Debug.Log("Found oppo spot? " + (oppoSpot != null).ToString());
+                    // UnityEngine.Debug.Log("Found oppo spot? " + (oppoSpot != null).ToString());
                     // find the group id of the opposing microedge
                     int oppoGroupId = oppoSpot.EdgeGroupId;
                     // see if any ownedfarms have this TPI alignment

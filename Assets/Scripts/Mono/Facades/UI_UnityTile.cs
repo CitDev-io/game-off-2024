@@ -1,9 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public enum UITileStatus {
@@ -26,11 +23,14 @@ public class UI_UnityTile : MonoBehaviour
     public List<Transform> GamepieceAnchors = new List<Transform>();
     public SpriteRenderer RotationIcon;
     public GridPosition gridPosition;
+    public SpriteRenderer LastPlacedIndicator;
+    public bool AllowPlacementglow = true;
 
     float FLOATING_ELEVATION_START = -0.55f;
     float FLOATING_ELEVATION_SPEED = 2f;
     float FLOATING_ELEVATION_ARCH = 0.001f;
     float PLACED_ELEVATION = 0.4f;
+
 
     public void RotateWorkableOnly() {
         if (currentStatus == UITileStatus.CONFIGURE_TRANSFORM) {
@@ -165,6 +165,13 @@ public class UI_UnityTile : MonoBehaviour
                 }
             }
 
+
+            PlayerSlot curPlayer = GameObject
+                .Find("GameBoard")
+                .GetComponent<GameBoardManager>()
+                .CurrentPlayer;
+            GamepieceAnchors[anchorIdForGroup].GetChild(0).gameObject.GetComponent<SpriteRenderer>().sprite = (Sprite) Resources
+                .Load<Sprite>("Images/Marker" + (curPlayer == PlayerSlot.PLAYER1 ? "Blue" : "Pink"));
             GamepieceAnchors[anchorIdForGroup].gameObject.SetActive(eligibleToPlaceTf);
         }
         HighlightChosenTerraformer();
@@ -175,9 +182,19 @@ public class UI_UnityTile : MonoBehaviour
             bool thereIsATerraformerHere = registeredTile.GamepieceAssignments.Exists(
                 assignment => assignment.Anchor == registeredTile.Placements[i]
             );
+            
+            PlayerSlot currentPlayer = GameObject
+                .Find("GameBoard")
+                .GetComponent<GameBoardManager>()
+                .CurrentPlayer;
+            Sprite sprite = currentPlayer == PlayerSlot.PLAYER1 ? Resources.Load<Sprite>("Images/PortalBlue") : Resources.Load<Sprite>("Images/PortalPink");
             GamepieceAnchors[
                 registeredTile.Placements[i]
-            ].Find("HangingDot").GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, thereIsATerraformerHere ? 1f : 0.75f);
+            ].Find("HangingDot").GetComponent<SpriteRenderer>().sprite = sprite;
+            GamepieceAnchors[
+                registeredTile.Placements[i]
+            ].Find("HangingDot").GetComponent<SpriteRenderer>().enabled = thereIsATerraformerHere;
+
         }
     }
 
@@ -231,6 +248,36 @@ public class UI_UnityTile : MonoBehaviour
             Gamepiece.transform.rotation = Quaternion.Euler(0f, 0, -12.5f);
             Gamepiece.transform.SetParent(transform);
         }
+        StartCoroutine(StartLastPlacementGlowForPlayer(player));
+    }
+
+    IEnumerator StartLastPlacementGlowForPlayer(PlayerSlot player) {
+        if (!AllowPlacementglow) {
+            yield break;
+        }
+        LastPlacedIndicator.sprite = Resources.Load<Sprite>("Images/TileHighlight" + (player == PlayerSlot.PLAYER1 ? "Blue" : "Pink"));
+        LastPlacedIndicator.color = new Color(1f, 1f, 1f, 0f);
+        LastPlacedIndicator.gameObject.SetActive(true);
+        yield return new WaitForSeconds(1.25f);
+        LastPlacedIndicator.color = new Color(1f, 1f, 1f, .3f);
+        yield return new WaitForSeconds(0.15f);
+        LastPlacedIndicator.color = new Color(1f, 1f, 1f, 0f);
+        yield return new WaitForSeconds(0.07f);
+        LastPlacedIndicator.color = new Color(1f, 1f, 1f, .3f);
+        yield return new WaitForSeconds(0.15f);
+        LastPlacedIndicator.color = new Color(1f, 1f, 1f, 0f);
+        yield return new WaitForSeconds(0.3f);
+        // fade opacity up over 1.5s
+        float time = 0f;
+        while (time < 7f) {
+            LastPlacedIndicator.color = new Color(1f, 1f, 1f, time / 7f);
+            time += Time.deltaTime;
+            yield return null;
+        }
+    }
+
+    public void DisableLastPlacementGlow() {
+        LastPlacedIndicator.gameObject.SetActive(false);
     }
 
     void OnDestroy() {

@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: DotSpot
+  m_Name: TileHighlightPink
   m_Shader: {fileID: 4800000, guid: 7f279f4e87e01304c864e85d0d5afe2a, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -49,7 +49,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 860bee38404e94e9e87cd76a38e66f22, type: 3}
+        m_Texture: {fileID: 2800000, guid: a469008b336aa41a6a4a04e1800a300e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MatcapMap:

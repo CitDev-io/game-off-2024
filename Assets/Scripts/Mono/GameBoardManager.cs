@@ -19,6 +19,7 @@ public class GameBoardManager : MonoBehaviour
     public GameObject TilePlacementUserInput;
     Coroutine CameraOperator;
     public PlayerSlot CurrentPlayer = PlayerSlot.PLAYER1;
+    public List<UI_UnityTile> Tiles = new();
 
     public float DEFAULT_CAMERA_FOV = 45f;
     public float ZOOMED_CAMERA_FOV = 25f;
@@ -62,9 +63,17 @@ public class GameBoardManager : MonoBehaviour
         StartTurnPerformanceForPlayer(GridGameInstance.scoreboard.GetCurrentTurnPlayer());
     }
 
+    void DisableTileHighlightsForCurrentPlayer() {
+        Tiles
+            .Where(t => t.LastPlacedIndicator.sprite.name == (CurrentPlayer == PlayerSlot.PLAYER1 ? "TileHighlightBlue" : "TileHighlightPink"))
+            .ToList()
+            .ForEach(i => i.DisableLastPlacementGlow());
+    }
     void StartTurnPerformanceForPlayer(PlayerAssignment pa) {
         // now's your chance. here's who's turn is starting right now
         CurrentPlayer = pa.slot;
+        DisableTileHighlightsForCurrentPlayer();
+
         Debug.Log("STARTING TURN FOR PLAYER: " + pa.slot + " - " + pa.type);
         UpdateDrawnTile();
         
@@ -126,6 +135,7 @@ public class GameBoardManager : MonoBehaviour
             Workables,
             GridGameInstance.SurveyPosition(coords)
         );
+        Tiles.Add(StagedTile);
         TripAckCheck();
         return StagedTile;
     }
@@ -144,6 +154,8 @@ public class GameBoardManager : MonoBehaviour
 
     void InitUnityCartridge(GameSettings settings) {
         var StarterTile = StageUnityTileAt(GridGameInstance.grid[settings.BoardMidPoint, settings.BoardMidPoint], new GridPosition(settings.BoardMidPoint, settings.BoardMidPoint));
+        StarterTile.AllowPlacementglow = false;
+        Tiles.Add(StarterTile);
         StarterTile.SetStatus(UITileStatus.PLACED, PlayerSlot.PLAYER1);
 
         ClearStagingUI();
@@ -215,6 +227,7 @@ public class GameBoardManager : MonoBehaviour
             ) {
                 TilePlacementUserInput.SetActive(true);
                 StagedTile.CancelGamepiecePlacement();
+
                 StagedTile.SetStatus(UITileStatus.CONFIGURE_TERRAFORMER, GridGameInstance.scoreboard.GetCurrentTurnPlayer().slot);
                 CameraControlTo(
                     new Vector3(
@@ -297,11 +310,12 @@ public class GameBoardManager : MonoBehaviour
             });
             e.ScoringAction.Invoke();
         }
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(2.5f);
         OnComplete.Invoke();
     }
 
     void CancelStagingInput() {
+        Tiles.Remove(StagedTile);
         Destroy(StagedTile.gameObject);
         Confirmations = 0;
         StagedTile = null;
