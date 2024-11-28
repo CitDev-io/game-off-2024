@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 
 public abstract class SecretObjective {
     public SecretObjectiveRank Rank { get; set; }
@@ -28,7 +27,7 @@ public abstract class SecretObjective {
 public enum SecretObjectiveRank {
     RECRUIT,
     DIRTLING,
-    LANDSHAPER,
+    LANDSCRAPER,
     STARSHAPER
 }
 
@@ -593,5 +592,505 @@ public class SO_T1_AnyComplete : SecretObjective {
     internal override void GatherImprintOnInit()
     {
         ObjectiveStartAmount = _scoreboard.Stats[_player].ObjectivesCompleted;
+    }
+}
+
+public class SO_T1_SharePOI : SecretObjective {
+    public SO_T1_SharePOI() {
+        SpritePath = "Images/GroundBlue";
+        ObjectiveName = "Share a Road or City with the Enemy";
+        ObjectiveOrders = "Combine a claimed road or city with the enemy";
+        SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
+        Rank = SecretObjectiveRank.DIRTLING;
+        Tier = 0;
+    }
+
+    int ObjectiveStartAmount = -1;
+    int TimesRequired = 1;
+
+    public override ScoringEvent GetScoringEvent() {
+        bool isComplete = _getCountOfRoadsCitiesShared() >= ObjectiveStartAmount + TimesRequired;
+        if (!isComplete) {
+            return null;
+        }
+
+        var scoreEarned = new Dictionary<PlayerSlot, int> {
+            {_player, 6}
+        };
+        return new ScoringEvent(
+            () => {
+                _scoreboard.CommitScoringEvent(new ScoringEvent(
+                    () => {},
+                    new List<Tile>(),
+                    new List<GamepieceTileAssignment>(),
+                    ScoringEventType.SECRET_OBJECTIVE,
+                    scoreEarned,
+                    "Objective Complete!"
+                ));
+                _scoreboard.Stats[_player].Objectives.Remove(this);
+                _scoreboard.Stats[_player].ObjectivesCompleted++;
+                _scoreboard.Stats[_player].DirtlingObjectiveCompleted++;
+            },
+            new List<Tile>(),
+            new List<GamepieceTileAssignment>(),
+            ScoringEventType.SECRET_OBJECTIVE,
+            scoreEarned,
+            "Secret Objective Completed: " + ObjectiveName
+        );
+    }
+
+    int _getCountOfRoadsCitiesShared() {
+        return _boardInventory.AssembledRoads
+            .Where(r => r.tilePis.SelectMany(tpi => tpi.tile.GamepieceAssignments.Select(ga => ga.Team)).Distinct().Count() > 1)
+            .Count();
+    }
+
+    internal override void GatherImprintOnInit()
+    {
+        ObjectiveStartAmount = _getCountOfRoadsCitiesShared();
+    }
+}
+
+public class SO_T2_AnyComplete : SecretObjective {
+    public SO_T2_AnyComplete() {
+        SpritePath = "Images/GroundBlue";
+        ObjectiveName = "Complete any 4 Roads/Cities/Obelisks";
+        ObjectiveOrders = "Place the final tile to complete 4 in any combination: Roads, Cities, or Obelisks";
+        SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
+        Rank = SecretObjectiveRank.LANDSCRAPER;
+        Tier = 0;
+    }
+
+    int ObjectiveStartAmount = -1;
+
+    public override ScoringEvent GetScoringEvent() {
+        bool isComplete = _scoreboard.Stats[_player].ObjectivesCompleted - ObjectiveStartAmount >= 4;
+        if (!isComplete) {
+            return null;
+        }
+
+        var scoreEarned = new Dictionary<PlayerSlot, int> {
+            {_player, 7}
+        };
+        return new ScoringEvent(
+            () => {
+                _scoreboard.CommitScoringEvent(new ScoringEvent(
+                    () => {},
+                    new List<Tile>(),
+                    new List<GamepieceTileAssignment>(),
+                    ScoringEventType.SECRET_OBJECTIVE,
+                    scoreEarned,
+                    "Objective Complete!"
+                ));
+                _scoreboard.Stats[_player].Objectives.Remove(this);
+                _scoreboard.Stats[_player].ObjectivesCompleted++;
+                _scoreboard.Stats[_player].LandscraperObjectiveCompleted++;
+            },
+            new List<Tile>(),
+            new List<GamepieceTileAssignment>(),
+            ScoringEventType.SECRET_OBJECTIVE,
+            scoreEarned,
+            "Secret Objective Completed: " + ObjectiveName
+        );
+    }
+
+    internal override void GatherImprintOnInit()
+    {
+        ObjectiveStartAmount = _scoreboard.Stats[_player].ObjectivesCompleted;
+    }
+}
+
+public class SO_T2_PointsScoredTurn : SecretObjective {
+    public SO_T2_PointsScoredTurn() {
+        SpritePath = "Images/RoadBlue";
+        ObjectiveName = "Score 8 Points in a Turn";
+        ObjectiveOrders = "Score 8 points in a turn";
+        SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
+        Rank = SecretObjectiveRank.LANDSCRAPER;
+        Tier = 0;
+    }
+
+    public override ScoringEvent GetScoringEvent() {
+        bool isComplete = _scoreboard.Stats[_player].Score - _scoreboard.Stats[_player].ScoreAtLastTurnStart >= 8;
+        if (!isComplete) {
+            return null;
+        }
+
+        var scoreEarned = new Dictionary<PlayerSlot, int> {
+            {_player, 7}
+        };
+        return new ScoringEvent(
+            () => {
+                _scoreboard.CommitScoringEvent(new ScoringEvent(
+                    () => {},
+                    new List<Tile>(),
+                    new List<GamepieceTileAssignment>(),
+                    ScoringEventType.SECRET_OBJECTIVE,
+                    scoreEarned,
+                    "Objective Complete!"
+                ));
+                _scoreboard.Stats[_player].Objectives.Remove(this);
+                _scoreboard.Stats[_player].ObjectivesCompleted++;
+                _scoreboard.Stats[_player].LandscraperObjectiveCompleted++;
+            },
+            new List<Tile>(),
+            new List<GamepieceTileAssignment>(),
+            ScoringEventType.SECRET_OBJECTIVE,
+            scoreEarned,
+            "Secret Objective Completed: " + ObjectiveName
+        );
+    }
+
+    internal override void GatherImprintOnInit()
+    {
+
+    }
+}
+
+
+public class SO_T2_RoadCitySize : SecretObjective {
+    public SO_T2_RoadCitySize() {
+        SpritePath = "Images/RoadBlue";
+        ObjectiveName = "Complete a 4+ Tile Road or City";
+        ObjectiveOrders = "Complete a 4+ Tile Road or City";
+        SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
+        Rank = SecretObjectiveRank.LANDSCRAPER;
+        Tier = 0;
+    }
+
+    int GOAL_COUNT = -1;
+    int SIZE_THRESHOLD = 4;
+    int HOW_MANY_TO_COLLECT = 1;
+
+    public override ScoringEvent GetScoringEvent() {
+        if (_getCountOfRoadsCitiesOfSizeOrLarger(SIZE_THRESHOLD) < GOAL_COUNT) {
+            return null;
+        }
+        var scoreEarned = new Dictionary<PlayerSlot, int> {
+            {_player, 7}
+        };
+        return new ScoringEvent(
+            () => {
+                _scoreboard.CommitScoringEvent(new ScoringEvent(
+                    () => {},
+                    new List<Tile>(),
+                    new List<GamepieceTileAssignment>(),
+                    ScoringEventType.SECRET_OBJECTIVE,
+                    scoreEarned,
+                    "Objective Complete!"
+                ));
+                _scoreboard.Stats[_player].Objectives.Remove(this);
+                _scoreboard.Stats[_player].ObjectivesCompleted++;
+                _scoreboard.Stats[_player].LandscraperObjectiveCompleted++;
+            },
+            new List<Tile>(),
+            new List<GamepieceTileAssignment>(),
+            ScoringEventType.SECRET_OBJECTIVE,
+            scoreEarned,
+            "Secret Objective Completed: " + ObjectiveName
+        );
+    }
+
+    int _getCountOfRoadsCitiesOfSizeOrLarger(int size) {
+        int roadsMeetingReqs = _boardInventory.AssembledRoads
+            .Where(r => r.collectedBy == _player && r.GetUniqueTileCount() >= size)
+            .Count();
+        int citiesMeetingReqs = _boardInventory.AssembledCities
+            .Where(c => c.collectedBy == _player && c.GetUniqueTileCount() >= size)
+            .Count();
+
+        return roadsMeetingReqs + citiesMeetingReqs;
+    }
+
+    internal override void GatherImprintOnInit()
+    {
+        GOAL_COUNT = _getCountOfRoadsCitiesOfSizeOrLarger(SIZE_THRESHOLD) + HOW_MANY_TO_COLLECT;
+    }
+}
+
+public class SO_T2_CityWithShield : SecretObjective {
+    public SO_T2_CityWithShield() {
+        SpritePath = "Images/CityBlue";
+        ObjectiveName = "Complete a City with a Shield";
+        ObjectiveOrders = "Complete a City with a Shield";
+        SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
+        Rank = SecretObjectiveRank.LANDSCRAPER;
+        Tier = 0;
+    }
+
+    int GOAL_COUNT = -1;
+    int HOW_MANY_TO_COLLECT = 1;
+
+    public override ScoringEvent GetScoringEvent() {
+        if (_getCountOfCitiesCollectedWithShield() < GOAL_COUNT) {
+            return null;
+        }
+        var scoreEarned = new Dictionary<PlayerSlot, int> {
+            {_player, 7}
+        };
+        return new ScoringEvent(
+            () => {
+                _scoreboard.CommitScoringEvent(new ScoringEvent(
+                    () => {},
+                    new List<Tile>(),
+                    new List<GamepieceTileAssignment>(),
+                    ScoringEventType.SECRET_OBJECTIVE,
+                    scoreEarned,
+                    "Objective Complete!"
+                ));
+                _scoreboard.Stats[_player].Objectives.Remove(this);
+                _scoreboard.Stats[_player].ObjectivesCompleted++;
+                _scoreboard.Stats[_player].LandscraperObjectiveCompleted++;
+            },
+            new List<Tile>(),
+            new List<GamepieceTileAssignment>(),
+            ScoringEventType.SECRET_OBJECTIVE,
+            scoreEarned,
+            "Secret Objective Completed: " + ObjectiveName
+        );
+    }
+
+    int _getCountOfCitiesCollectedWithShield() {
+        return _boardInventory.AssembledCities
+            .Where(c => c.collectedBy == _player && c.tilePis.Any(tpi => tpi.tile.IsABonusTile))
+            .Count();
+    }
+
+    internal override void GatherImprintOnInit()
+    {
+        GOAL_COUNT = _getCountOfCitiesCollectedWithShield() + HOW_MANY_TO_COLLECT;
+    }
+}
+
+public class SO_T3_ObeliskCapture : SecretObjective {
+    public SO_T3_ObeliskCapture() {
+        SpritePath = "Images/ObeliskBlue";
+        ObjectiveName = "Claim and Complete an Obelisk";
+        ObjectiveOrders = "Claim and Complete an Obelisk";
+        SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
+        Rank = SecretObjectiveRank.STARSHAPER;
+        Tier = 0;
+    }
+
+    int GOAL_COUNT = -1;
+    int HOW_MANY_TO_COLLECT = 1;
+
+    public override ScoringEvent GetScoringEvent() {
+        if (_getCountofObelisksClaimedAndCaptured() < GOAL_COUNT) {
+            return null;
+        }
+        var scoreEarned = new Dictionary<PlayerSlot, int> {
+            {_player, 8}
+        };
+        return new ScoringEvent(
+            () => {
+                _scoreboard.CommitScoringEvent(new ScoringEvent(
+                    () => {},
+                    new List<Tile>(),
+                    new List<GamepieceTileAssignment>(),
+                    ScoringEventType.SECRET_OBJECTIVE,
+                    scoreEarned,
+                    "Objective Complete!"
+                ));
+                _scoreboard.Stats[_player].Objectives.Remove(this);
+                _scoreboard.Stats[_player].ObjectivesCompleted++;
+                _scoreboard.Stats[_player].StarShaperObjectiveCompleted++;
+            },
+            new List<Tile>(),
+            new List<GamepieceTileAssignment>(),
+            ScoringEventType.SECRET_OBJECTIVE,
+            scoreEarned,
+            "Secret Objective Completed: " + ObjectiveName
+        );
+    }
+
+    int _getCountofObelisksClaimedAndCaptured() {
+        return _boardInventory.AssembledObelisks
+            .Where(o => o.tilePi.tile.GamepieceAssignments.Any(g => g.Team == _player) && o.IsComplete())
+            .Count();
+    }
+
+    internal override void GatherImprintOnInit()
+    {
+        GOAL_COUNT = _getCountofObelisksClaimedAndCaptured() + HOW_MANY_TO_COLLECT;
+    }
+}
+
+
+public class SO_T3_PointsScoredTurn : SecretObjective {
+    public SO_T3_PointsScoredTurn() {
+        SpritePath = "Images/RoadBlue";
+        ObjectiveName = "Score 10+ Points in a Turn";
+        ObjectiveOrders = "Score 10+ points in a turn";
+        SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
+        Rank = SecretObjectiveRank.STARSHAPER;
+        Tier = 0;
+    }
+
+    public override ScoringEvent GetScoringEvent() {
+        bool isComplete = _scoreboard.Stats[_player].Score - _scoreboard.Stats[_player].ScoreAtLastTurnStart >= 10;
+        if (!isComplete) {
+            return null;
+        }
+
+        var scoreEarned = new Dictionary<PlayerSlot, int> {
+            {_player, 8}
+        };
+        return new ScoringEvent(
+            () => {
+                _scoreboard.CommitScoringEvent(new ScoringEvent(
+                    () => {},
+                    new List<Tile>(),
+                    new List<GamepieceTileAssignment>(),
+                    ScoringEventType.SECRET_OBJECTIVE,
+                    scoreEarned,
+                    "Objective Complete!"
+                ));
+                _scoreboard.Stats[_player].Objectives.Remove(this);
+                _scoreboard.Stats[_player].ObjectivesCompleted++;
+                _scoreboard.Stats[_player].StarShaperObjectiveCompleted++;
+            },
+            new List<Tile>(),
+            new List<GamepieceTileAssignment>(),
+            ScoringEventType.SECRET_OBJECTIVE,
+            scoreEarned,
+            "Secret Objective Completed: " + ObjectiveName
+        );
+    }
+
+    internal override void GatherImprintOnInit()
+    {
+
+    }
+}
+
+
+public class SO_T3_RoadCitySize : SecretObjective {
+    public SO_T3_RoadCitySize() {
+        SpritePath = "Images/RoadBlue";
+        ObjectiveName = "Complete a 5+ Tile Road or City";
+        ObjectiveOrders = "Complete a 5+ Tile Road or City";
+        SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
+        Rank = SecretObjectiveRank.STARSHAPER;
+        Tier = 0;
+    }
+
+    int GOAL_COUNT = -1;
+    int SIZE_THRESHOLD = 5;
+    int HOW_MANY_TO_COLLECT = 1;
+
+    public override ScoringEvent GetScoringEvent() {
+        if (_getCountOfRoadsCitiesOfSizeOrLarger(SIZE_THRESHOLD) < GOAL_COUNT) {
+            return null;
+        }
+        var scoreEarned = new Dictionary<PlayerSlot, int> {
+            {_player, 8}
+        };
+        return new ScoringEvent(
+            () => {
+                _scoreboard.CommitScoringEvent(new ScoringEvent(
+                    () => {},
+                    new List<Tile>(),
+                    new List<GamepieceTileAssignment>(),
+                    ScoringEventType.SECRET_OBJECTIVE,
+                    scoreEarned,
+                    "Objective Complete!"
+                ));
+                _scoreboard.Stats[_player].Objectives.Remove(this);
+                _scoreboard.Stats[_player].ObjectivesCompleted++;
+                _scoreboard.Stats[_player].StarShaperObjectiveCompleted++;
+            },
+            new List<Tile>(),
+            new List<GamepieceTileAssignment>(),
+            ScoringEventType.SECRET_OBJECTIVE,
+            scoreEarned,
+            "Secret Objective Completed: " + ObjectiveName
+        );
+    }
+
+    int _getCountOfRoadsCitiesOfSizeOrLarger(int size) {
+        int roadsMeetingReqs = _boardInventory.AssembledRoads
+            .Where(r => r.collectedBy == _player && r.GetUniqueTileCount() >= size)
+            .Count();
+        int citiesMeetingReqs = _boardInventory.AssembledCities
+            .Where(c => c.collectedBy == _player && c.GetUniqueTileCount() >= size)
+            .Count();
+
+        return roadsMeetingReqs + citiesMeetingReqs;
+    }
+
+    internal override void GatherImprintOnInit()
+    {
+        GOAL_COUNT = _getCountOfRoadsCitiesOfSizeOrLarger(SIZE_THRESHOLD) + HOW_MANY_TO_COLLECT;
+    }
+}
+
+public class SO_T3_ShareWin : SecretObjective {
+    public SO_T3_ShareWin() {
+        SpritePath = "Images/GroundBlue";
+        ObjectiveName = "Complete and Win a Shared Road or City";
+        ObjectiveOrders = "Complete and Win a Shared Road or City";
+        SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
+        Rank = SecretObjectiveRank.STARSHAPER;
+        Tier = 0;
+    }
+
+    int ObjectiveStartAmount = -1;
+    int TimesRequired = 1;
+
+    public override ScoringEvent GetScoringEvent() {
+        bool isComplete = _getCountOfSharedPOIWins() >= ObjectiveStartAmount + TimesRequired;
+        if (!isComplete) {
+            return null;
+        }
+
+        var scoreEarned = new Dictionary<PlayerSlot, int> {
+            {_player, 6}
+        };
+        return new ScoringEvent(
+            () => {
+                _scoreboard.CommitScoringEvent(new ScoringEvent(
+                    () => {},
+                    new List<Tile>(),
+                    new List<GamepieceTileAssignment>(),
+                    ScoringEventType.SECRET_OBJECTIVE,
+                    scoreEarned,
+                    "Objective Complete!"
+                ));
+                _scoreboard.Stats[_player].Objectives.Remove(this);
+                _scoreboard.Stats[_player].ObjectivesCompleted++;
+                _scoreboard.Stats[_player].StarShaperObjectiveCompleted++;
+            },
+            new List<Tile>(),
+            new List<GamepieceTileAssignment>(),
+            ScoringEventType.SECRET_OBJECTIVE,
+            scoreEarned,
+            "Secret Objective Completed: " + ObjectiveName
+        );
+    }
+
+    int _getCountOfSharedPOIWins() {
+        int roadWins = _boardInventory.AssembledRoads
+            .Where(
+                ar => ar.IsShared()
+                && ar.IsComplete()
+                && ar.WinningTerraformerOwners().Count == 1
+                && ar.WinningTerraformerOwners()[0] == _player)
+            .Count();
+
+        int cityWins = _boardInventory.AssembledCities
+            .Where(
+                ac => ac.IsShared()
+                && ac.IsComplete()
+                && ac.WinningTerraformerOwners().Count == 1
+                && ac.WinningTerraformerOwners()[0] == _player)
+            .Count();
+
+        return roadWins + cityWins;
+    }
+
+    internal override void GatherImprintOnInit()
+    {
+        ObjectiveStartAmount = _getCountOfSharedPOIWins();
     }
 }

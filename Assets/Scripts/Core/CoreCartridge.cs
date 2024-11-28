@@ -104,22 +104,98 @@ public class CoreCartridge {
                 ev.Add(new ScoringEvent(
                     () => {
                         // rank up
-                        scoreboard.Stats[p].Rank = SecretObjectiveRank.LANDSHAPER;
+                        scoreboard.Stats[p].Rank = SecretObjectiveRank.LANDSCRAPER;
 
-                        var objs = new List<SecretObjective> {
-                            // new SO_T1_NoTots(),
-                            // new SO_T1_TotStreak(),
-                            // new SO_T1_CitySize(),
+                        var Tier1ObjectiveList = new List<SecretObjective> {
+                            new SO_T1_NoTots(),
+                            new SO_T1_TotStreak(),
+                            new SO_T1_CitySize(),
                             new SO_T1_RoadSize(),
                             new SO_T1_HelpOppoRoad(),
                             new SO_T1_PointsScoredTurn(),
-                            new SO_T1_AnyComplete()
+                            new SO_T1_AnyComplete(),
+                            new SO_T1_SharePOI()
                         };
-                        objs.ForEach(so => so.ImprintForPlayer(p, inventory, scoreboard));
+
+                        List<SecretObjective> FourRandom = Tier1ObjectiveList.OrderBy(x => Guid.NewGuid()).Take(4).ToList();
+            
+                        FourRandom.ForEach(so => so.ImprintForPlayer(p, inventory, scoreboard));
                         // clear recruit missions
                         scoreboard.Stats[p].Objectives.RemoveAll(o => o.Rank == SecretObjectiveRank.RECRUIT);
                         scoreboard.Stats[p].Objectives.AddRange(
-                            objs
+                            FourRandom
+                        );
+                    },
+                    new List<Tile>(),
+                    new List<GamepieceTileAssignment>(),
+                    ScoringEventType.PROMOTION,
+                    new Dictionary<PlayerSlot, int>(),
+                    "Level Up!"
+                ));
+            }
+
+            bool DoneWithTier1Missions = (
+                scoreboard.Stats[p].Objectives.All(o => o.Rank == SecretObjectiveRank.DIRTLING)
+                && scoreboard.Stats[p].Rank == SecretObjectiveRank.DIRTLING
+                && scoreboard.Stats[p].DirtlingObjectiveCompleted > 2
+            );
+
+            if (DoneWithTier1Missions) {
+                ev.Add(new ScoringEvent(
+                    () => {
+                        // rank up
+                        scoreboard.Stats[p].Rank = SecretObjectiveRank.LANDSCRAPER;
+
+                        var Tier2ObjectiveList = new List<SecretObjective> {
+                            new SO_T2_AnyComplete(),
+                            new SO_T2_PointsScoredTurn(),
+                            new SO_T2_RoadCitySize(),
+                            new SO_T2_CityWithShield()
+                        };
+
+                        List<SecretObjective> FourRandom = Tier2ObjectiveList.OrderBy(x => Guid.NewGuid()).Take(4).ToList();
+            
+                        FourRandom.ForEach(so => so.ImprintForPlayer(p, inventory, scoreboard));
+                        // clear recruit missions
+                        scoreboard.Stats[p].Objectives.RemoveAll(o => o.Rank == SecretObjectiveRank.DIRTLING);
+                        scoreboard.Stats[p].Objectives.AddRange(
+                            FourRandom
+                        );
+                    },
+                    new List<Tile>(),
+                    new List<GamepieceTileAssignment>(),
+                    ScoringEventType.PROMOTION,
+                    new Dictionary<PlayerSlot, int>(),
+                    "Level Up!"
+                ));
+            }
+
+            bool DoneWithTier2Missions = (
+                scoreboard.Stats[p].Objectives.All(o => o.Rank == SecretObjectiveRank.LANDSCRAPER)
+                && scoreboard.Stats[p].Rank == SecretObjectiveRank.LANDSCRAPER
+                && scoreboard.Stats[p].LandscraperObjectiveCompleted > 2
+            );
+
+            if (DoneWithTier2Missions) {
+                ev.Add(new ScoringEvent(
+                    () => {
+                        // rank up
+                        scoreboard.Stats[p].Rank = SecretObjectiveRank.STARSHAPER;
+
+                        var Tier3ObjectiveList = new List<SecretObjective> {
+                            new SO_T3_PointsScoredTurn(),
+                            new SO_T3_ObeliskCapture(),
+                            new SO_T3_ShareWin(),
+                            new SO_T3_RoadCitySize()
+                        };
+
+                        List<SecretObjective> FourRandom = Tier3ObjectiveList.OrderBy(x => Guid.NewGuid()).Take(4).ToList();
+            
+                        FourRandom.ForEach(so => so.ImprintForPlayer(p, inventory, scoreboard));
+                        // clear recruit missions
+                        scoreboard.Stats[p].Objectives.RemoveAll(o => o.Rank == SecretObjectiveRank.DIRTLING);
+                        scoreboard.Stats[p].Objectives.AddRange(
+                            FourRandom
                         );
                     },
                     new List<Tile>(),
@@ -252,13 +328,15 @@ public class CoreCartridge {
             .SelectMany(tpi => tpi.tile.GetAllGamepiecesInGroupId(tpi.groupIndexId))
             .ToList();
 
-        int shieldBonus = 0; // TODO: !
+        int shieldBonus = ac.tilePis
+            .Select(tpi => tpi.tile.IsABonusTile ? 2 : 0)
+            .Sum();
 
         Dictionary<PlayerSlot, int> NetScoreChangeByPlayer = new();
         
         List<PlayerSlot> PlayersWithMostTerraformers = GetPlayersWithMostTerraformers(RelatedGamepieces);
 
-        int ScoreEarned = ac.GetUniqueTileCount() * 2;
+        int ScoreEarned = shieldBonus + (ac.GetUniqueTileCount() * 2);
         string Earners = string.Join(
             " and ",
             PlayersWithMostTerraformers.Select(s => s.ToString())

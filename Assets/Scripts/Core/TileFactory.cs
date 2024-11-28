@@ -27,7 +27,8 @@ public class TileFactory {
                         new Road(CardinalDirection.SOUTH, 0),
                     },
                     new int[] { 7, 5, 4 },
-                    new Obelisk(2)
+                    new Obelisk(2),
+                    false
                 );
             case TileType.B:
                 return new Tile(
@@ -44,7 +45,8 @@ public class TileFactory {
                     },
                     new List<Road>(),
                     new int[] { 5, 4 },
-                    new Obelisk(1)
+                    new Obelisk(1),
+                    false
                 );
             case TileType.C:
                 return new Tile(
@@ -60,7 +62,9 @@ public class TileFactory {
                         new MicroEdge(MicroEdgeType.CITY, 0)
                     },
                     new List<Road>(),
-                    new int[] { 4 }
+                    new int[] { 4 },
+                    null,
+                    false
                 );
             case TileType.D:
                 return new Tile(
@@ -79,7 +83,9 @@ public class TileFactory {
                         new Road(CardinalDirection.WEST, 0),
                         new Road(CardinalDirection.EAST, 0)
                     },
-                    new int[] { 4, 1, 7, 10 }
+                    new int[] { 4, 1, 7, 10 },
+                    null,
+                    false
                 );
             case TileType.E:
                 return new Tile(
@@ -95,9 +101,11 @@ public class TileFactory {
                         new MicroEdge(MicroEdgeType.FARM, 1)
                     },
                     new List<Road>(),
-                    new int[] { 1, 12 }
+                    new int[] { 1, 12 },
+                    null,
+                    false
                 );
-            case TileType.F:    // todo: SHIELD
+            case TileType.F:
                 return new Tile(
                     type.ToString(),
                     new List<MicroEdge> {
@@ -111,7 +119,9 @@ public class TileFactory {
                         new MicroEdge(MicroEdgeType.CITY, 0)
                     },
                     new List<Road>(),
-                    new int[] { 4, 1, 7 }
+                    new int[] { 4, 1, 7 },
+                    null,
+                    true    // shield
                 );
             case TileType.G:
                 return new Tile(
@@ -127,7 +137,9 @@ public class TileFactory {
                         new MicroEdge(MicroEdgeType.CITY, 1)
                     },
                     new List<Road>(),
-                    new int[] { 1, 4, 7 }
+                    new int[] { 1, 4, 7 },
+                    null,
+                    false
                 );
             case TileType.H:
                 return new Tile(
@@ -143,7 +155,9 @@ public class TileFactory {
                         new MicroEdge(MicroEdgeType.CITY, 2),
                     },
                     new List<Road>(),
-                    new int[] { 5, 4, 3 }
+                    new int[] { 5, 4, 3 },
+                    null,
+                    false
                 );
             case TileType.I:
                 return new Tile(
@@ -159,7 +173,9 @@ public class TileFactory {
                         new MicroEdge(MicroEdgeType.FARM, 1),
                     },
                     new List<Road>(),
-                    new int[] { 1, 4, 5 }
+                    new int[] { 1, 4, 5 },
+                    null,
+                    false
                 );
             case TileType.J:
                 return new Tile(
@@ -178,7 +194,9 @@ public class TileFactory {
                         new Road(CardinalDirection.SOUTH, 3),
                         new Road(CardinalDirection.EAST, 3)
                     },
-                    new int[] { 1, 3, 8, 7 }
+                    new int[] { 1, 3, 8, 7 },
+                    null,
+                    false
                 );
             case TileType.K:
                 return new Tile(
@@ -197,7 +215,9 @@ public class TileFactory {
                         new Road(CardinalDirection.SOUTH, 0),
                         new Road(CardinalDirection.WEST, 0)
                     },
-                    new int[] { 4, 1, 6, 5 }
+                    new int[] { 4, 1, 6, 5 },
+                    null,
+                    false
                 );
             case TileType.L:
                 return new Tile(
@@ -217,9 +237,11 @@ public class TileFactory {
                         new Road(CardinalDirection.EAST, 1),
                         new Road(CardinalDirection.WEST, 2)
                     },
-                    new int[] { 7, 5, 3, 1, 9, 8, 6 }
+                    new int[] { 7, 5, 3, 1, 9, 8, 6 },
+                    null,
+                    false
                 );
-            case TileType.M:    // todo: shield
+            case TileType.M:
                 return new Tile(
                     type.ToString(),
                     new List<MicroEdge> {
@@ -233,7 +255,9 @@ public class TileFactory {
                         new MicroEdge(MicroEdgeType.CITY, 0)
                     },
                     new List<Road>(),
-                    new int[] { 0, 12 }
+                    new int[] { 0, 12 },
+                    null,
+                    true
                 );
             case TileType.N:
                 return new Tile(
@@ -249,9 +273,11 @@ public class TileFactory {
                         new MicroEdge(MicroEdgeType.CITY, 1)
                     },
                     new List<Road>(),
-                    new int[] { 12, 0 }
+                    new int[] { 12, 0 },
+                    null,
+                    false
                 );
-            case TileType.O:        // todo: SHIELD
+            case TileType.O:
                 return new Tile(
                     type.ToString(),
                     new List<MicroEdge> {
@@ -268,7 +294,9 @@ public class TileFactory {
                         new Road(CardinalDirection.SOUTH, 0),
                         new Road(CardinalDirection.EAST, 0)
                     },
-                    new int[] { 5, 0, 8, 13 }
+                    new int[] { 5, 0, 8, 13 },
+                    null,
+                    true
                 );
             case TileType.P:
                 return new Tile(
@@ -287,9 +315,11 @@ public class TileFactory {
                         new Road(CardinalDirection.SOUTH, 0),
                         new Road(CardinalDirection.EAST, 0)
                     },
-                    new int[] { 5, 0, 8, 13 }
+                    new int[] { 5, 0, 8, 13 },
+                    null,
+                    false
                 );
-            case TileType.Q:        // todo: SHIELD
+            case TileType.Q:
                 return new Tile(
                     type.ToString(),
                     new List<MicroEdge> {
@@ -303,7 +333,9 @@ public class TileFactory {
                         new MicroEdge(MicroEdgeType.CITY, 1),
                     },
                     new List<Road>(),
-                    new int[] { 7, 4 }
+                    new int[] { 7, 4 },
+                    null,
+                    true
                 );
             case TileType.R:
                 return new Tile(
@@ -319,9 +351,11 @@ public class TileFactory {
                         new MicroEdge(MicroEdgeType.CITY, 1),
                     },
                     new List<Road>(),
-                    new int[] { 7, 4 }
+                    new int[] { 7, 4 },
+                    null,
+                    false
                 );
-            case TileType.S:        // todo: SHIELD
+            case TileType.S:
                 return new Tile(
                     type.ToString(),
                     new List<MicroEdge> {
@@ -337,7 +371,9 @@ public class TileFactory {
                     new List<Road> {
                         new Road(CardinalDirection.SOUTH, 3)
                     },
-                    new int[] { 13, 4, 14, 7 }
+                    new int[] { 13, 4, 14, 7 },
+                    null,
+                    true    //shield
                 );
             case TileType.T:
                 return new Tile(
@@ -355,7 +391,9 @@ public class TileFactory {
                     new List<Road> {
                         new Road(CardinalDirection.SOUTH, 3)
                     },
-                    new int[] { 13, 4, 14, 7 }
+                    new int[] { 13, 4, 14, 7 },
+                    null,
+                    false
                 );
             case TileType.U:
                 return new Tile(
@@ -374,7 +412,9 @@ public class TileFactory {
                         new Road(CardinalDirection.SOUTH, 0),
                         new Road(CardinalDirection.NORTH, 0)
                     },
-                    new int[] { 4, 3, 5 }
+                    new int[] { 4, 3, 5 },
+                    null,
+                    false
                 );
             case TileType.V:
                 return new Tile(
@@ -393,7 +433,9 @@ public class TileFactory {
                         new Road(CardinalDirection.SOUTH, 0),
                         new Road(CardinalDirection.WEST, 0)
                     },
-                    new int[] { 3, 10, 6 }
+                    new int[] { 3, 10, 6 },
+                    null,
+                    false
                 );
             case TileType.W:
                 return new Tile(
@@ -413,7 +455,9 @@ public class TileFactory {
                         new Road(CardinalDirection.WEST, 1),
                         new Road(CardinalDirection.EAST, 2)
                     },
-                    new int[] { 7, 3, 5, 6, 8, 0 }
+                    new int[] { 7, 3, 5, 6, 8, 0 },
+                    null,
+                    false
                 );
             case TileType.X:
                 return new Tile(
@@ -434,7 +478,9 @@ public class TileFactory {
                         new Road(CardinalDirection.EAST, 2),
                         new Road(CardinalDirection.NORTH, 3)
                     },
-                    new int[] { 7, 3, 5, 1, 6, 0, 2, 8 }
+                    new int[] { 7, 3, 5, 1, 6, 0, 2, 8 },
+                    null,
+                    false
                 );
             default:
                 return new Tile(
@@ -450,7 +496,9 @@ public class TileFactory {
                         new MicroEdge(MicroEdgeType.FARM, 0)
                     },
                     new List<Road>(),
-                    new int[] { 4 }
+                    new int[] { 4 },
+                    null,
+                    false
                 );
         }
     }

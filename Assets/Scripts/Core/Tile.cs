@@ -6,13 +6,14 @@ public delegate void TileRotated();
 public class Tile
 {
     public TileRotated OnTileRotated;
-    public Tile(string name, List<MicroEdge> edges, List<Road> roads, int[] placements, Obelisk o = null)
+    public Tile(string name, List<MicroEdge> edges, List<Road> roads, int[] placements, Obelisk o = null, bool isBonus = false)
     {
         Name = name;
         Edges = edges;
         Roads = roads;
         Placements = placements;
         obelisk = o;
+        IsABonusTile = isBonus;
     }
 
     public string Name;
@@ -23,6 +24,7 @@ public class Tile
     public int Rotation = 0;
     public Obelisk obelisk;
     public List<GamepieceTileAssignment> GamepieceAssignments = new List<GamepieceTileAssignment>();
+    public bool IsABonusTile = false;
 
     public void Rotate()
     {

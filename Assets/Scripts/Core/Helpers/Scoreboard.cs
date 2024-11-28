@@ -20,6 +20,8 @@ public class PlayerStatSheet {
     public int ObjectivesCompleted = 0;
     public int RookieObjectiveCompleted = 0;
     public int DirtlingObjectiveCompleted = 0;
+    public int LandscraperObjectiveCompleted = 0;
+    public int StarShaperObjectiveCompleted = 0;
     public int ScoreAtLastTurnStart = 0;
     public Dictionary<EdgeType, int> TerraformersPlacedOnPOIType = new() {
         {EdgeType.ROAD, 0},
@@ -96,6 +98,9 @@ public class Scoreboard {
                 if (hasClaimsByOtherPlayers) {
                     pss.HelpedOppClaimedPOITypes[EdgeType.ROAD]++;
                 }
+                continue;
+            }
+            if (t.obelisk != null && t.obelisk.GroupId == i) {
                 continue;
             }
             MicroEdgeType met = t.Edges.First(e => e.EdgeGroupId == i).type;

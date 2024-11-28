@@ -46,4 +46,29 @@ public class AssembledCity {
     public int GetUniqueTileCount() {
         return tilePis.Count;
     }
+
+    public bool IsShared() {
+        int countOfTerraformerOwners = tilePis
+            .SelectMany(tpi => tpi.tile.GamepieceAssignments)
+            .Where(gpa => gpa.Type == GamepieceType.TERRAFORMER)
+            .Select(gpa => gpa.Team)
+            .Distinct().Count();
+
+        return countOfTerraformerOwners > 1;
+    }
+
+    public List<PlayerSlot> WinningTerraformerOwners() {
+        var TeamWonList = tilePis
+            .SelectMany(tpi => tpi.tile.GamepieceAssignments)
+            .Where(gpa => gpa.Type == GamepieceType.TERRAFORMER)
+            .Select(gpa => gpa.Team);
+        
+        // get all teams with the highest population
+        return TeamWonList
+            .GroupBy(team => team)
+            .OrderByDescending(group => group.Count())
+            .Where(group => group.Count() == TeamWonList.GroupBy(team => team).Max(group => group.Count()))
+            .Select(group => group.Key)
+            .ToList();
+    }
 };
