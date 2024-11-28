@@ -30,7 +30,7 @@ public class PlayerStatSheet {
         {EdgeType.OBELISK, 0}
     };
 
-    public Dictionary<EdgeType, int> ClaimedPOITypes = new() {
+    public Dictionary<EdgeType, int> ScoredPOITypes = new() {
         {EdgeType.ROAD, 0},
         {EdgeType.CITY, 0},
         {EdgeType.FARM, 0},
@@ -125,7 +125,7 @@ public class Scoreboard {
 
     public void ReportPlayersScoredPOIType(List<PlayerSlot> pss, EdgeType et) {
         foreach (PlayerSlot ps in pss) {
-            Stats[ps].ClaimedPOITypes[et]++;
+            Stats[ps].ScoredPOITypes[et]++;
         }
     }
 
@@ -135,6 +135,10 @@ public class Scoreboard {
             new SO_RECRUIT_City(),
             new SO_RECRUIT_Farm(),
             new SO_RECRUIT_Obelisk()
+            // new SO_T2_AnyComplete(),
+            // new SO_T2_PointsScoredTurn(),
+            // new SO_T2_RoadCitySize(),
+            // new SO_T2_CityWithShield()
         };
         recruitMissions.ForEach(so => so.ImprintForPlayer(ps, _inventory, this));
         Stats[ps].Objectives.AddRange(recruitMissions);

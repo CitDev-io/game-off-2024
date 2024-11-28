@@ -6,7 +6,7 @@ public class AssembledCity {
     int index = 0;
     bool collected = false;
     public List<TileAndPlacementGroupIndex> tilePis = new List<TileAndPlacementGroupIndex>();
-    public PlayerSlot collectedBy;
+    public PlayerSlot collectedBy = PlayerSlot.NEUTRAL;
     public AssembledCity(int i) {
         index = i;
     }
@@ -59,7 +59,7 @@ public class AssembledCity {
 
     public List<PlayerSlot> WinningTerraformerOwners() {
         var TeamWonList = tilePis
-            .SelectMany(tpi => tpi.tile.GamepieceAssignments)
+            .SelectMany(tpi => tpi.tile.GamepieceAssignments.Where(gpa => gpa.Anchor == tpi.tile.Placements[tpi.groupIndexId]))
             .Where(gpa => gpa.Type == GamepieceType.TERRAFORMER)
             .Select(gpa => gpa.Team);
         
@@ -70,5 +70,13 @@ public class AssembledCity {
             .Where(group => group.Count() == TeamWonList.GroupBy(team => team).Max(group => group.Count()))
             .Select(group => group.Key)
             .ToList();
+    }
+
+    public int GetUniqueTerraformerOwners() {
+        return tilePis
+            .SelectMany(tpi => tpi.tile.GamepieceAssignments.Where(gpa => gpa.Anchor == tpi.tile.Placements[tpi.groupIndexId]))
+            .Where(gpa => gpa.Type == GamepieceType.TERRAFORMER)
+            .Select(gpa => gpa.Team)
+            .Distinct().Count();
     }
 };

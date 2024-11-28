@@ -5,7 +5,7 @@ using System.Linq;
 public class AssembledRoad {
     int index = 0;
     bool collected = false;
-    public PlayerSlot collectedBy;
+    public PlayerSlot collectedBy = PlayerSlot.NEUTRAL;
     public List<TileAndPlacementGroupIndex> tilePis = new List<TileAndPlacementGroupIndex>();
 
     public AssembledRoad(int i) {
@@ -60,7 +60,7 @@ public class AssembledRoad {
 
     public List<PlayerSlot> WinningTerraformerOwners() {
         var TeamWonList = tilePis
-            .SelectMany(tpi => tpi.tile.GamepieceAssignments)
+            .SelectMany(tpi => tpi.tile.GamepieceAssignments.Where(gpa => gpa.Anchor == tpi.tile.Placements[tpi.groupIndexId]))
             .Where(gpa => gpa.Type == GamepieceType.TERRAFORMER)
             .Select(gpa => gpa.Team);
         
@@ -71,5 +71,13 @@ public class AssembledRoad {
             .Where(group => group.Count() == TeamWonList.GroupBy(team => team).Max(group => group.Count()))
             .Select(group => group.Key)
             .ToList();
+    }
+
+    public int GetUniqueTerraformerOwners() {
+        return tilePis
+            .SelectMany(tpi => tpi.tile.GamepieceAssignments.Where(gpa => gpa.Anchor == tpi.tile.Placements[tpi.groupIndexId]))
+            .Where(gpa => gpa.Type == GamepieceType.TERRAFORMER)
+            .Select(gpa => gpa.Team)
+            .Distinct().Count();
     }
 };

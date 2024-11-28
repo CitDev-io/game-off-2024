@@ -2,14 +2,16 @@ public class AssembledObelisk {
     int index = 0;
     bool collected = false;
     public TileAndPlacementGroupIndex tilePi;
+    public PlayerSlot collectedBy = PlayerSlot.NEUTRAL;
 
     public AssembledObelisk(int i, TileAndPlacementGroupIndex tpi) {
         index = i;
         tilePi = tpi;
     }
 
-    public void MarkAsCollected() {
+    public void MarkAsCollectedBy(PlayerSlot ps) {
         collected = true;
+        collectedBy = ps;
     }
 
     public bool IsCompleteAndUncollected() {

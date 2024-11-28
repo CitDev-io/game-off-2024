@@ -124,3 +124,11 @@ Game is instantiated with Settings item (can be just default, vanilla)
 - check that ALL achievements are processed the same for the score portion. no need to vary.
 
 - Rank up mission swapping
+
+late
+
+- not out of the woods yet. issues with how secrets are resolving
+    - points per turn is processing before the enemy's turn starts?
+        - maybe clear the since last turn sooner
+    - tots placed vs not placed... one of them keeps popping immediately?
+    - CLAIMED V COMPLETE doesn't seem right in later levels

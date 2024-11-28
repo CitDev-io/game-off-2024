@@ -18,7 +18,7 @@ public class GameBoardManager : MonoBehaviour
     Dictionary<GridPosition, UI_DotSpot> ClickGrid = new Dictionary<GridPosition, UI_DotSpot>();
     public GameObject TilePlacementUserInput;
     Coroutine CameraOperator;
-    public PlayerSlot CurrentPlayer = PlayerSlot.PLAYER1;
+    public PlayerSlot CurrentPlayer = PlayerSlot.NEUTRAL;
     public List<UI_UnityTile> Tiles = new();
 
     public float DEFAULT_CAMERA_FOV = 45f;

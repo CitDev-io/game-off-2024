@@ -75,7 +75,7 @@ public class SO_RECRUIT_Road : SecretObjective {
     }
 
     int _getClaimedRoadsCount() {
-        return _scoreboard.Stats[_player].ClaimedPOITypes[EdgeType.ROAD];
+        return _scoreboard.Stats[_player].ScoredPOITypes[EdgeType.ROAD];
     }
 
     internal override void GatherImprintOnInit() {
@@ -130,7 +130,7 @@ public class SO_RECRUIT_City : SecretObjective {
     }
 
     int _getClaimedCitiesCount() {
-        return _scoreboard.Stats[_player].ClaimedPOITypes[EdgeType.CITY];
+        return _scoreboard.Stats[_player].ScoredPOITypes[EdgeType.CITY];
     }
 
     internal override void GatherImprintOnInit() {
@@ -213,7 +213,7 @@ public class SO_RECRUIT_Obelisk : SecretObjective {
     int STARTINGAMOUNT = 0;
 
     public override ScoringEvent GetScoringEvent() {
-        if (_getCompletedObeliskCount() < STARTINGAMOUNT + OBELISKS_NEEDED) {
+        if (_getClaimedObeliskCount() < STARTINGAMOUNT + OBELISKS_NEEDED) {
             return null;
         }
         var scoreEarned = new Dictionary<PlayerSlot, int> {
@@ -241,16 +241,16 @@ public class SO_RECRUIT_Obelisk : SecretObjective {
         );
     }
 
-    int _getCompletedObeliskCount() {
-        return _scoreboard.Stats[_player].ClaimedPOITypes[EdgeType.OBELISK];
+    int _getClaimedObeliskCount() {
+        return _scoreboard.Stats[_player].TerraformersPlacedOnPOIType[EdgeType.OBELISK];
     }
 
     internal override void GatherImprintOnInit() {
-        STARTINGAMOUNT = _getCompletedObeliskCount();
+        STARTINGAMOUNT = _getClaimedObeliskCount();
     }
 
     public override string GetStatusString() {
-        return "(" + (_getCompletedObeliskCount() - STARTINGAMOUNT) + "/" + OBELISKS_NEEDED + ")";
+        return "(" + (_getClaimedObeliskCount() - STARTINGAMOUNT) + "/" + OBELISKS_NEEDED + ")";
     }
 }
 
@@ -373,11 +373,11 @@ public class SO_T1_CitySize : SecretObjective {
         Tier = 0;
     }
 
-    int MIN_SIZE = 3;
-    int GOAL_COUNT = -1;
+    int CITIES_NEEDED = 1;
+    int STARTINGAMOUNT = 0;
 
     public override ScoringEvent GetScoringEvent() {
-        if (_getCountOfCitiesCollected() < GOAL_COUNT) {
+        if (_getCountOfCitiesCollected() < CITIES_NEEDED + STARTINGAMOUNT) {
             return null;
         }
         var scoreEarned = new Dictionary<PlayerSlot, int> {
@@ -407,17 +407,17 @@ public class SO_T1_CitySize : SecretObjective {
 
     int _getCountOfCitiesCollected() {
         return _boardInventory.AssembledCities
-            .Where(city => city.collectedBy == _player && city.GetUniqueTileCount() >= MIN_SIZE)
+            .Where(city => city.collectedBy == _player && city.GetUniqueTileCount() >= 3)
             .Count();
     }
 
     internal override void GatherImprintOnInit()
     {
-        GOAL_COUNT = _getCountOfCitiesCollected() + 1;
+        STARTINGAMOUNT = _getCountOfCitiesCollected();
     }
 
     public override string GetStatusString() {
-        return "(" + _getCountOfCitiesCollected() + "/" + GOAL_COUNT + ")";
+        return "(" + (_getCountOfCitiesCollected() - STARTINGAMOUNT) + "/" + CITIES_NEEDED + ")";
     }
 }
 
@@ -600,7 +600,7 @@ public class SO_T1_AnyComplete : SecretObjective {
     int ObjectiveStartAmount = 0;
 
     public override ScoringEvent GetScoringEvent() {
-        bool isComplete = _scoreboard.Stats[_player].ObjectivesCompleted - ObjectiveStartAmount >= 3;
+        bool isComplete = _getCompletedRoadsCitiesObelisks() >= ObjectiveStartAmount + 3;
         if (!isComplete) {
             return null;
         }
@@ -632,11 +632,22 @@ public class SO_T1_AnyComplete : SecretObjective {
 
     internal override void GatherImprintOnInit()
     {
-        ObjectiveStartAmount = _scoreboard.Stats[_player].ObjectivesCompleted;
+        ObjectiveStartAmount = _getCompletedRoadsCitiesObelisks();
     }
 
     public override string GetStatusString() {
-        return "(" + (_scoreboard.Stats[_player].ObjectivesCompleted - ObjectiveStartAmount) + "/3)";
+        return "(" + (_getCompletedRoadsCitiesObelisks() - ObjectiveStartAmount) + "/3)";
+    }
+
+    int _getCompletedRoadsCitiesObelisks() {
+        int roadsCollected = _boardInventory.AssembledRoads
+            .Count(f => f.collectedBy == _player);
+        int citiesCollected = _boardInventory.AssembledCities
+            .Count(f => f.collectedBy == _player);
+        int obelisksCollected = _boardInventory.AssembledObelisks
+            .Count(f => f.collectedBy == _player);
+
+        return roadsCollected + citiesCollected + obelisksCollected;
     }
 }
 
@@ -685,9 +696,12 @@ public class SO_T1_SharePOI : SecretObjective {
     }
 
     int _getCountOfRoadsCitiesShared() {
-        return _boardInventory.AssembledRoads
-            .Where(r => r.tilePis.SelectMany(tpi => tpi.tile.GamepieceAssignments.Select(ga => ga.Team)).Distinct().Count() > 1)
-            .Count();
+        int sharedRoads = _boardInventory.AssembledRoads
+            .Count(r => r.GetUniqueTerraformerOwners() > 1);
+        int sharedCities = _boardInventory.AssembledCities
+            .Count(c => c.GetUniqueTerraformerOwners() > 1);
+        UnityEngine.Debug.Log("Shared Roads: " + sharedRoads + " Shared Cities: " + sharedCities);
+        return sharedRoads + sharedCities;
     }
 
     internal override void GatherImprintOnInit()
@@ -713,7 +727,7 @@ public class SO_T2_AnyComplete : SecretObjective {
     int ObjectiveStartAmount = -1;
 
     public override ScoringEvent GetScoringEvent() {
-        bool isComplete = _scoreboard.Stats[_player].ObjectivesCompleted - ObjectiveStartAmount >= 4;
+        bool isComplete = _getCompletedRoadsCitiesObelisks() - ObjectiveStartAmount >= 4;
         if (!isComplete) {
             return null;
         }
@@ -743,13 +757,24 @@ public class SO_T2_AnyComplete : SecretObjective {
         );
     }
 
+    int _getCompletedRoadsCitiesObelisks() {
+        int roadsCollected = _boardInventory.AssembledRoads
+            .Count(f => f.collectedBy == _player);
+        int citiesCollected = _boardInventory.AssembledCities
+            .Count(f => f.collectedBy == _player);
+        int obelisksCollected = _boardInventory.AssembledObelisks
+            .Count(f => f.collectedBy == _player);
+
+        return roadsCollected + citiesCollected + obelisksCollected;
+    }
+
     internal override void GatherImprintOnInit()
     {
-        ObjectiveStartAmount = _scoreboard.Stats[_player].ObjectivesCompleted;
+        ObjectiveStartAmount = _getCompletedRoadsCitiesObelisks();
     }
 
     public override string GetStatusString() {
-        return "(" + (_scoreboard.Stats[_player].ObjectivesCompleted - ObjectiveStartAmount) + "/4)";
+        return "(" + (_getCompletedRoadsCitiesObelisks() - ObjectiveStartAmount) + "/4)";
     }
 }
 

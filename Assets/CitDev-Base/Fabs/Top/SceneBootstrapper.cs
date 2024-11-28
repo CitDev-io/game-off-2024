@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class SceneController : MonoBehaviour
+public class SceneBootstrapper : MonoBehaviour
 {
     [SerializeField] GameObject DDOLobj;
 

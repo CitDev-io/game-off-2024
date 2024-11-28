@@ -100,11 +100,13 @@ public class CoreCartridge {
                 && scoreboard.Stats[p].RookieObjectiveCompleted > 1
             );
 
+            UnityEngine.Debug.Log(p + " " + scoreboard.Stats[p].Rank + ", recruit: " + scoreboard.Stats[p].RookieObjectiveCompleted);
+
             if (DoneWithRecruitMissions) {
                 ev.Add(new ScoringEvent(
                     () => {
                         // rank up
-                        scoreboard.Stats[p].Rank = SecretObjectiveRank.LANDSCRAPER;
+                        scoreboard.Stats[p].Rank = SecretObjectiveRank.DIRTLING;
 
                         var Tier1ObjectiveList = new List<SecretObjective> {
                             new SO_T1_NoTots(),
@@ -135,10 +137,10 @@ public class CoreCartridge {
             }
 
             bool DoneWithTier1Missions = (
-                scoreboard.Stats[p].Objectives.All(o => o.Rank == SecretObjectiveRank.DIRTLING)
-                && scoreboard.Stats[p].Rank == SecretObjectiveRank.DIRTLING
+                scoreboard.Stats[p].Rank == SecretObjectiveRank.DIRTLING
                 && scoreboard.Stats[p].DirtlingObjectiveCompleted > 2
             );
+            UnityEngine.Debug.Log(p + ":" + scoreboard.Stats[p].Rank + " " + scoreboard.Stats[p].Rank + ", dirt: " + scoreboard.Stats[p].DirtlingObjectiveCompleted);
 
             if (DoneWithTier1Missions) {
                 ev.Add(new ScoringEvent(
@@ -170,6 +172,8 @@ public class CoreCartridge {
                 ));
             }
 
+            UnityEngine.Debug.Log(p + " " + scoreboard.Stats[p].Rank + ", land: " + scoreboard.Stats[p].LandscraperObjectiveCompleted);
+            UnityEngine.Debug.Log(p + " " + scoreboard.Stats[p].TurnsInARow_NOT_PlacingTerraformer + " - " + scoreboard.Stats[p].TurnsInARowPlacingTerraformer);
             bool DoneWithTier2Missions = (
                 scoreboard.Stats[p].Objectives.All(o => o.Rank == SecretObjectiveRank.LANDSCRAPER)
                 && scoreboard.Stats[p].Rank == SecretObjectiveRank.LANDSCRAPER
@@ -424,7 +428,7 @@ public class CoreCartridge {
                 NetScoreChangeByPlayer,
                 Description
             ));
-            ao.MarkAsCollected();
+            ao.MarkAsCollectedBy(scoreboard.GetCurrentTurnPlayer().slot);
         };
         
         return new ScoringEvent(

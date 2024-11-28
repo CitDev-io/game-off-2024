@@ -75,12 +75,10 @@ public class Tile
         // get the index of each in Edges
         foreach(MicroEdge me in edgesInGroup) {
             int index = Edges.IndexOf(me);
-            UnityEngine.Debug.Log("index: " + index);
             // get the edge before and after
             MicroEdge before = Edges[(index + 7) % 8];
             MicroEdge after = Edges[(index + 1) % 8];
-            UnityEngine.Debug.Log("index: " + ((index + 7) % 8) + " is " + before.type);
-            UnityEngine.Debug.Log("index: " + ((index + 1) % 8) + " is " + after.type);
+
             // if edge before or after is of type city, return true
             if (before.type == MicroEdgeType.CITY || after.type == MicroEdgeType.CITY) {
                 return true;

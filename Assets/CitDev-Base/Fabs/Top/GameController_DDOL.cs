@@ -6,6 +6,8 @@ public class GameController_DDOL : MonoBehaviour
     public int PreviousRoundMoves = 0;
     ChangeScene _sceneChanger;
 
+    Coroutine CrossFadeDJ;
+
     void Awake()
     {
         DontDestroyOnLoad(this.gameObject);
@@ -90,12 +92,27 @@ public class GameController_DDOL : MonoBehaviour
         StartCoroutine(FadeToStopCoroutine());
     }
 
+    public void FadeIn() {
+        StartCoroutine(FadeInCoroutine());
+    }
+
+    IEnumerator FadeInCoroutine() {
+        float startingVolume = audioSource_Music.volume;
+        AudioClip startingAudio = audioSource_Music.clip;
+        audioSource_Music.volume = 0f;
+        audioSource_Music.Play();
+        while (audioSource_Music.volume < startingVolume) {
+            audioSource_Music.volume += 0.00015f;
+            yield return new WaitForSeconds(0.003f);
+        }
+        audioSource_Music.volume = startingVolume;
+    }
     IEnumerator FadeToStopCoroutine() {
         float startingVolume = audioSource_Music.volume;
         AudioClip startingAudio = audioSource_Music.clip;
         while (audioSource_Music.volume > 0f) {
-            audioSource_Music.volume -= 0.001f;
-            yield return new WaitForSeconds(0.01f);
+            audioSource_Music.volume -= 0.00015f;
+            yield return new WaitForSeconds(0.001f);
         }
         if (audioSource_Music.clip == startingAudio) {
             audioSource_Music.Stop();
@@ -103,14 +120,30 @@ public class GameController_DDOL : MonoBehaviour
         audioSource_Music.volume = startingVolume;
     }
 
-    public void PlayMusic(string songName)
+    IEnumerator ChangeSongs(AudioClip song, bool crossFade) {
+        if (crossFade && audioSource_Music.isPlaying) {
+            yield return FadeToStopCoroutine();
+        }
+
+        audioSource_Music.clip = song;
+        audioSource_Music.Play();
+
+        if (crossFade) {
+            yield return FadeInCoroutine();
+        }
+
+    }
+
+    public void PlayMusic(string songName, bool crossFade = true)
     {
         AudioClip audioClip = GetSongClipByName(songName);
         if (audioClip != null)
         {
-            audioSource_Music.Stop();
-            audioSource_Music.clip = audioClip;
-            audioSource_Music.Play();
+            if (CrossFadeDJ != null)
+            {
+                StopCoroutine(CrossFadeDJ);
+            }
+            CrossFadeDJ = StartCoroutine(ChangeSongs(audioClip, crossFade));
         }
         else
         {
@@ -120,12 +153,12 @@ public class GameController_DDOL : MonoBehaviour
 
     AudioClip GetAudioClipByName(string clipName)
     {
-        return (AudioClip)Resources.Load("Sounds/" + clipName);
+        return (AudioClip)Resources.Load("SFX/" + clipName);
     }
 
     AudioClip GetSongClipByName(string clipName)
     {
-        return (AudioClip)Resources.Load("Songs/" + clipName);
+        return (AudioClip)Resources.Load("Music/" + clipName);
     }
 
     public void SetSoundLevel(int volumeLevel)
