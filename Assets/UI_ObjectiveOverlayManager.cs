@@ -48,6 +48,7 @@ public class UI_ObjectiveOverlayManager : MonoBehaviour
         }
         organizer.Wired_Icon.sprite = Resources.Load<Sprite>(objective.SpritePath);
         organizer.Wired_ObjectiveText.text = objective.ObjectiveName;
+        organizer.Wired_StatusText.text = objective.GetStatusString();
         organizer.Show();
       }
    }

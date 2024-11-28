@@ -22,6 +22,7 @@ public abstract class SecretObjective {
 
     internal abstract void GatherImprintOnInit();
     public abstract ScoringEvent GetScoringEvent();
+    public abstract string GetStatusString();
 }
 
 public enum SecretObjectiveRank {
@@ -42,10 +43,10 @@ public class SO_RECRUIT_Road : SecretObjective {
     }
 
     int ROADS_NEEDED = 1;
-    int COMPLETE_FORPLAYER_AT_COUNT = 0;
+    int STARTING_AMOUNT = 0;
 
     public override ScoringEvent GetScoringEvent() {
-        if (_getClaimedRoadsCount() < COMPLETE_FORPLAYER_AT_COUNT) {
+        if (_getClaimedRoadsCount() < STARTING_AMOUNT + ROADS_NEEDED) {
             return null;
         }
         var scoreEarned = new Dictionary<PlayerSlot, int> {
@@ -78,7 +79,11 @@ public class SO_RECRUIT_Road : SecretObjective {
     }
 
     internal override void GatherImprintOnInit() {
-        COMPLETE_FORPLAYER_AT_COUNT = ROADS_NEEDED + _getClaimedRoadsCount();
+        STARTING_AMOUNT = _getClaimedRoadsCount();
+    }
+
+    public override string GetStatusString() {
+        return "(" + (_getClaimedRoadsCount() - STARTING_AMOUNT) + "/" + (STARTING_AMOUNT + ROADS_NEEDED) + ")";
     }
 }
 
@@ -93,10 +98,10 @@ public class SO_RECRUIT_City : SecretObjective {
     }
 
     int CITIES_NEEDED = 1;
-    int COMPLETE_FORPLAYER_AT_COUNT = 0;
+    int STARTINGAMOUNT = 0;
 
     public override ScoringEvent GetScoringEvent() {
-        if (_getClaimedCitiesCount() < COMPLETE_FORPLAYER_AT_COUNT) {
+        if (_getClaimedCitiesCount() < STARTINGAMOUNT + CITIES_NEEDED) {
             return null;
         }
         var scoreEarned = new Dictionary<PlayerSlot, int> {
@@ -129,7 +134,11 @@ public class SO_RECRUIT_City : SecretObjective {
     }
 
     internal override void GatherImprintOnInit() {
-        COMPLETE_FORPLAYER_AT_COUNT = CITIES_NEEDED + _getClaimedCitiesCount();
+        STARTINGAMOUNT = _getClaimedCitiesCount();
+    }
+
+    public override string GetStatusString() {
+        return "(" + (_getClaimedCitiesCount() - STARTINGAMOUNT) + "/" + CITIES_NEEDED + ")";
     }
 }
 
@@ -144,10 +153,10 @@ public class SO_RECRUIT_Farm : SecretObjective {
     }
 
     int FARMS_NEEDED = 1;
-    int COMPLETE_FORPLAYER_AT_COUNT = 0;
+    int STARTINGAMOUNT = 0;
 
     public override ScoringEvent GetScoringEvent() {
-        if (_getPlacedFarmCount() < COMPLETE_FORPLAYER_AT_COUNT) {
+        if (_getPlacedFarmCount() < STARTINGAMOUNT + FARMS_NEEDED) {
             return null;
         }
         var scoreEarned = new Dictionary<PlayerSlot, int> {
@@ -182,7 +191,11 @@ public class SO_RECRUIT_Farm : SecretObjective {
     }
 
     internal override void GatherImprintOnInit() {
-        COMPLETE_FORPLAYER_AT_COUNT = FARMS_NEEDED + _getPlacedFarmCount();
+        STARTINGAMOUNT = _getPlacedFarmCount();
+    }
+
+    public override string GetStatusString() {
+        return "(" + (_getPlacedFarmCount() - STARTINGAMOUNT) + "/" + FARMS_NEEDED + ")";
     }
 }
 
@@ -197,10 +210,10 @@ public class SO_RECRUIT_Obelisk : SecretObjective {
     }
 
     int OBELISKS_NEEDED = 1;
-    int COMPLETE_FORPLAYER_AT_COUNT = 0;
+    int STARTINGAMOUNT = 0;
 
     public override ScoringEvent GetScoringEvent() {
-        if (_getCompletedObeliskCount() < COMPLETE_FORPLAYER_AT_COUNT) {
+        if (_getCompletedObeliskCount() < STARTINGAMOUNT + OBELISKS_NEEDED) {
             return null;
         }
         var scoreEarned = new Dictionary<PlayerSlot, int> {
@@ -233,7 +246,11 @@ public class SO_RECRUIT_Obelisk : SecretObjective {
     }
 
     internal override void GatherImprintOnInit() {
-        COMPLETE_FORPLAYER_AT_COUNT = OBELISKS_NEEDED + _getCompletedObeliskCount();
+        STARTINGAMOUNT = _getCompletedObeliskCount();
+    }
+
+    public override string GetStatusString() {
+        return "(" + (_getCompletedObeliskCount() - STARTINGAMOUNT) + "/" + OBELISKS_NEEDED + ")";
     }
 }
 
@@ -286,6 +303,10 @@ public class SO_T1_NoTots : SecretObjective {
     internal override void GatherImprintOnInit()
     {
     }
+
+    public override string GetStatusString() {
+        return "(" + _getStreakCount() + "/" + STREAK_LENGTH + ")";
+    }
 }
 
 public class SO_T1_TotStreak : SecretObjective {
@@ -335,6 +356,10 @@ public class SO_T1_TotStreak : SecretObjective {
 
     internal override void GatherImprintOnInit()
     {
+    }
+
+    public override string GetStatusString() {
+        return "(" + _getStreakCount() + "/" + STREAK_LENGTH + ")";
     }
 }
 
@@ -389,6 +414,10 @@ public class SO_T1_CitySize : SecretObjective {
     internal override void GatherImprintOnInit()
     {
         GOAL_COUNT = _getCountOfCitiesCollected() + 1;
+    }
+
+    public override string GetStatusString() {
+        return "(" + _getCountOfCitiesCollected() + "/" + GOAL_COUNT + ")";
     }
 }
 
@@ -445,6 +474,10 @@ public class SO_T1_RoadSize : SecretObjective {
     {
         GOAL_COUNT = _getCountOfRoadsCollected() + 1;
     }
+
+    public override string GetStatusString() {
+        return "(" + _getCountOfRoadsCollected() + "/" + GOAL_COUNT + ")";
+    }
 }
 
 public class SO_T1_HelpOppoRoad : SecretObjective {
@@ -458,10 +491,10 @@ public class SO_T1_HelpOppoRoad : SecretObjective {
     }
 
     int ROADS_NEEDED = 1;
-    int COMPLETE_FORPLAYER_AT_COUNT = -1;
+    int STARTINGAMOUNT = 0;
 
     public override ScoringEvent GetScoringEvent() {
-        if (_getCountOfRoadsHelped() < COMPLETE_FORPLAYER_AT_COUNT) {
+        if (_getCountOfRoadsHelped() < STARTINGAMOUNT + ROADS_NEEDED) {
             return null;
         }
         var scoreEarned = new Dictionary<PlayerSlot, int> {
@@ -495,7 +528,11 @@ public class SO_T1_HelpOppoRoad : SecretObjective {
 
     internal override void GatherImprintOnInit()
     {
-        COMPLETE_FORPLAYER_AT_COUNT = _getCountOfRoadsHelped() + 1;
+        STARTINGAMOUNT = _getCountOfRoadsHelped();
+    }
+
+    public override string GetStatusString() {
+        return "(" + (_getCountOfRoadsHelped() - STARTINGAMOUNT) + "/" + ROADS_NEEDED + ")";
     }
 }
 
@@ -544,6 +581,10 @@ public class SO_T1_PointsScoredTurn : SecretObjective {
     {
 
     }
+
+    public override string GetStatusString() {
+        return "";
+    }
 }
 
 public class SO_T1_AnyComplete : SecretObjective {
@@ -556,7 +597,7 @@ public class SO_T1_AnyComplete : SecretObjective {
         Tier = 0;
     }
 
-    int ObjectiveStartAmount = -1;
+    int ObjectiveStartAmount = 0;
 
     public override ScoringEvent GetScoringEvent() {
         bool isComplete = _scoreboard.Stats[_player].ObjectivesCompleted - ObjectiveStartAmount >= 3;
@@ -592,6 +633,10 @@ public class SO_T1_AnyComplete : SecretObjective {
     internal override void GatherImprintOnInit()
     {
         ObjectiveStartAmount = _scoreboard.Stats[_player].ObjectivesCompleted;
+    }
+
+    public override string GetStatusString() {
+        return "(" + (_scoreboard.Stats[_player].ObjectivesCompleted - ObjectiveStartAmount) + "/3)";
     }
 }
 
@@ -649,6 +694,10 @@ public class SO_T1_SharePOI : SecretObjective {
     {
         ObjectiveStartAmount = _getCountOfRoadsCitiesShared();
     }
+
+    public override string GetStatusString() {
+        return "(" + (_getCountOfRoadsCitiesShared() - ObjectiveStartAmount) + "/" + TimesRequired + ")";
+    }
 }
 
 public class SO_T2_AnyComplete : SecretObjective {
@@ -698,6 +747,10 @@ public class SO_T2_AnyComplete : SecretObjective {
     {
         ObjectiveStartAmount = _scoreboard.Stats[_player].ObjectivesCompleted;
     }
+
+    public override string GetStatusString() {
+        return "(" + (_scoreboard.Stats[_player].ObjectivesCompleted - ObjectiveStartAmount) + "/4)";
+    }
 }
 
 public class SO_T2_PointsScoredTurn : SecretObjective {
@@ -745,6 +798,10 @@ public class SO_T2_PointsScoredTurn : SecretObjective {
     {
 
     }
+
+    public override string GetStatusString() {
+        return "";
+    }
 }
 
 
@@ -758,12 +815,12 @@ public class SO_T2_RoadCitySize : SecretObjective {
         Tier = 0;
     }
 
-    int GOAL_COUNT = -1;
+    int STARTINGAMOUNT = 0;
     int SIZE_THRESHOLD = 4;
     int HOW_MANY_TO_COLLECT = 1;
 
     public override ScoringEvent GetScoringEvent() {
-        if (_getCountOfRoadsCitiesOfSizeOrLarger(SIZE_THRESHOLD) < GOAL_COUNT) {
+        if (_getCountOfRoadsCitiesOfSizeOrLarger(SIZE_THRESHOLD) < STARTINGAMOUNT + HOW_MANY_TO_COLLECT) {
             return null;
         }
         var scoreEarned = new Dictionary<PlayerSlot, int> {
@@ -804,7 +861,11 @@ public class SO_T2_RoadCitySize : SecretObjective {
 
     internal override void GatherImprintOnInit()
     {
-        GOAL_COUNT = _getCountOfRoadsCitiesOfSizeOrLarger(SIZE_THRESHOLD) + HOW_MANY_TO_COLLECT;
+        STARTINGAMOUNT = _getCountOfRoadsCitiesOfSizeOrLarger(SIZE_THRESHOLD);
+    }
+
+    public override string GetStatusString() {
+        return "(" + (_getCountOfRoadsCitiesOfSizeOrLarger(SIZE_THRESHOLD) - STARTINGAMOUNT) + "/" + HOW_MANY_TO_COLLECT + ")";
     }
 }
 
@@ -818,11 +879,11 @@ public class SO_T2_CityWithShield : SecretObjective {
         Tier = 0;
     }
 
-    int GOAL_COUNT = -1;
     int HOW_MANY_TO_COLLECT = 1;
+    int STARTINGAMOUNT = 0;
 
     public override ScoringEvent GetScoringEvent() {
-        if (_getCountOfCitiesCollectedWithShield() < GOAL_COUNT) {
+        if (_getCountOfCitiesCollectedWithShield() < STARTINGAMOUNT + HOW_MANY_TO_COLLECT) {
             return null;
         }
         var scoreEarned = new Dictionary<PlayerSlot, int> {
@@ -858,7 +919,11 @@ public class SO_T2_CityWithShield : SecretObjective {
 
     internal override void GatherImprintOnInit()
     {
-        GOAL_COUNT = _getCountOfCitiesCollectedWithShield() + HOW_MANY_TO_COLLECT;
+        STARTINGAMOUNT = _getCountOfCitiesCollectedWithShield();
+    }
+
+    public override string GetStatusString() {
+        return "(" + (_getCountOfCitiesCollectedWithShield() - STARTINGAMOUNT) + "/" + HOW_MANY_TO_COLLECT + ")";
     }
 }
 
@@ -872,11 +937,11 @@ public class SO_T3_ObeliskCapture : SecretObjective {
         Tier = 0;
     }
 
-    int GOAL_COUNT = -1;
+    int STARTINGAMOUNT = 0;
     int HOW_MANY_TO_COLLECT = 1;
 
     public override ScoringEvent GetScoringEvent() {
-        if (_getCountofObelisksClaimedAndCaptured() < GOAL_COUNT) {
+        if (_getCountofObelisksClaimedAndCaptured() < STARTINGAMOUNT + HOW_MANY_TO_COLLECT) {
             return null;
         }
         var scoreEarned = new Dictionary<PlayerSlot, int> {
@@ -912,7 +977,11 @@ public class SO_T3_ObeliskCapture : SecretObjective {
 
     internal override void GatherImprintOnInit()
     {
-        GOAL_COUNT = _getCountofObelisksClaimedAndCaptured() + HOW_MANY_TO_COLLECT;
+        STARTINGAMOUNT = _getCountofObelisksClaimedAndCaptured();
+    }
+
+    public override string GetStatusString() {
+        return "(" + (_getCountofObelisksClaimedAndCaptured() - STARTINGAMOUNT) + "/" + HOW_MANY_TO_COLLECT + ")";
     }
 }
 
@@ -962,6 +1031,10 @@ public class SO_T3_PointsScoredTurn : SecretObjective {
     {
 
     }
+
+    public override string GetStatusString() {
+        return "";
+    }
 }
 
 
@@ -975,12 +1048,12 @@ public class SO_T3_RoadCitySize : SecretObjective {
         Tier = 0;
     }
 
-    int GOAL_COUNT = -1;
+    int STARTINGAMOUNT = 0;
     int SIZE_THRESHOLD = 5;
     int HOW_MANY_TO_COLLECT = 1;
 
     public override ScoringEvent GetScoringEvent() {
-        if (_getCountOfRoadsCitiesOfSizeOrLarger(SIZE_THRESHOLD) < GOAL_COUNT) {
+        if (_getCountOfRoadsCitiesOfSizeOrLarger(SIZE_THRESHOLD) < STARTINGAMOUNT + HOW_MANY_TO_COLLECT) {
             return null;
         }
         var scoreEarned = new Dictionary<PlayerSlot, int> {
@@ -1021,7 +1094,11 @@ public class SO_T3_RoadCitySize : SecretObjective {
 
     internal override void GatherImprintOnInit()
     {
-        GOAL_COUNT = _getCountOfRoadsCitiesOfSizeOrLarger(SIZE_THRESHOLD) + HOW_MANY_TO_COLLECT;
+        STARTINGAMOUNT = _getCountOfRoadsCitiesOfSizeOrLarger(SIZE_THRESHOLD);
+    }
+
+    public override string GetStatusString() {
+        return "(" + (_getCountOfRoadsCitiesOfSizeOrLarger(SIZE_THRESHOLD) - STARTINGAMOUNT) + "/" + HOW_MANY_TO_COLLECT + ")";
     }
 }
 
@@ -1092,5 +1169,9 @@ public class SO_T3_ShareWin : SecretObjective {
     internal override void GatherImprintOnInit()
     {
         ObjectiveStartAmount = _getCountOfSharedPOIWins();
+    }
+
+    public override string GetStatusString() {
+        return "(" + (_getCountOfSharedPOIWins() - ObjectiveStartAmount) + "/" + TimesRequired + ")";
     }
 }
