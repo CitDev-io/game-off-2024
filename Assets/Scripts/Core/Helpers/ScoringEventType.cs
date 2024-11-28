@@ -3,5 +3,7 @@ public enum ScoringEventType {
     OBELISKCOMPLETED,
     CITYCOMPLETED,
     FARMSCORED,
-    INCOMPLETE
+    INCOMPLETE,
+    SECRET_OBJECTIVE,
+    PROMOTION
 }

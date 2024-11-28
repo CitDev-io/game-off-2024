@@ -63,6 +63,9 @@ public class GameBoardManager : MonoBehaviour
         StartTurnPerformanceForPlayer(GridGameInstance.scoreboard.GetCurrentTurnPlayer());
     }
 
+    void _ui_UpdateObjectiveBoard() {
+        GameObject.FindAnyObjectByType<UI_ObjectiveOverlayManager>().UpdateObjectivesForPlayer(CurrentPlayer);
+    }
     void DisableTileHighlightsForCurrentPlayer() {
         Tiles
             .Where(t => t.LastPlacedIndicator.sprite.name == (CurrentPlayer == PlayerSlot.PLAYER1 ? "TileHighlightBlue" : "TileHighlightPink"))
@@ -73,12 +76,13 @@ public class GameBoardManager : MonoBehaviour
         // now's your chance. here's who's turn is starting right now
         CurrentPlayer = pa.slot;
         DisableTileHighlightsForCurrentPlayer();
+        _ui_UpdateObjectiveBoard();
 
         Debug.Log("STARTING TURN FOR PLAYER: " + pa.slot + " - " + pa.type);
         UpdateDrawnTile();
         
         if (pa.type == PlayerType.CPU) {
-            PerformTurnScoringEventsAndAck(); // likely a series of coroutines later
+            throw new NotImplementedException("WE DONT HAVE LOGIC FOR WHEN THE CPU IS UP. NEED TO ACK THIS OR DO ACTION, PERFORM, THEN ACK.");
         }
     }
 
@@ -221,9 +225,9 @@ public class GameBoardManager : MonoBehaviour
             );
         }
         if (Confirmations == 1) {
-            if (GridGameInstance.scoreboard.CurrentTerraformerCount[
+            if (GridGameInstance.scoreboard.Stats[
                 GridGameInstance.scoreboard.GetCurrentTurnPlayer().slot
-            ] > 0
+            ].TerraformerCount > 0
             ) {
                 TilePlacementUserInput.SetActive(true);
                 StagedTile.CancelGamepiecePlacement();
@@ -242,76 +246,91 @@ public class GameBoardManager : MonoBehaviour
             // ************* if not, skip to the next step
         }
         if (Confirmations == 2 && StagedTile.GetStatus() != UITileStatus.PLACED) {
-            bool PlacedSuccessfully = GridGameInstance
+            GridGameInstance
                 .PlaceTile(
                     StagedTile.registeredTile,
                     StagedTile.gridPosition
                 );
 
-            if (!PlacedSuccessfully) {
-                Debug.Log("Tile placement failed");
-                Confirmations--;
-                TripAckCheck();
-                return;
-            } else {
-                StagedTile.SetStatus(UITileStatus.PLACED, GridGameInstance.scoreboard.GetCurrentTurnPlayer().slot);
-            }
+            StagedTile.SetStatus(UITileStatus.PLACED, GridGameInstance.scoreboard.GetCurrentTurnPlayer().slot);
 
-            PerformTurnScoringEventsAndAck();
+            Action OnPerformanceComplete = () => {
+                GridGameInstance.Ack();
+                Confirmations = 0;
+                CameraControlTo(Camera.main.transform.position, DEFAULT_CAMERA_FOV);
+            };
+            StartCoroutine(BRIDGE_DoEndOfTurnSequence(OnPerformanceComplete));
         }
     }
 
-    void PerformTurnScoringEventsAndAck() {
-        List<ScoringEvent> EndOfTurnEvents = GridGameInstance.GetTilePlacedScoringEvents();
-        Action OnPerformanceComplete = () => {
-            GridGameInstance.Ack();
-            Confirmations = 0;
-            CameraControlTo(Camera.main.transform.position, DEFAULT_CAMERA_FOV);
-        };
-        StartCoroutine(EnactScoringEvents(EndOfTurnEvents, OnPerformanceComplete));
+    // void BRIDGE_DoEndOfGameSequence() {
+        
+    //     throw new NotImplementedException("No End Of Game Sequence");
+    //     // List<ScoringEvent> EndOfGameScoringEvents = GridGameInstance.GetEndGameScoringEvents();
+    //     // EnactScoringEvents(EndOfGameScoringEvents);
+    // }
 
-       // ready to take elsewhere! 
-        // List<ScoringEvent> EndOfGameScoringEvents = GridGameInstance.GetEndGameScoringEvents();
-        // EnactScoringEvents(EndOfGameScoringEvents);
+    IEnumerator BRIDGE_DoEndOfTurnSequence(Action UIOnComplete) {
+        // board scoring events
+        List<ScoringEvent> BoardScoringEvents = GridGameInstance.GetScoringEvents_TilePlaced();
+        yield return StartCoroutine(ProcessAndInvokeScoringEvents(BoardScoringEvents));
+
+        // secret objective scoring events
+        List<ScoringEvent> SecretObjectiveScoringEvents = GridGameInstance.GetScoringEvents_ObjectiveCheck();
+        yield return StartCoroutine(ProcessAndInvokeScoringEvents(SecretObjectiveScoringEvents));
+
+        // scoring events for role/rank
+        List<ScoringEvent> RankScoringEvents = GridGameInstance.GetScoringEvents_RoleProgress();
+        yield return StartCoroutine(ProcessAndInvokeScoringEvents(RankScoringEvents));
+
+        UIOnComplete.Invoke();
     }
 
-    IEnumerator EnactScoringEvents(List<ScoringEvent> events, Action OnComplete) {
-        
+    IEnumerator ProcessAndInvokeScoringEvents(List<ScoringEvent> events) {
         foreach(ScoringEvent e in events) {
             Debug.Log("PROCESSING " + e.EventType + " EVENT:");
             Debug.Log(e.Description);
 
             switch(e.EventType) {
                 case ScoringEventType.ROADCOMPLETED:
-                    // do RoadComplete performance
+                case ScoringEventType.CITYCOMPLETED:
+                case ScoringEventType.OBELISKCOMPLETED:
+                    yield return StartCoroutine(PerformScoringEvent_RoadCityObelisk(e));
                     break;
+                case ScoringEventType.FARMSCORED:
+
+                    break;
+                case ScoringEventType.INCOMPLETE:
                 default:
                     break;
             }
 
-            e.RelatedGamepieces.ForEach(gp => {
-                if (gp.Type == GamepieceType.TERRAFORMER) {
-                    // do terraformer performance
-                    List<UI_AnchorTag> ats = FindObjectsOfType<UI_AnchorTag>()
-                            .Where(anchor => anchor.AnchorId == gp.Anchor
-                                && anchor.gridPosition == gp.Position
-                            ).ToList();
-
-                    // doesn't honestly go here, does it? i'll add if()
-                    if (
-                        e.EventType == ScoringEventType.ROADCOMPLETED
-                        || e.EventType == ScoringEventType.CITYCOMPLETED
-                        || e.EventType == ScoringEventType.OBELISKCOMPLETED) {
-                            foreach (UI_AnchorTag at in ats) {
-                                Destroy(at.gameObject);
-                            }
-                        }
-                }
-            });
-            e.ScoringAction.Invoke();
+            
+            e.ScoringAction.Invoke(); // COMMIT the scoring action
         }
+    }
+
+    IEnumerator PerformScoringEvent_RoadCityObelisk(ScoringEvent e) {
+        yield return null;
+        e.RelatedGamepieces.ForEach(gp => {
+            if (gp.Type == GamepieceType.TERRAFORMER) {
+                List<UI_AnchorTag> ats = FindObjectsOfType<UI_AnchorTag>()
+                .Where(anchor => anchor.AnchorId == gp.Anchor
+                    && anchor.gridPosition == gp.Position
+                ).ToList();
+                foreach (UI_AnchorTag at in ats) {
+
+                    // terraformer being recalled right here.
+                    Destroy(at.gameObject);
+                }
+            }
+        });
+    }
+
+    IEnumerator PerformAnyCompletedObjectives() {
+        Debug.Log("Checking......");
+
         yield return new WaitForSeconds(2.5f);
-        OnComplete.Invoke();
     }
 
     void CancelStagingInput() {

@@ -18,10 +18,10 @@ public class CoreCartridge {
     {
         // can add tilebag to this
         grid = new Tile[gs.OddGameBoardWidth, gs.OddGameBoardWidth];
-
+        scoreboard = new Scoreboard(gs.playerManifest, inventory);
 
         PlaceTile(startingTile, new GridPosition(gs.BoardMidPoint, gs.BoardMidPoint));
-        scoreboard = new Scoreboard(gs.playerManifest);
+
 
         // set the table
         CurrentTile = DrawNewTile();
@@ -61,7 +61,11 @@ public class CoreCartridge {
     }
 
 /* SCORING STUFF */
-    public List<ScoringEvent> GetTilePlacedScoringEvents() {
+
+
+
+
+    public List<ScoringEvent> GetScoringEvents_TilePlaced() {
         List<ScoringEvent> Events = new List<ScoringEvent>();
 
         Events.AddRange(SCORE_CompletedRoads);
@@ -71,13 +75,65 @@ public class CoreCartridge {
         return Events;
     }
 
-    public List<ScoringEvent> GetEndGameScoringEvents() {
+    public List<ScoringEvent> GetScoringEvents_EndGame() {
         List<ScoringEvent> Events = new List<ScoringEvent>();
 
         Events.AddRange(SCORE_OwnedFarms);
 
         return Events;
     }
+
+    public List<ScoringEvent> GetScoringEvents_ObjectiveCheck() => scoreboard
+        .GetAllPlayerObjectives()
+        .Select(obj => obj.GetScoringEvent())
+        .Where(se => se != null)
+        .ToList();
+
+    public List<ScoringEvent> GetScoringEvents_RoleProgress() {
+        List<ScoringEvent> ev = new List<ScoringEvent>();
+        List<PlayerSlot> Players = scoreboard.Stats.Keys.ToList();
+
+        foreach(PlayerSlot p in Players) {
+            bool DoneWithRecruitMissions = (
+                scoreboard.Stats[p].Objectives.All(o => o.Rank == SecretObjectiveRank.RECRUIT)
+                && scoreboard.Stats[p].Rank == SecretObjectiveRank.RECRUIT
+                && scoreboard.Stats[p].RookieObjectiveCompleted > 1
+            );
+
+            if (DoneWithRecruitMissions) {
+                ev.Add(new ScoringEvent(
+                    () => {
+                        // rank up
+                        scoreboard.Stats[p].Rank = SecretObjectiveRank.LANDSHAPER;
+
+                        var objs = new List<SecretObjective> {
+                            // new SO_T1_NoTots(),
+                            // new SO_T1_TotStreak(),
+                            // new SO_T1_CitySize(),
+                            new SO_T1_RoadSize(),
+                            new SO_T1_HelpOppoRoad(),
+                            new SO_T1_PointsScoredTurn(),
+                            new SO_T1_AnyComplete()
+                        };
+                        objs.ForEach(so => so.ImprintForPlayer(p, inventory, scoreboard));
+                        // clear recruit missions
+                        scoreboard.Stats[p].Objectives.RemoveAll(o => o.Rank == SecretObjectiveRank.RECRUIT);
+                        scoreboard.Stats[p].Objectives.AddRange(
+                            objs
+                        );
+                    },
+                    new List<Tile>(),
+                    new List<GamepieceTileAssignment>(),
+                    ScoringEventType.PROMOTION,
+                    new Dictionary<PlayerSlot, int>(),
+                    "Level Up!"
+                ));
+            }
+        }
+        return ev;
+    }
+
+
 
     public List<ScoringEvent> SCORE_OwnedFarms =>
         inventory.OwnedFarms
@@ -161,14 +217,19 @@ public class CoreCartridge {
         foreach(PlayerSlot ps in PlayersWithMostTerraformers) {
             NetScoreChangeByPlayer.Add(ps, ScoreEarned);
         }
-        Action ScoringAction = () => { 
-            // do NOT reference local variables if you can help it. trying read-only jic
-            foreach(PlayerSlot ps in PlayersWithMostTerraformers) {
-                scoreboard.AddScoreForPlayerSlot(ps, ScoreEarned);
-            }
-            foreach(GamepieceTileAssignment gta in RelatedGamepieces) {
-                scoreboard.CollectGamepiece(gta.Type, gta.Team);
-            }
+        Action ScoringAction = () => {
+            scoreboard.ReportPlayersScoredPOIType(
+                PlayersWithMostTerraformers,
+                EdgeType.FARM
+            );
+            scoreboard.CommitScoringEvent(new ScoringEvent(
+                () => {},
+                RelatedTiles,
+                RelatedGamepieces,
+                ScoringEventType.FARMSCORED,
+                NetScoreChangeByPlayer,
+                Description
+            ));
         };
         
         return new ScoringEvent(
@@ -211,14 +272,19 @@ public class CoreCartridge {
             NetScoreChangeByPlayer.Add(ps, ScoreEarned);
         }
         Action ScoringAction = () => { 
-            // do NOT reference local variables if you can help it. trying read-only jic
-            foreach(PlayerSlot ps in PlayersWithMostTerraformers) {
-                scoreboard.AddScoreForPlayerSlot(ps, ScoreEarned);
-            }
-            foreach(GamepieceTileAssignment gta in RelatedGamepieces) {
-                scoreboard.CollectGamepiece(gta.Type, gta.Team);
-            }
-            ac.MarkAsCollected();
+            scoreboard.ReportPlayersScoredPOIType(
+                PlayersWithMostTerraformers,
+                EdgeType.CITY
+            );
+            scoreboard.CommitScoringEvent(new ScoringEvent(
+                () => {},
+                RelatedTiles,
+                RelatedGamepieces,
+                ScoringEventType.CITYCOMPLETED,
+                NetScoreChangeByPlayer,
+                Description
+            ));
+            ac.MarkAsCollectedBy(scoreboard.GetCurrentTurnPlayer());
         };
         
         return new ScoringEvent(
@@ -267,14 +333,19 @@ public class CoreCartridge {
         foreach(PlayerSlot ps in PlayersWithMostTerraformers) {
             NetScoreChangeByPlayer.Add(ps, ScoreEarned);
         }
-        Action ScoringAction = () => { 
-            // do NOT reference local variables if you can help it. trying read-only jic
-            foreach(PlayerSlot ps in PlayersWithMostTerraformers) {
-                scoreboard.AddScoreForPlayerSlot(ps, ScoreEarned);
-            }
-            foreach(GamepieceTileAssignment gta in RelatedGamepieces) {
-                scoreboard.CollectGamepiece(gta.Type, gta.Team);
-            }
+        Action ScoringAction = () => {
+            scoreboard.ReportPlayersScoredPOIType(
+                PlayersWithMostTerraformers,
+                EdgeType.OBELISK
+            );
+            scoreboard.CommitScoringEvent(new ScoringEvent(
+                () => {},
+                RelatedTiles,
+                RelatedGamepieces,
+                ScoringEventType.CITYCOMPLETED,
+                NetScoreChangeByPlayer,
+                Description
+            ));
             ao.MarkAsCollected();
         };
         
@@ -314,15 +385,20 @@ public class CoreCartridge {
         foreach(PlayerSlot ps in PlayersWithMostTerraformers) {
             NetScoreChangeByPlayer.Add(ps, ScoreEarned);
         }
-        Action ScoringAction = () => { 
-            // do NOT reference local variables if you can help it. trying read-only jic
-            foreach(PlayerSlot ps in PlayersWithMostTerraformers) {
-                scoreboard.AddScoreForPlayerSlot(ps, ScoreEarned);
-            }
-            foreach(GamepieceTileAssignment gta in RelatedGamepieces) {
-                scoreboard.CollectGamepiece(gta.Type, gta.Team);
-            }
-            ar.MarkAsCollected();
+        Action ScoringAction = () => {
+            scoreboard.ReportPlayersScoredPOIType(
+                PlayersWithMostTerraformers,
+                EdgeType.ROAD
+            );
+            scoreboard.CommitScoringEvent(new ScoringEvent(
+                () => {},
+                RelatedTiles,
+                RelatedGamepieces,
+                ScoringEventType.ROADCOMPLETED,
+                NetScoreChangeByPlayer,
+                Description
+            ));
+            ar.MarkAsCollectedBy(scoreboard.GetCurrentTurnPlayer().slot);
         };
         
         return new ScoringEvent(
@@ -395,7 +471,7 @@ public class CoreCartridge {
         return true;
     }
 
-    public bool PlaceTile(Tile tileToPlace, GridPosition pos) {
+    public void PlaceTile(Tile tileToPlace, GridPosition pos) {
         if (!CanPlaceTile(tileToPlace, pos)) {
             throw new Exception("Invalid Tile Placement Attempted");
         }
@@ -408,13 +484,6 @@ public class CoreCartridge {
 
         grid[pos.x, pos.y] = tileToPlace;
 
-        // TODO: check if gp are ok
-        bool gamepiecePlacementsAreValid = true;
-
-        if (!gamepiecePlacementsAreValid) {
-            grid[pos.x, pos.y] = null;
-            return false;
-        }
         TileSurvey tileSurvey = SurveyPosition(pos);
         tileToPlace.NormalizedSurvey = tileSurvey;
 
@@ -424,8 +493,7 @@ public class CoreCartridge {
 
         tileSurvey.ApplyToOtherSurveys(tileToPlace);
         inventory.AddTileToInventory(tileToPlace);
-
-        return true;
+        scoreboard.ReportTilePlacementByCurrentPlayer(tileToPlace);        
     }
     #nullable enable
     Tile? GetTileAtGridPosition(GridPosition pos) {

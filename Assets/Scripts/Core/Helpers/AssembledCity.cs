@@ -6,12 +6,13 @@ public class AssembledCity {
     int index = 0;
     bool collected = false;
     public List<TileAndPlacementGroupIndex> tilePis = new List<TileAndPlacementGroupIndex>();
-
+    public PlayerSlot collectedBy;
     public AssembledCity(int i) {
         index = i;
     }
 
-    public void MarkAsCollected() {
+    public void MarkAsCollectedBy(PlayerAssignment assignment) {
+        collectedBy = assignment.slot;
         collected = true;
     }
 

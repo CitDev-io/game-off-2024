@@ -117,3 +117,10 @@ Game is instantiated with Settings item (can be just default, vanilla)
 - add secret missions/scoring
 - title screen
 - ship it
+
+
+## 11-27-24 early
+- score for achievements is not being applied.
+- check that ALL achievements are processed the same for the score portion. no need to vary.
+
+- Rank up mission swapping

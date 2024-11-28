@@ -30,6 +30,21 @@ public class Tile
         OnTileRotated?.Invoke();
     }
 
+    public EdgeType GetPOITypeForGamepiece(GamepieceTileAssignment gpa) {
+        int groupId = Placements.ToList().IndexOf(gpa.Anchor);
+        if (Roads.Exists(r => r.RoadGroupId == groupId)) {
+            return EdgeType.ROAD;
+        }
+        if (gpa.Anchor == 4 && obelisk != null) {
+            return EdgeType.OBELISK;
+        }
+
+        EdgeType edgeType = Edges.Where(e => e.EdgeGroupId == groupId).First().type == MicroEdgeType.FARM
+            ? EdgeType.FARM
+            : EdgeType.CITY;
+            return edgeType;
+    }
+
     public bool FitsWithOtherToThe(Tile otherTile, CardinalDirection direction)
     {
         CardinalDirection oppositeDirection = (CardinalDirection)(((int)direction + 2) % 4);
@@ -52,7 +67,41 @@ public class Tile
         GamepieceAssignments.Clear();
     }
 
-    
+    public bool IsGroupTouchingCity(int groupId) {
+        // get all edges in the group
+        List<MicroEdge> edgesInGroup = Edges.FindAll(e => e.EdgeGroupId == groupId).ToList();
+        // get the index of each in Edges
+        foreach(MicroEdge me in edgesInGroup) {
+            int index = Edges.IndexOf(me);
+            UnityEngine.Debug.Log("index: " + index);
+            // get the edge before and after
+            MicroEdge before = Edges[(index + 7) % 8];
+            MicroEdge after = Edges[(index + 1) % 8];
+            UnityEngine.Debug.Log("index: " + ((index + 7) % 8) + " is " + before.type);
+            UnityEngine.Debug.Log("index: " + ((index + 1) % 8) + " is " + after.type);
+            // if edge before or after is of type city, return true
+            if (before.type == MicroEdgeType.CITY || after.type == MicroEdgeType.CITY) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool PlayerHasTerraformerInGroup(PlayerSlot slot, int groupId) {
+        return GamepieceAssignments.Exists(gpa =>
+            gpa.Team == slot &&
+            gpa.Type == GamepieceType.TERRAFORMER &&
+            Placements[groupId] == gpa.Anchor
+        );
+    }
+
+    public bool OtherPlayerHasTerraformerInGroup(PlayerSlot slot, int groupId) {
+        return GamepieceAssignments.Exists(gpa =>
+            gpa.Team != slot &&
+            gpa.Type == GamepieceType.TERRAFORMER &&
+            Placements[groupId] == gpa.Anchor
+        );
+    }
 
     public int GetGroupIndexIdForNormalizedDirectionalSide(CardinalDirection cDir) {
         EdgeType edgeType = GetEdgeTypeByNormalizedDir(cDir);

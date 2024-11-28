@@ -11,14 +11,14 @@ public class OwnedFarm {
     }
 
     public void Merge(OwnedFarm of) {
-        //if (of == null) UnityEngine.Debug.Log("NULL OF???");
-        //if (of.tilePis == null) UnityEngine.Debug.Log("NULL OF TILEPIS???");
         tilePis = tilePis.Union(of.tilePis).ToList();
     }
 
     public int GetUniqueTileCount() {
         return tilePis.Select(t => t.tile).Distinct().Count();
     }
+
+    public bool IsTouchingACity() => tilePis.Any(tpi => tpi.tile.IsGroupTouchingCity(tpi.groupIndexId));
 }
 
 public class BoardInventory {

@@ -5,13 +5,15 @@ using System.Linq;
 public class AssembledRoad {
     int index = 0;
     bool collected = false;
+    public PlayerSlot collectedBy;
     public List<TileAndPlacementGroupIndex> tilePis = new List<TileAndPlacementGroupIndex>();
 
     public AssembledRoad(int i) {
         index = i;
     }
 
-    public void MarkAsCollected() {
+    public void MarkAsCollectedBy(PlayerSlot ps) {
+        collectedBy = ps;
         collected = true;
     }
 

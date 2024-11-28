@@ -1,5 +1,6 @@
 public enum EdgeType {
     ROAD,
     CITY,
-    FARM
+    FARM,
+    OBELISK
 }

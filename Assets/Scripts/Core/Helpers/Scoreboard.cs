@@ -1,32 +1,163 @@
 using System.Collections.Generic;
 using System.Linq;
 
+public class PlayerStatSheet {
+    public PlayerStatSheet(PlayerType pt) {
+        PlayerType = pt;
+    }
+    public PlayerType PlayerType = PlayerType.HUMAN;
+    public static int TERRAFORMER_STARTING_COUNT = 7;
+    public int Score = 0;
+    public SecretObjectiveRank Rank = SecretObjectiveRank.RECRUIT;
+    public int TerraformerCount = TERRAFORMER_STARTING_COUNT;
+    public List<SecretObjective> Objectives = new();
+
+
+    public int TerraformersCollected = 0;
+    public int TurnsInARowPlacingTerraformer = 0;
+    public int TurnsInARow_NOT_PlacingTerraformer = 0;
+    public int TilesPlaced = 0;
+    public int ObjectivesCompleted = 0;
+    public int RookieObjectiveCompleted = 0;
+    public int DirtlingObjectiveCompleted = 0;
+    public int ScoreAtLastTurnStart = 0;
+    public Dictionary<EdgeType, int> TerraformersPlacedOnPOIType = new() {
+        {EdgeType.ROAD, 0},
+        {EdgeType.CITY, 0},
+        {EdgeType.FARM, 0},
+        {EdgeType.OBELISK, 0}
+    };
+
+    public Dictionary<EdgeType, int> ClaimedPOITypes = new() {
+        {EdgeType.ROAD, 0},
+        {EdgeType.CITY, 0},
+        {EdgeType.FARM, 0},
+        {EdgeType.OBELISK, 0}
+    };
+
+    public Dictionary<EdgeType, int> HelpedOppClaimedPOITypes = new() {
+        {EdgeType.ROAD, 0},
+        {EdgeType.CITY, 0},
+        {EdgeType.FARM, 0},
+        {EdgeType.OBELISK, 0}
+    };
+}
+
 public class Scoreboard {
-    public Dictionary<PlayerAssignment, int> CurrentScores = new Dictionary<PlayerAssignment, int>();
-    public Dictionary<PlayerSlot, int> CurrentTerraformerCount = new Dictionary<PlayerSlot, int>();
+    public Dictionary<PlayerSlot, PlayerStatSheet> Stats = new();
     PlayerAssignment CurrentTurnPlayer;
+    BoardInventory _inventory;
 
-    int TERRAFORMER_STARTING_COUNT = 7;
-
-    public Scoreboard(PlayerManifest pm) {
+    public Scoreboard(PlayerManifest pm, BoardInventory inv) {
+        _inventory = inv;
         foreach (PlayerAssignment pa in pm.players) {
-            CurrentTerraformerCount.Add(pa.slot, TERRAFORMER_STARTING_COUNT);
-            CurrentScores.Add(pa, 0);
+            Stats.Add(pa.slot, new PlayerStatSheet(pa.type));
+            _GiveRecruitMissionsToPlayer(pa.slot);
         }
-        CurrentTurnPlayer = CurrentScores.Keys
-            .OrderBy(k => (int) k.slot)
-            .First();
+        CurrentTurnPlayer = new PlayerAssignment {
+            slot = pm.players[0].slot,
+            type = pm.players[0].type
+        }; 
+    }
+
+    public void ReportTilePlacementByCurrentPlayer(Tile t) {
+        PlayerStatSheet pss = Stats[CurrentTurnPlayer.slot];
+        if (t == null) {
+            return;
+        }
+        // terraformer placement stats
+        if (t.GamepieceAssignments.Any(gpa => gpa.Type == GamepieceType.TERRAFORMER)) {
+            pss.TurnsInARowPlacingTerraformer++;
+            pss.TurnsInARow_NOT_PlacingTerraformer = 0;
+            // GP Drop Counts            
+            t.GamepieceAssignments
+                .Where(gpa => gpa.Type == GamepieceType.TERRAFORMER)
+                .ToList()
+                .ForEach(gpa => {
+                    pss.TerraformersPlacedOnPOIType[
+                        t.GetPOITypeForGamepiece(gpa)
+                    ]++;
+                });
+        } else {
+            pss.TurnsInARow_NOT_PlacingTerraformer++;
+            pss.TurnsInARowPlacingTerraformer = 0;
+        }
+
+        // tile place stats
+        pss.TilesPlaced++;
+
+        // helped oppo stats
+        int groupCount = t.Placements.Count();
+        for(var i=0; i < groupCount; i++) {
+            if (t.Roads.Any(r => r.RoadGroupId == i)) {
+                Road r = t.Roads.First(r => r.RoadGroupId == i);
+                AssembledRoad ar = _inventory.AssembledRoads.FirstOrDefault(ar => ar.tilePis.Any(tpi => tpi.tile == t && tpi.groupIndexId == i));
+                bool hasClaimsByOtherPlayers = ar.tilePis.Any(tpi => tpi.tile.OtherPlayerHasTerraformerInGroup(CurrentTurnPlayer.slot, tpi.groupIndexId));
+                if (hasClaimsByOtherPlayers) {
+                    pss.HelpedOppClaimedPOITypes[EdgeType.ROAD]++;
+                }
+                continue;
+            }
+            MicroEdgeType met = t.Edges.First(e => e.EdgeGroupId == i).type;
+            switch(met) {
+                case MicroEdgeType.FARM:
+                    OwnedFarm of = _inventory.OwnedFarms.FirstOrDefault(of => of.tilePis.Any(tpi => tpi.tile == t && tpi.groupIndexId == i));
+                    bool hasClaimsByOtherPlayers = of.tilePis.Any(tpi => tpi.tile.OtherPlayerHasTerraformerInGroup(CurrentTurnPlayer.slot, tpi.groupIndexId));
+                    if (hasClaimsByOtherPlayers) {
+                        pss.HelpedOppClaimedPOITypes[EdgeType.FARM]++;
+                    }
+                    continue;
+                case MicroEdgeType.CITY:
+                    AssembledCity ac = _inventory.AssembledCities.FirstOrDefault(ac => ac.tilePis.Any(tpi => tpi.tile == t && tpi.groupIndexId == i));
+                    bool claims = ac.tilePis.Any(tpi => tpi.tile.OtherPlayerHasTerraformerInGroup(CurrentTurnPlayer.slot, tpi.groupIndexId));
+                    if (claims) {
+                        pss.HelpedOppClaimedPOITypes[EdgeType.CITY]++;
+                    }
+                    continue;
+            }
+        }
+    }
+
+    public void ReportPlayersScoredPOIType(List<PlayerSlot> pss, EdgeType et) {
+        foreach (PlayerSlot ps in pss) {
+            Stats[ps].ClaimedPOITypes[et]++;
+        }
+    }
+
+    void _GiveRecruitMissionsToPlayer(PlayerSlot ps) {
+        List<SecretObjective> recruitMissions = new List<SecretObjective> {
+            new SO_RECRUIT_Road(),
+            new SO_RECRUIT_City(),
+            new SO_RECRUIT_Farm(),
+            new SO_RECRUIT_Obelisk()
+        };
+        recruitMissions.ForEach(so => so.ImprintForPlayer(ps, _inventory, this));
+        Stats[ps].Objectives.AddRange(recruitMissions);
+    }
+
+    public List<SecretObjective> GetAllPlayerObjectives() {
+        return Stats.Values.SelectMany(pss => pss.Objectives).ToList();
+    }
+
+    public void CommitScoringEvent(ScoringEvent se) {
+        foreach(PlayerSlot ps in se.NetScoreChangeByPlayer.Keys) {
+            AddScoreForPlayerSlot(ps, se.NetScoreChangeByPlayer[ps]);
+        }
+        foreach(GamepieceTileAssignment gta in se.RelatedGamepieces) {
+            CollectGamepiece(gta.Type, gta.Team);
+        }
     }
 
     public void CollectGamepiece(GamepieceType type, PlayerSlot slot) {
         if (type == GamepieceType.TERRAFORMER) {
-            CurrentTerraformerCount[slot]++;
+            Stats[slot].TerraformerCount++;
+            Stats[slot].TerraformersCollected++;
         }
     }
 
     public void RemoveGamepieceFromStash(GamepieceType type, PlayerSlot slot) {
         if (type == GamepieceType.TERRAFORMER) {
-            CurrentTerraformerCount[slot]--;
+            Stats[slot].TerraformerCount--;
         }
     }
 
@@ -35,24 +166,27 @@ public class Scoreboard {
     }
 
     public int GetScoreForPlayerSlot(PlayerSlot ps) {
-        return CurrentScores.First(kvp => kvp.Key.slot == ps).Value;
+        return Stats[ps].Score;
     }
     
     public void AddScoreForPlayerSlot(PlayerSlot ps, int scoreIncrease) {
-        PlayerAssignment pa = CurrentScores.Keys.First(k => k.slot == ps);
-        CurrentScores[pa] += scoreIncrease;
+        Stats[ps].Score += scoreIncrease;
     }
 
     public PlayerAssignment GetNextTurnPlayer() {
-        List<PlayerAssignment> players = CurrentScores.Keys
-            .OrderBy(k => (int) k.slot)
+        List<PlayerSlot> players = Stats.Keys
+            .OrderBy(k => k)
             .ToList();
-        int currentIndex = players.IndexOf(CurrentTurnPlayer);
+        int currentIndex = players.IndexOf(CurrentTurnPlayer.slot);
         int nextIndex = (currentIndex + 1) % players.Count;
-        return players[nextIndex];
+        return new PlayerAssignment{
+            slot = players[nextIndex],
+            type = Stats[players[nextIndex]].PlayerType
+        };
     }
     // would be internal
     public void AdvanceToNextTurn() {
         CurrentTurnPlayer = GetNextTurnPlayer();
+        Stats[CurrentTurnPlayer.slot].ScoreAtLastTurnStart = Stats[CurrentTurnPlayer.slot].Score;
     }
 }
