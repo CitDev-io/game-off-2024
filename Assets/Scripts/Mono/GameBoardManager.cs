@@ -20,9 +20,14 @@ public class GameBoardManager : MonoBehaviour
     Coroutine CameraOperator;
     public PlayerSlot CurrentPlayer = PlayerSlot.NEUTRAL;
     public List<UI_UnityTile> Tiles = new();
+    public CanvasGroup wired_UI_SecretPanel;
+    public CanvasGroup wired_UI_CaptainPanel;
+    public CanvasGroup wired_UI_AnnouncementPanel;
+    public CanvasGroup wired_UI_PlaytimePanel;
 
     public float DEFAULT_CAMERA_FOV = 45f;
     public float ZOOMED_CAMERA_FOV = 25f;
+    public float ZOOMED_WAY_OUT_CAMERA_FOV = 70f;
     public float AUTO_ZOOM_SPEED = 2.5f;
     public float AUTO_PAN_SPEED = 3f;
     public float AUTO_PAN_SNAP_DISTANCE = 0.1f;
@@ -101,14 +106,14 @@ public class GameBoardManager : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         if (Confirmations == 1) {
             // TODO: Stop picking farms so damn much
-    
-            int? anchorId = FindObjectsOfType<UI_TileGPDropZone>()?
-                .OrderBy(d => Guid.NewGuid())
-                .First()?.GetAnchorId();
-            if (anchorId != null) {
-                UserAssignsTerraformerToAnchor((int)anchorId);
+            if (FindObjectsOfType<UI_TileGPDropZone>().Count() > 0) {
+                int anchorId = FindObjectsOfType<UI_TileGPDropZone>()
+                    .OrderBy(d => Guid.NewGuid())
+                    .First().GetAnchorId();
+                AI_AssignTerraformerToAnchor((int)anchorId);
                 yield return new WaitForSeconds(1f);
             }
+
             UIINGRESS_OnPlayerAccept();
         }
         yield return new WaitForSeconds(1.5f);
@@ -217,6 +222,7 @@ public class GameBoardManager : MonoBehaviour
     }
 
     IEnumerator RoutineCameraControl(Vector3 target, float cameraFov) {
+        Camera.main.GetComponent<DragCamera>().DisableUserInput = true;
         while (Vector3.Distance(Camera.main.transform.position, target) > AUTO_PAN_SNAP_DISTANCE || Mathf.Abs(Camera.main.fieldOfView - cameraFov) > AUTO_ZOOM_SNAP_DISTANCE) {
             Vector3 lerpSpot = Vector3.Lerp(
                 Camera.main.transform.position,
@@ -242,6 +248,7 @@ public class GameBoardManager : MonoBehaviour
             Camera.main.transform.position.z
         );
         Camera.main.fieldOfView = cameraFov;
+        Camera.main.GetComponent<DragCamera>().DisableUserInput = false;
     }
 
     void TripAckCheck() {
@@ -314,7 +321,24 @@ public class GameBoardManager : MonoBehaviour
 
         // scoring events for role/rank
         List<ScoringEvent> RankScoringEvents = GridGameInstance.GetScoringEvents_RoleProgress();
+        bool RankUpForPlayer = RankScoringEvents.Count > 0 && RankScoringEvents.Any(e => e.PrivacyFilter == PlayerSlot.PLAYER1);
+        if (RankUpForPlayer) {
+            wired_UI_SecretPanel.alpha = 0;
+            wired_UI_PlaytimePanel.alpha = 0;
+            CameraControlTo(
+                new Vector3(0, 0, -8),
+                ZOOMED_WAY_OUT_CAMERA_FOV
+            );
+        }
         yield return StartCoroutine(ProcessAndInvokeScoringEvents(RankScoringEvents));
+        if (RankUpForPlayer) {
+            wired_UI_SecretPanel.alpha = 1;
+            wired_UI_PlaytimePanel.alpha = 1;
+            CameraControlTo(
+                new Vector3(0, 0, -8),
+                DEFAULT_CAMERA_FOV
+            );
+        }
 
         UIOnComplete.Invoke();
     }
@@ -456,7 +480,13 @@ public class GameBoardManager : MonoBehaviour
         StageUnityTileAt(TemporarilyGlobalTileInHand, coords);
     }
 
+    public void AI_AssignTerraformerToAnchor(int anchorIndex) {
+        if (StagedTile == null) return;
+        StagedTile.AssignTerraformerToAnchorFacade(anchorIndex, GridGameInstance.scoreboard.GetCurrentTurnPlayer().slot);
+    }
+
     public void UserAssignsTerraformerToAnchor(int anchorIndex) {
+        if (GridGameInstance.scoreboard.GetCurrentTurnPlayer().type != PlayerType.HUMAN) return;
         if (StagedTile == null) return;
         StagedTile.AssignTerraformerToAnchorFacade(
             anchorIndex,

@@ -7,6 +7,7 @@ public class DragCamera : MonoBehaviour
     public float dragSpeed = 1.5f;
     float STARTING_CAMERA_Z = -10f;
     GameBoardManager gbm;
+    public bool DisableUserInput = false;
 
     private void Start()
     {
@@ -17,6 +18,7 @@ public class DragCamera : MonoBehaviour
 
     void Update()
     {
+        if (DisableUserInput) return;
         if (Input.GetMouseButtonDown(1))
         {
             gbm.OnUserCameraMovement();

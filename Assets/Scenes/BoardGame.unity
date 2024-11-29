@@ -353,6 +353,7 @@ GameObject:
   - component: {fileID: 116486672}
   - component: {fileID: 116486674}
   - component: {fileID: 116486675}
+  - component: {fileID: 116486676}
   m_Layer: 5
   m_Name: CaptainsBoard
   m_TagString: Untagged
@@ -449,6 +450,18 @@ MonoBehaviour:
   CRAWL_SPEED: 0.05
   DISPLAY_DURATION: 1.25
   CHECK_QUEUE_TIMEOUT: 0.25
+--- !u!225 &116486676
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 116486669}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &121775630
 GameObject:
   m_ObjectHideFlags: 0
@@ -561,7 +574,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f66031af8cc31432dabdf2c7a8c5cf15, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1300,6 +1313,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dragSpeed: 1.4
+  DisableUserInput: 0
 --- !u!114 &396058400
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2466,6 +2480,7 @@ GameObject:
   - component: {fileID: 863956447}
   - component: {fileID: 863956449}
   - component: {fileID: 863956448}
+  - component: {fileID: 863956450}
   m_Layer: 5
   m_Name: Secret Panel
   m_TagString: Untagged
@@ -2540,6 +2555,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 863956446}
   m_CullTransparentMesh: 1
+--- !u!225 &863956450
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 863956446}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &866009381
 GameObject:
   m_ObjectHideFlags: 0
@@ -4551,8 +4578,13 @@ MonoBehaviour:
   TilePlacementUserInput: {fileID: 1282043778}
   CurrentPlayer: 0
   Tiles: []
+  wired_UI_SecretPanel: {fileID: 863956450}
+  wired_UI_CaptainPanel: {fileID: 116486676}
+  wired_UI_AnnouncementPanel: {fileID: 1796758979}
+  wired_UI_PlaytimePanel: {fileID: 1619349020}
   DEFAULT_CAMERA_FOV: 45
   ZOOMED_CAMERA_FOV: 25
+  ZOOMED_WAY_OUT_CAMERA_FOV: 70
   AUTO_ZOOM_SPEED: 2.5
   AUTO_PAN_SPEED: 3
   AUTO_PAN_SNAP_DISTANCE: 0.1
@@ -4656,6 +4688,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1619349019}
+  - component: {fileID: 1619349020}
   m_Layer: 5
   m_Name: PlayTimeUI
   m_TagString: Untagged
@@ -4685,6 +4718,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &1619349020
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1619349018}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1634208893
 GameObject:
   m_ObjectHideFlags: 0
@@ -5357,6 +5402,7 @@ GameObject:
   - component: {fileID: 1796758975}
   - component: {fileID: 1796758977}
   - component: {fileID: 1796758978}
+  - component: {fileID: 1796758979}
   m_Layer: 5
   m_Name: Announcement Board
   m_TagString: Untagged
@@ -5453,6 +5499,18 @@ MonoBehaviour:
   CRAWL_SPEED: 0.05
   DISPLAY_DURATION: 1.25
   CHECK_QUEUE_TIMEOUT: 0.25
+--- !u!225 &1796758979
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1796758973}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &1825468848
 GameObject:
   m_ObjectHideFlags: 0

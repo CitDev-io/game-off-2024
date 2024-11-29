@@ -137,3 +137,10 @@ late
 
     - AI choosing RANDOM TF spot instead of first (tended to be farm)
     - Give it a second after TF spot chosen to highlight spot then AI clicks to confirm
+
+
+    - Lock user ability to move camera while auto-piloting
+    - Restored starfield in the background
+    - No longer allow player to tap TF landing zones to mess with AI choice
+    - Zoom all the way out and hide Turn-Based UI during Promotion window
+
