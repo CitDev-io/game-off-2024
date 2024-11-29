@@ -100,8 +100,10 @@ public class GameBoardManager : MonoBehaviour
         UIINGRESS_OnPlayerAccept();
         yield return new WaitForSeconds(1.5f);
         if (Confirmations == 1) {
-            // pick an anchor that's available
-            int? anchorId = FindObjectsOfType<UI_TileGPDropZone>().ToList().First()?.GetAnchorId();
+            // TODO: Stop picking farms so damn much
+    
+            int? anchorId = FindObjectsOfType<UI_TileGPDropZone>()?
+                .First()?.GetAnchorId();
             if (anchorId != null) {
                 UserAssignsTerraformerToAnchor((int)anchorId);
             }
@@ -258,7 +260,7 @@ public class GameBoardManager : MonoBehaviour
                 GridGameInstance.scoreboard.GetCurrentTurnPlayer().slot
             ].TerraformerCount > 0
             ) {
-                TilePlacementUserInput.SetActive(true);
+                TilePlacementUserInput.SetActive(GridGameInstance.scoreboard.GetCurrentTurnPlayer().type == PlayerType.HUMAN);
                 StagedTile.CancelGamepiecePlacement();
 
                 StagedTile.SetStatus(UITileStatus.CONFIGURE_TERRAFORMER, GridGameInstance.scoreboard.GetCurrentTurnPlayer().slot);
@@ -423,6 +425,7 @@ public class GameBoardManager : MonoBehaviour
 
     public void RotateTileInHand() {
         if (TemporarilyGlobalTileInHand == null) return;
+        if (GridGameInstance.scoreboard.GetCurrentTurnPlayer().type != PlayerType.HUMAN) return;
         TemporarilyGlobalTileInHand.Rotate();
 
         InHandTileImg.transform.rotation = Quaternion.Euler(
