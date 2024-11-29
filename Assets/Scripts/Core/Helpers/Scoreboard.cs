@@ -196,6 +196,9 @@ public class Scoreboard {
     // would be internal
     public void AdvanceToNextTurn() {
         CurrentTurnPlayer = GetNextTurnPlayer();
-        Stats[CurrentTurnPlayer.slot].ScoreAtLastTurnStart = Stats[CurrentTurnPlayer.slot].Score;
+        foreach(PlayerSlot ps in Stats.Keys) {
+            Stats[ps].ScoreAtLastTurnStart = Stats[ps].Score;
+            
+        }
     }
 }

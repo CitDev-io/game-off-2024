@@ -4,8 +4,8 @@ using UnityEngine.UI;
 
 public class UI_DotSpot : MonoBehaviour
 {
-    GridPosition coords;
-    bool visibility = false;
+    public GridPosition coords;
+    public bool visibility = false;
 
     public void OnMouseDown()
     {

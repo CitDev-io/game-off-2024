@@ -64,7 +64,7 @@ public class GameBoardManager : MonoBehaviour
     }
 
     void _ui_UpdateObjectiveBoard() {
-        GameObject.FindAnyObjectByType<UI_ObjectiveOverlayManager>().UpdateObjectivesForPlayer(CurrentPlayer);
+        FindAnyObjectByType<UI_ObjectiveOverlayManager>().UpdateObjectivesForPlayer(PlayerSlot.PLAYER1);
     }
     void DisableTileHighlightsForCurrentPlayer() {
         Tiles
@@ -82,9 +82,37 @@ public class GameBoardManager : MonoBehaviour
         UpdateDrawnTile();
         
         if (pa.type == PlayerType.CPU) {
-            GridGameInstance.Ack();
-            // throw new NotImplementedException("WE DONT HAVE LOGIC FOR WHEN THE CPU IS UP. NEED TO ACK THIS OR DO ACTION, PERFORM, THEN ACK.");
+            StartCoroutine(DOCPUTURN());
         }
+    }
+
+    IEnumerator DOCPUTURN() {
+        // yield return new WaitForSeconds(1.5f);
+        // TripAckCheck();
+        yield return new WaitForSeconds(3f);
+        var pss = FindObjectsOfType<UI_DotSpot>()
+            .Where(d => d.visibility)
+            .OrderBy(d => Guid.NewGuid())
+            .ToList();
+        GridPosition pos = pss.First().coords;
+        AI_TileSpotClick(pos);
+        yield return new WaitForSeconds(1.5f);
+        UIINGRESS_OnPlayerAccept();
+        yield return new WaitForSeconds(1.5f);
+        if (Confirmations == 1) {
+            // pick an anchor that's available
+            int? anchorId = FindObjectsOfType<UI_TileGPDropZone>().ToList().First()?.GetAnchorId();
+            if (anchorId != null) {
+                UserAssignsTerraformerToAnchor((int)anchorId);
+            }
+            UIINGRESS_OnPlayerAccept();
+        }
+        yield return new WaitForSeconds(1.5f);
+        // yield return new WaitForSeconds(3.5f);
+        // Debug.Log("READY TO ACK?");
+        // // GridPosition coords = GridGameInstance.GetBestMoveForCPU();
+        // // StageUnityTileAt(TemporarilyGlobalTileInHand, coords);
+        // GridGameInstance.Ack();
     }
 
     void UpdateDrawnTile() {
@@ -94,7 +122,7 @@ public class GameBoardManager : MonoBehaviour
         UpdateClickGrid();
         InHandTileImg.sprite = Resources.Load<Sprite>("Images/Tiles/Tile_" + newTile.Name);
         InHandTileImg.transform.rotation = Quaternion.Euler(
-            new Vector3(0, 0, (-90 * newTile.Rotation) + 21.42f)
+            new Vector3(0, 0, -90 * newTile.Rotation)
         );
     }
 
@@ -215,7 +243,7 @@ public class GameBoardManager : MonoBehaviour
     void TripAckCheck() {
         ClearStagingUI();
         if (Confirmations == 0) {
-            TilePlacementUserInput.SetActive(true);
+            TilePlacementUserInput.SetActive(GridGameInstance.scoreboard.GetCurrentTurnPlayer().type == PlayerType.HUMAN);
             StagedTile.SetStatus(UITileStatus.CONFIGURE_TRANSFORM, GridGameInstance.scoreboard.GetCurrentTurnPlayer().slot);
             CameraControlTo(
                 new Vector3(
@@ -398,17 +426,26 @@ public class GameBoardManager : MonoBehaviour
         TemporarilyGlobalTileInHand.Rotate();
 
         InHandTileImg.transform.rotation = Quaternion.Euler(
-            new Vector3(0, 0, -90 * TemporarilyGlobalTileInHand.Rotation + 21.42f)
+            new Vector3(0, 0, -90 * TemporarilyGlobalTileInHand.Rotation)
         );
     }
 
     public void RotateStagedTile() {
         if (StagedTile == null) return;
+        if (GridGameInstance.scoreboard.GetCurrentTurnPlayer().type != PlayerType.HUMAN) return;
         StagedTile.RotateWorkableOnly();
     }
 
     public void OnDotClick(GridPosition coords)
     {
+        if (GridGameInstance.scoreboard.GetCurrentTurnPlayer().type != PlayerType.HUMAN) return;
+
+        if (TemporarilyGlobalTileInHand == null) return;
+
+        StageUnityTileAt(TemporarilyGlobalTileInHand, coords);
+    }
+
+    public void AI_TileSpotClick(GridPosition coords) {
         if (TemporarilyGlobalTileInHand == null) return;
 
         StageUnityTileAt(TemporarilyGlobalTileInHand, coords);
