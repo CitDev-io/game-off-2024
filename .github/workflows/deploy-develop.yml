@@ -25,12 +25,12 @@ jobs:
             Library-GameOff2024-
             Library-
 
-      # Notification 1
-      #- name: Discord Notify Start
-      #  uses: tsickert/discord-webhook@v5.3.0
-      #  with:
-      #    webhook-url: https://discord.com/api/webhooks/1304296004555767892/SBpA_0_rLBRNY5qZ-mzb4gOhAQHjoBvInt3hKoe0Fm2SUbx8nwZPRvVY6pZG-jphFssE
-      #    content: ":wrench: **New build started** WebGL build started on `develop` branch for the game-off-2024 project. This will take time. CPP doesn't transpile to WASM quickly.."
+      #Notification 1
+      - name: Discord Notify Start
+       uses: tsickert/discord-webhook@v5.3.0
+       with:
+         webhook-url: https://discord.com/api/webhooks/1304296004555767892/SBpA_0_rLBRNY5qZ-mzb4gOhAQHjoBvInt3hKoe0Fm2SUbx8nwZPRvVY6pZG-jphFssE
+         content: ":wrench: **New build started** WebGL build started on `develop` branch for the game-off-2024 project. This will take time. CPP doesn't transpile to WASM quickly.."
       
       # Build
       - name: Unity WebGL Build
@@ -58,8 +58,8 @@ jobs:
           PACKAGE: build
 
       # Notification 2
-      #- name: Discord Notify Complete
-      #  uses: tsickert/discord-webhook@v5.3.0
-      #  with:
-      #    webhook-url: https://discord.com/api/webhooks/1304296004555767892/SBpA_0_rLBRNY5qZ-mzb4gOhAQHjoBvInt3hKoe0Fm2SUbx8nwZPRvVY6pZG-jphFssE
-      #    content: ":white_check_mark: **WebGL build complete** a new build is available at https://citizendevelopers.itch.io/game-off-2024"
+      - name: Discord Notify Complete
+       uses: tsickert/discord-webhook@v5.3.0
+       with:
+         webhook-url: https://discord.com/api/webhooks/1304296004555767892/SBpA_0_rLBRNY5qZ-mzb4gOhAQHjoBvInt3hKoe0Fm2SUbx8nwZPRvVY6pZG-jphFssE
+         content: ":white_check_mark: **WebGL build complete** a new build is available at https://citizendevelopers.itch.io/game-off-2024"
