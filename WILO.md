@@ -132,3 +132,8 @@ late
         - maybe clear the since last turn sooner
     - tots placed vs not placed... one of them keeps popping immediately?
     - CLAIMED V COMPLETE doesn't seem right in later levels
+
+
+
+    - AI choosing RANDOM TF spot instead of first (tended to be farm)
+    - Give it a second after TF spot chosen to highlight spot then AI clicks to confirm

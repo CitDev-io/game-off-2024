@@ -103,9 +103,11 @@ public class GameBoardManager : MonoBehaviour
             // TODO: Stop picking farms so damn much
     
             int? anchorId = FindObjectsOfType<UI_TileGPDropZone>()?
+                .OrderBy(d => Guid.NewGuid())
                 .First()?.GetAnchorId();
             if (anchorId != null) {
                 UserAssignsTerraformerToAnchor((int)anchorId);
+                yield return new WaitForSeconds(1f);
             }
             UIINGRESS_OnPlayerAccept();
         }
