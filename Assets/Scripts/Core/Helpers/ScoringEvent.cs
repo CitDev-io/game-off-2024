@@ -9,6 +9,7 @@ public class ScoringEvent {
     public readonly ScoringEventType EventType;
     public readonly Dictionary<PlayerSlot, int> NetScoreChangeByPlayer;
     public readonly string Description;
+    public readonly PlayerSlot PrivacyFilter = PlayerSlot.NEUTRAL;
     
     public ScoringEvent(
         Action scoringAction,
@@ -16,7 +17,8 @@ public class ScoringEvent {
         List<GamepieceTileAssignment> relatedGamepieces,
         ScoringEventType eventType,
         Dictionary<PlayerSlot, int> netScoreChangeByPlayer,
-        string description
+        string description,
+        PlayerSlot privacyFilter = PlayerSlot.NEUTRAL
     ) {
         ScoringAction = scoringAction;
         RelatedTiles = relatedTiles;
@@ -24,6 +26,7 @@ public class ScoringEvent {
         EventType = eventType;
         NetScoreChangeByPlayer = netScoreChangeByPlayer;
         Description = description;
+        PrivacyFilter = privacyFilter;
     }
 
 }

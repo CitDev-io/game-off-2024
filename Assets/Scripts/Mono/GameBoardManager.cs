@@ -82,7 +82,8 @@ public class GameBoardManager : MonoBehaviour
         UpdateDrawnTile();
         
         if (pa.type == PlayerType.CPU) {
-            throw new NotImplementedException("WE DONT HAVE LOGIC FOR WHEN THE CPU IS UP. NEED TO ACK THIS OR DO ACTION, PERFORM, THEN ACK.");
+            GridGameInstance.Ack();
+            // throw new NotImplementedException("WE DONT HAVE LOGIC FOR WHEN THE CPU IS UP. NEED TO ACK THIS OR DO ACTION, PERFORM, THEN ACK.");
         }
     }
 
@@ -287,27 +288,60 @@ public class GameBoardManager : MonoBehaviour
     }
 
     IEnumerator ProcessAndInvokeScoringEvents(List<ScoringEvent> events) {
-        foreach(ScoringEvent e in events) {
-            Debug.Log("PROCESSING " + e.EventType + " EVENT:");
-            Debug.Log(e.Description);
+        List<ScoringEvent> eventsToPerform = events
+            .Where(e => e.PrivacyFilter == PlayerSlot.NEUTRAL || e.PrivacyFilter == PlayerSlot.PLAYER1)
+            .ToList();
+        foreach(ScoringEvent e in eventsToPerform) {
+            if (eventsToPerform.Contains(e)) {
+                Debug.Log("PROCESSING " + e.EventType + " EVENT:");
+                Debug.Log(e.Description);
 
-            switch(e.EventType) {
-                case ScoringEventType.ROADCOMPLETED:
-                case ScoringEventType.CITYCOMPLETED:
-                case ScoringEventType.OBELISKCOMPLETED:
-                    yield return StartCoroutine(PerformScoringEvent_RoadCityObelisk(e));
-                    break;
-                case ScoringEventType.FARMSCORED:
+                switch(e.EventType) {
+                    case ScoringEventType.ROADCOMPLETED:
+                    case ScoringEventType.CITYCOMPLETED:
+                    case ScoringEventType.FARMSCORED:
+                    case ScoringEventType.OBELISKCOMPLETED:
+                        yield return StartCoroutine(PerformScoringEvent_RoadCityObelisk(e));
+                        break;
+                    case ScoringEventType.PROMOTION:
+                        yield return StartCoroutine(CaptainsQuarters(e));
+                        break;
+                    case ScoringEventType.INCOMPLETE:
+                    default:
+                        break;
+                }
 
-                    break;
-                case ScoringEventType.INCOMPLETE:
-                default:
-                    break;
+                if (e.Description != "" && e.Description != null) {
+                    FindAnyObjectByType<UI_AnnouncementOverlayManager>().Announce(e.Description);
+                }
+
             }
-
-            
             e.ScoringAction.Invoke(); // COMMIT the scoring action
         }
+        yield return new WaitForSeconds(2.5f * eventsToPerform.Count);
+    }
+
+    IEnumerator CaptainsQuarters(ScoringEvent e) {
+        string message = "CONGRATULATIONS!\n\nYou've been promoted to "; //RANK 1\nDIRTLING (DRT)\n\nYou really showed initiative out there!";
+        switch(GridGameInstance.scoreboard.Stats[e.PrivacyFilter].Rank) {
+            case SecretObjectiveRank.RECRUIT:
+                message += "RANK 1\nDIRTLING (DRT)"; //\n\nYou really showed initiative out there!";
+                break;
+            case SecretObjectiveRank.DIRTLING:
+                message += "RANK 2\nLANDSCRAPER (LSR)"; //\n\nYou really showed initiative out there!";
+                break;
+            case SecretObjectiveRank.LANDSCRAPER:
+                message += "RANK 3\nSTARSHAPER (STR)"; //\n\nYou really showed initiative out there!";
+                break;
+            case SecretObjectiveRank.STARSHAPER:
+                message += "RANK 4\nGALACTIC ENGINEER (GNG)"; //
+                break;
+        }
+        message += "\n\nYou really showed initiative out there!";
+        
+        yield return FindAnyObjectByType<UI_CaptainOverlayManager>().Announce(message);
+
+        yield return new WaitForSeconds(0.5f); // captain script still chillin.. if he wants to do anything else... pausing....
     }
 
     IEnumerator PerformScoringEvent_RoadCityObelisk(ScoringEvent e) {
@@ -325,12 +359,6 @@ public class GameBoardManager : MonoBehaviour
                 }
             }
         });
-    }
-
-    IEnumerator PerformAnyCompletedObjectives() {
-        Debug.Log("Checking......");
-
-        yield return new WaitForSeconds(2.5f);
     }
 
     void CancelStagingInput() {

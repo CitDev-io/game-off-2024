@@ -4,7 +4,7 @@ public class GameSettings {
     public int OddGameBoardWidth = DEFAULT_GRID_LENGTH;
     public int BoardMidPoint = DEFAULT_MIDPOINT;
     public PlayerManifest playerManifest = new PlayerManifest(
-        PlayerAlignmentType.HUMAN_V_HUMAN_LOCAL_PRESET
+        PlayerAlignmentType.HUMAN_V_CPU_PRESET
     );
 
     public GameSettings(

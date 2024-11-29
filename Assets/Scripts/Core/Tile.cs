@@ -115,53 +115,6 @@ public class Tile
 
     }
 
-    // warning: revisit for fields
-    // public List<int> GetGroupIndexIdsForNormalizedDirectionalSide(CardinalDirection cDir) {
-    //     List<int> GroupIndexIds = new();
-    //     EdgeType edgeType = GetEdgeTypeByNormalizedDir(cDir);
-    //     if (edgeType == EdgeType.ROAD) {
-    //         Road road = Roads.Find(r => LocalToNormalizedDirection(r.localizedDirection) == cDir);
-    //         GroupIndexIds.Add(road.RoadGroupId);
-    //     } else if (edgeType == EdgeType.CITY) {
-    //         MicroEdgeSpot spot = DecodeDirectionToTrueMicroEdgeSpot(cDir);
-    //         GroupIndexIds.Add(FindMicroEdgeFromLocalizedEdgeSpot(spot).EdgeGroupId);
-    //     }
-        
-    //     edgeType = GetEdgeTypeByNormalizedDirNoRoads(cDir);
-
-    //     if (edgeType == EdgeType.FARM) {
-    //         MicroEdgeSpot spot1 = DecodeDirectionToTrueMicroEdgeSpot(cDir);
-    //         MicroEdgeSpot spot2 = (MicroEdgeSpot)(((int)spot1 + 1) % 8);
-            
-    //         GroupIndexIds.Add(FindMicroEdgeFromLocalizedEdgeSpot(spot1).EdgeGroupId);
-    //         GroupIndexIds.Add(FindMicroEdgeFromLocalizedEdgeSpot(spot2).EdgeGroupId);
-    //     }
-    //     return GroupIndexIds.Distinct().ToList();
-    // }
-
-    // public bool IsGroupIdEligibleForTerraformer(int groupIndexId) {
-    //     List<CardinalDirection> NeighborDirections = GetCardinalDirectionsForGroupIndexId(groupIndexId);
-    //     // UnityEngine.Debug.Log("Neighbor Directions: " + string.Join(", ", NeighborDirections));
-    //     foreach(CardinalDirection NeighborCardinalAddress in NeighborDirections) {
-    //         CardinalDirection oppositeDirection = (CardinalDirection)(((int)NeighborCardinalAddress + 2) % 4);
-    //         Tile Neighbor = NormalizedSurvey.TileInDirection(NeighborCardinalAddress);
-            
-    //         if (Neighbor == null) {
-    //             // UnityEngine.Debug.Log("NO NEIGHBOR TO THE " + NeighborCardinalAddress.ToString());
-    //             continue;
-    //         }
-    //         // UnityEngine.Debug.Log("Neighbor: " + Neighbor.Name);
-    //         List<GamepieceTileAssignment> gamepieces = Neighbor.GetAllGamepiecesInGroupId(
-    //             Neighbor.GetGroupIndexIdForNormalizedDirectionalSide(oppositeDirection)
-    //         );
-
-    //         if (gamepieces.Exists(gpa => gpa.Type == GamepieceType.TERRAFORMER)) {
-    //             return false;
-    //         }
-    //     }
-    //     return true;
-    // }
-
     public List<CardinalDirection> GetCardinalDirectionsForGroupIndexId_Farms(int groupIndexId) {
         return Edges
             .FindAll(e => e.EdgeGroupId == groupIndexId && e.type == MicroEdgeType.FARM)

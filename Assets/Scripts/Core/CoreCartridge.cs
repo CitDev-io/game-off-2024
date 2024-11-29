@@ -100,8 +100,6 @@ public class CoreCartridge {
                 && scoreboard.Stats[p].RookieObjectiveCompleted > 1
             );
 
-            UnityEngine.Debug.Log(p + " " + scoreboard.Stats[p].Rank + ", recruit: " + scoreboard.Stats[p].RookieObjectiveCompleted);
-
             if (DoneWithRecruitMissions) {
                 ev.Add(new ScoringEvent(
                     () => {
@@ -123,7 +121,7 @@ public class CoreCartridge {
             
                         FourRandom.ForEach(so => so.ImprintForPlayer(p, inventory, scoreboard));
                         // clear recruit missions
-                        scoreboard.Stats[p].Objectives.RemoveAll(o => o.Rank == SecretObjectiveRank.RECRUIT);
+                        scoreboard.Stats[p].Objectives.Clear();
                         scoreboard.Stats[p].Objectives.AddRange(
                             FourRandom
                         );
@@ -132,7 +130,8 @@ public class CoreCartridge {
                     new List<GamepieceTileAssignment>(),
                     ScoringEventType.PROMOTION,
                     new Dictionary<PlayerSlot, int>(),
-                    "Level Up!"
+                    "Dirtling secret objectives received",
+                    p
                 ));
             }
 
@@ -140,7 +139,6 @@ public class CoreCartridge {
                 scoreboard.Stats[p].Rank == SecretObjectiveRank.DIRTLING
                 && scoreboard.Stats[p].DirtlingObjectiveCompleted > 2
             );
-            UnityEngine.Debug.Log(p + ":" + scoreboard.Stats[p].Rank + " " + scoreboard.Stats[p].Rank + ", dirt: " + scoreboard.Stats[p].DirtlingObjectiveCompleted);
 
             if (DoneWithTier1Missions) {
                 ev.Add(new ScoringEvent(
@@ -159,7 +157,7 @@ public class CoreCartridge {
             
                         FourRandom.ForEach(so => so.ImprintForPlayer(p, inventory, scoreboard));
                         // clear recruit missions
-                        scoreboard.Stats[p].Objectives.RemoveAll(o => o.Rank == SecretObjectiveRank.DIRTLING);
+                        scoreboard.Stats[p].Objectives.Clear();
                         scoreboard.Stats[p].Objectives.AddRange(
                             FourRandom
                         );
@@ -168,12 +166,11 @@ public class CoreCartridge {
                     new List<GamepieceTileAssignment>(),
                     ScoringEventType.PROMOTION,
                     new Dictionary<PlayerSlot, int>(),
-                    "Level Up!"
+                    "Landscraper secret objectives received",
+                    p
                 ));
             }
 
-            UnityEngine.Debug.Log(p + " " + scoreboard.Stats[p].Rank + ", land: " + scoreboard.Stats[p].LandscraperObjectiveCompleted);
-            UnityEngine.Debug.Log(p + " " + scoreboard.Stats[p].TurnsInARow_NOT_PlacingTerraformer + " - " + scoreboard.Stats[p].TurnsInARowPlacingTerraformer);
             bool DoneWithTier2Missions = (
                 scoreboard.Stats[p].Objectives.All(o => o.Rank == SecretObjectiveRank.LANDSCRAPER)
                 && scoreboard.Stats[p].Rank == SecretObjectiveRank.LANDSCRAPER
@@ -197,7 +194,7 @@ public class CoreCartridge {
             
                         FourRandom.ForEach(so => so.ImprintForPlayer(p, inventory, scoreboard));
                         // clear recruit missions
-                        scoreboard.Stats[p].Objectives.RemoveAll(o => o.Rank == SecretObjectiveRank.DIRTLING);
+                        scoreboard.Stats[p].Objectives.Clear();
                         scoreboard.Stats[p].Objectives.AddRange(
                             FourRandom
                         );
@@ -206,7 +203,8 @@ public class CoreCartridge {
                     new List<GamepieceTileAssignment>(),
                     ScoringEventType.PROMOTION,
                     new Dictionary<PlayerSlot, int>(),
-                    "Level Up!"
+                    "Starshaper secret objectives received",
+                    p
                 ));
             }
         }
@@ -424,7 +422,7 @@ public class CoreCartridge {
                 () => {},
                 RelatedTiles,
                 RelatedGamepieces,
-                ScoringEventType.CITYCOMPLETED,
+                ScoringEventType.OBELISKCOMPLETED,
                 NetScoreChangeByPlayer,
                 Description
             ));

@@ -296,7 +296,6 @@ public class SO_T1_NoTots : SecretObjective {
     }
 
     int _getStreakCount() {
-        UnityEngine.Debug.Log(_player + " : " + _scoreboard.Stats[_player].TurnsInARow_NOT_PlacingTerraformer);
         return _scoreboard.Stats[_player].TurnsInARow_NOT_PlacingTerraformer;
     }
 
@@ -472,6 +471,7 @@ public class SO_T1_RoadSize : SecretObjective {
 
     internal override void GatherImprintOnInit()
     {
+        // TODO: startingamt
         GOAL_COUNT = _getCountOfRoadsCollected() + 1;
     }
 
@@ -700,7 +700,6 @@ public class SO_T1_SharePOI : SecretObjective {
             .Count(r => r.GetUniqueTerraformerOwners() > 1);
         int sharedCities = _boardInventory.AssembledCities
             .Count(c => c.GetUniqueTerraformerOwners() > 1);
-        UnityEngine.Debug.Log("Shared Roads: " + sharedRoads + " Shared Cities: " + sharedCities);
         return sharedRoads + sharedCities;
     }
 

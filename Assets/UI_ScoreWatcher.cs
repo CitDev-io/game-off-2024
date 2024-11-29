@@ -23,9 +23,6 @@ public class UI_ScoreWatcher : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (gameBoardManager.GridGameInstance.scoreboard == null) {
-            Debug.Log("NO SCOREBOARD??");
-        }
         scoreText.text = gameBoardManager.GridGameInstance.scoreboard.GetScoreForPlayerSlot(slotWatch).ToString();
         int tfCount = gameBoardManager.GridGameInstance.scoreboard.Stats[slotWatch].TerraformerCount;
         string color = slotWatch == PlayerSlot.PLAYER1 ? "Blue" : "Pink";

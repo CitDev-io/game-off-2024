@@ -147,7 +147,6 @@ public class UI_UnityTile : MonoBehaviour
                         // remove rotations to normalize
                         int normalizedOppoSpotId = (thisLocalizedOpponentIndex + (NeighborTile.Rotation * 6)) % 8;
                         // if oppo weren't rotated, we would just grab the ME at normalizedOppoSpotId
-                        // UnityEngine.Debug.Log("my oppo localized index is: " + oppoLocalizedIndex);
                         MicroEdge oppoSpot = NeighborTile.Edges[normalizedOppoSpotId];
                         
                         // find the group id of the opposing microedge
@@ -243,7 +242,6 @@ public class UI_UnityTile : MonoBehaviour
                     "Terraformer" + 
                     (player == PlayerSlot.PLAYER1 ? "Blue" : "Pink")
                     + "Glow");
-            Debug.Log("***** GAMEPIECE DROPPED");
             Gamepiece.transform.position = GamepieceAnchors[gamepiece.Anchor].position + new Vector3(0, 0.1f, 0f);
             Gamepiece.transform.rotation = Quaternion.Euler(0f, 0, -12.5f);
             Gamepiece.transform.SetParent(transform);
