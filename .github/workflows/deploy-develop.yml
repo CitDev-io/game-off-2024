@@ -59,7 +59,7 @@ jobs:
 
       # Notification 2
       - name: Discord Notify Complete
-       uses: tsickert/discord-webhook@v5.3.0
-       with:
+        uses: tsickert/discord-webhook@v5.3.0
+        with:
           webhook-url: https://discord.com/api/webhooks/1304296004555767892/SBpA_0_rLBRNY5qZ-mzb4gOhAQHjoBvInt3hKoe0Fm2SUbx8nwZPRvVY6pZG-jphFssE
           content: ":white_check_mark: **WebGL build complete** a new build is available at https://citizendevelopers.itch.io/game-off-2024"
