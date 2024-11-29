@@ -144,3 +144,4 @@ late
     - No longer allow player to tap TF landing zones to mess with AI choice
     - Zoom all the way out and hide Turn-Based UI during Promotion window
 
+ - offcenter promotion announcement for now to make stuff look less busy
