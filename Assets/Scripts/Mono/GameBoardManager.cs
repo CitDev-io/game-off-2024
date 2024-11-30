@@ -4,22 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEditor;
+// using UnityEditor;
 
-[CustomEditor(typeof(GameBoardManager))]
-public class GameBoardManagerEditor : Editor
-{
-    public override void OnInspectorGUI()
-    {
-        DrawDefaultInspector();
+// [CustomEditor(typeof(GameBoardManager))]
+// public class GameBoardManagerEditor : Editor
+// {
+//     public override void OnInspectorGUI()
+//     {
+//         DrawDefaultInspector();
 
-        GameBoardManager myComponent = (GameBoardManager)target;
-        if (GUILayout.Button("INS_DoEOG"))
-        {
-            myComponent.INS_DoEOG();
-        }
-    }
-}
+//         GameBoardManager myComponent = (GameBoardManager)target;
+//         if (GUILayout.Button("INS_DoEOG"))
+//         {
+//             myComponent.INS_DoEOG();
+//         }
+//     }
+// }
 
 public class GameBoardManager : MonoBehaviour
 {
