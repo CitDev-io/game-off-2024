@@ -346,7 +346,7 @@ public class GameBoardManager : MonoBehaviour
         wired_UI_CaptainPanel.alpha = 0;
         wired_UI_AnnouncementPanel.alpha = 0;
 
-        FindFirstObjectByType<UI_EOGOverlayManager>().Present(GridGameInstance.scoreboard);
+        FindFirstObjectByType<UI_EOGOverlayManager>().Present();
         wired_UI_EndOfGameButtonsPanel.alpha = 1;
         wired_UI_EndOfGameButtonsPanel.interactable = true;
     }

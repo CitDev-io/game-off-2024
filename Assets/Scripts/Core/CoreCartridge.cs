@@ -158,7 +158,8 @@ public class CoreCartridge {
                             new SO_T2_AnyComplete(),
                             new SO_T2_PointsScoredTurn(),
                             new SO_T2_RoadCitySize(),
-                            new SO_T2_CityWithShield()
+                            new SO_T2_CityWithShield(),
+                            new SO_T2_TFCollected()
                         };
 
                         List<SecretObjective> FourRandom = Tier2ObjectiveList.OrderBy(x => Guid.NewGuid()).Take(4).ToList();

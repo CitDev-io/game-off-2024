@@ -23,6 +23,7 @@ public class PlayerStatSheet {
     public int LandscraperObjectiveCompleted = 0;
     public int StarShaperObjectiveCompleted = 0;
     public int ScoreAtLastTurnStart = 0;
+
     public Dictionary<EdgeType, int> TerraformersPlacedOnPOIType = new() {
         {EdgeType.ROAD, 0},
         {EdgeType.CITY, 0},
@@ -48,6 +49,7 @@ public class PlayerStatSheet {
 public class Scoreboard {
     public Dictionary<PlayerSlot, PlayerStatSheet> Stats = new();
     PlayerAssignment CurrentTurnPlayer;
+    public int TerraformersRecoveredThisTurn = 0;
     BoardInventory _inventory;
 
     public Scoreboard(PlayerManifest pm, BoardInventory inv) {
@@ -71,7 +73,8 @@ public class Scoreboard {
         if (t.GamepieceAssignments.Any(gpa => gpa.Type == GamepieceType.TERRAFORMER)) {
             pss.TurnsInARowPlacingTerraformer++;
             pss.TurnsInARow_NOT_PlacingTerraformer = 0;
-            // GP Drop Counts            
+            // GP Drop Counts
+            
             t.GamepieceAssignments
                 .Where(gpa => gpa.Type == GamepieceType.TERRAFORMER)
                 .ToList()
@@ -134,6 +137,7 @@ public class Scoreboard {
             new SO_RECRUIT_Road(),
             new SO_RECRUIT_City(),
             new SO_RECRUIT_Farm(),
+            // new SO_T2_TFCollected()
             new SO_RECRUIT_Obelisk()
             // new SO_T2_AnyComplete(),
             // new SO_T2_PointsScoredTurn(),
@@ -161,6 +165,7 @@ public class Scoreboard {
         if (type == GamepieceType.TERRAFORMER) {
             Stats[slot].TerraformerCount++;
             Stats[slot].TerraformersCollected++;
+            TerraformersRecoveredThisTurn++;
         }
     }
 
@@ -200,5 +205,6 @@ public class Scoreboard {
             Stats[ps].ScoreAtLastTurnStart = Stats[ps].Score;
             
         }
+        TerraformersRecoveredThisTurn = 0;
     }
 }

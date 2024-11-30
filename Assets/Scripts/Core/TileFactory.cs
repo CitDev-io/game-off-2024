@@ -215,7 +215,7 @@ public class TileFactory {
                         new Road(CardinalDirection.SOUTH, 0),
                         new Road(CardinalDirection.WEST, 0)
                     },
-                    new int[] { 4, 1, 6, 5 },
+                    new int[] { 3, 1, 6, 5 },
                     null,
                     false
                 );
@@ -255,7 +255,7 @@ public class TileFactory {
                         new MicroEdge(MicroEdgeType.CITY, 0)
                     },
                     new List<Road>(),
-                    new int[] { 0, 12 },
+                    new int[] { 9, 12 },
                     null,
                     true
                 );
@@ -273,7 +273,7 @@ public class TileFactory {
                         new MicroEdge(MicroEdgeType.CITY, 1)
                     },
                     new List<Road>(),
-                    new int[] { 12, 0 },
+                    new int[] { 12, 9 },
                     null,
                     false
                 );

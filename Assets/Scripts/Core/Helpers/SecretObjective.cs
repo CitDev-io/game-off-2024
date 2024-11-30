@@ -951,6 +951,57 @@ public class SO_T2_CityWithShield : SecretObjective {
     }
 }
 
+public class SO_T2_TFCollected : SecretObjective {
+    public SO_T2_TFCollected() {
+        SpritePath = "Images/CityBlue";
+        ObjectiveName = "Collect 2+ Terraformers in a Turn";
+        ObjectiveOrders = "Collect 2+ Terraformers in a Turn";
+        SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
+        Rank = SecretObjectiveRank.LANDSCRAPER;
+        Tier = 0;
+    }
+
+    int HOW_MANY_TO_COLLECT = 2;
+
+    public override ScoringEvent GetScoringEvent() {
+        if (_scoreboard.GetCurrentTurnPlayer().slot != _player || _scoreboard.TerraformersRecoveredThisTurn < HOW_MANY_TO_COLLECT) {
+            return null;
+        }
+        var scoreEarned = new Dictionary<PlayerSlot, int> {
+            {_player, 7}
+        };
+        return new ScoringEvent(
+            () => {
+                _scoreboard.CommitScoringEvent(new ScoringEvent(
+                    () => {},
+                    new List<Tile>(),
+                    new List<GamepieceTileAssignment>(),
+                    ScoringEventType.SECRET_OBJECTIVE,
+                    scoreEarned,
+                    "Objective Complete!"
+                ));
+                _scoreboard.Stats[_player].Objectives.Remove(this);
+                _scoreboard.Stats[_player].ObjectivesCompleted++;
+                _scoreboard.Stats[_player].LandscraperObjectiveCompleted++;
+            },
+            new List<Tile>(),
+            new List<GamepieceTileAssignment>(),
+            ScoringEventType.SECRET_OBJECTIVE,
+            scoreEarned,
+            "Secret Objective Completed: " + ObjectiveName + "\nREWARD: 7 Points"
+        );
+    }
+
+    internal override void GatherImprintOnInit()
+    {
+        
+    }
+
+    public override string GetStatusString() {
+        return "(0/" + HOW_MANY_TO_COLLECT + ")";
+    }
+}
+
 public class SO_T3_ObeliskCapture : SecretObjective {
     public SO_T3_ObeliskCapture() {
         SpritePath = "Images/ObeliskBlue";

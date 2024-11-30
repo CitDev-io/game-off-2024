@@ -20,7 +20,7 @@ public class UI_EOG_SwapsiesButton : MonoBehaviour
             _wiredOverlayManager.CloseOverlay();
         } else {
             _wiredText.text = "Show Map";
-            _wiredOverlayManager.Present(null);
+            _wiredOverlayManager.Present();
         }
     }
 }
