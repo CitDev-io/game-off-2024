@@ -41,17 +41,25 @@ public class UI_EOGOverlayManager : MonoBehaviour
     public UI_EOG_PlayerTail wired_Player2Tail;
     public Transform wired_PlayersBlock;
     public CanvasGroup wired_StatsBlock;
+
+    Coroutine _toggleCoroutine;
     
 
     public void Present(Scoreboard? s) {
         if (s != null) {
 
         }
-        StartCoroutine(AppearOnScreen());
+        if (_toggleCoroutine != null) {
+            StopCoroutine(_toggleCoroutine);
+        }
+        _toggleCoroutine = StartCoroutine(AppearOnScreen());
     }
 
     public void CloseOverlay() {
-        StartCoroutine(DisappearFromScreen());
+        if (_toggleCoroutine != null) {
+            StopCoroutine(_toggleCoroutine);
+        }
+        _toggleCoroutine = StartCoroutine(DisappearFromScreen());
     }
 
     IEnumerator FadeIn() {

@@ -954,8 +954,8 @@ public class SO_T2_CityWithShield : SecretObjective {
 public class SO_T3_ObeliskCapture : SecretObjective {
     public SO_T3_ObeliskCapture() {
         SpritePath = "Images/ObeliskBlue";
-        ObjectiveName = "Claim and Complete an Obelisk";
-        ObjectiveOrders = "Claim and Complete an Obelisk";
+        ObjectiveName = "Claim and Collect an Obelisk";
+        ObjectiveOrders = "Claim and Collect an Obelisk";
         SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
         Rank = SecretObjectiveRank.STARSHAPER;
         Tier = 0;

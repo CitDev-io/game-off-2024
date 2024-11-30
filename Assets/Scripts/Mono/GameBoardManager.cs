@@ -4,22 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-// using UnityEditor;
-
-// [CustomEditor(typeof(GameBoardManager))]
-// public class GameBoardManagerEditor : Editor
-// {
-//     public override void OnInspectorGUI()
-//     {
-//         DrawDefaultInspector();
-
-//         GameBoardManager myComponent = (GameBoardManager)target;
-//         if (GUILayout.Button("INS_DoEOG"))
-//         {
-//             myComponent.INS_DoEOG();
-//         }
-//     }
-// }
 
 public class GameBoardManager : MonoBehaviour
 {
@@ -364,6 +348,7 @@ public class GameBoardManager : MonoBehaviour
 
         FindFirstObjectByType<UI_EOGOverlayManager>().Present(GridGameInstance.scoreboard);
         wired_UI_EndOfGameButtonsPanel.alpha = 1;
+        wired_UI_EndOfGameButtonsPanel.interactable = true;
     }
 
     public void INS_DoEOG() {
@@ -434,7 +419,7 @@ public class GameBoardManager : MonoBehaviour
             }
             e.ScoringAction.Invoke(); // COMMIT the scoring action
         }
-        yield return new WaitForSeconds(2.5f * eventsToPerform.Count);
+        yield return new WaitForSeconds(1.5f * eventsToPerform.Count);
     }
 
     IEnumerator CaptainOpening() {

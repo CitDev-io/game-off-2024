@@ -16,10 +16,10 @@ public class UI_EOG_SwapsiesButton : MonoBehaviour
     public void DoAndSwap() {
         IsShowMap = !IsShowMap;
         if (IsShowMap) {
-            _wiredText.text = "View Map";
+            _wiredText.text = "View Results";
             _wiredOverlayManager.CloseOverlay();
         } else {
-            _wiredText.text = "View Results";
+            _wiredText.text = "Show Map";
             _wiredOverlayManager.Present(null);
         }
     }

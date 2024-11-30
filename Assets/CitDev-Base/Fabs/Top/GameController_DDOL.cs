@@ -103,7 +103,7 @@ public class GameController_DDOL : MonoBehaviour
         audioSource_Music.Play();
         while (audioSource_Music.volume < startingVolume) {
             audioSource_Music.volume += 0.00015f;
-            yield return new WaitForSeconds(0.003f);
+            yield return new WaitForSeconds(0.001f);
         }
         audioSource_Music.volume = startingVolume;
     }
