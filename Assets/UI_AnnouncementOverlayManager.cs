@@ -56,9 +56,9 @@ public class UI_AnnouncementOverlayManager : MonoBehaviour
     }
     
     IEnumerator AppearOnScreen() {
-        while (wired_VisualRootElement.localPosition.x < 0) {
+        while (wired_VisualRootElement.localPosition.x < 180) {
             wired_VisualRootElement.localPosition = new Vector3(
-                Mathf.Lerp(wired_VisualRootElement.localPosition.x, 100, 0.1f),
+                Mathf.Lerp(wired_VisualRootElement.localPosition.x, 203, 0.1f),
                 wired_VisualRootElement.localPosition.y,
                 wired_VisualRootElement.localPosition.z
             );
