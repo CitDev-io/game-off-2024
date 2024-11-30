@@ -1,37 +1,37 @@
 using System.Collections;
 using UnityEngine;
-using UnityEditor;
+// using UnityEditor;
 
-[CustomEditor(typeof(UI_EOGOverlayManager))]
-public class UI_EOGOVerlayManagerEditor : Editor
-{
-    public override void OnInspectorGUI()
-    {
-        DrawDefaultInspector();
+// [CustomEditor(typeof(UI_EOGOverlayManager))]
+// public class UI_EOGOVerlayManagerEditor : Editor
+// {
+//     public override void OnInspectorGUI()
+//     {
+//         DrawDefaultInspector();
 
-        UI_EOGOverlayManager myComponent = (UI_EOGOverlayManager)target;
-        if (GUILayout.Button("Unfurl Tail"))
-        {
-            myComponent.wired_Player1Tail.UnfurlTail();
-            myComponent.wired_Player2Tail.UnfurlTail();
-        }
-        if (GUILayout.Button("Refurl Tail"))
-        {
-            myComponent.wired_Player1Tail.RefurlTail();
-            myComponent.wired_Player2Tail.RefurlTail();
-        }
+//         UI_EOGOverlayManager myComponent = (UI_EOGOverlayManager)target;
+//         if (GUILayout.Button("Unfurl Tail"))
+//         {
+//             myComponent.wired_Player1Tail.UnfurlTail();
+//             myComponent.wired_Player2Tail.UnfurlTail();
+//         }
+//         if (GUILayout.Button("Refurl Tail"))
+//         {
+//             myComponent.wired_Player1Tail.RefurlTail();
+//             myComponent.wired_Player2Tail.RefurlTail();
+//         }
 
-        if (GUILayout.Button("Present"))
-        {
-            myComponent.Present();
-        }
+//         if (GUILayout.Button("Present"))
+//         {
+//             myComponent.Present();
+//         }
 
-        if (GUILayout.Button("Close"))
-        {
-            myComponent.CloseOverlay();
-        }
-    }
-}
+//         if (GUILayout.Button("Close"))
+//         {
+//             myComponent.CloseOverlay();
+//         }
+//     }
+// }
 
 public class UI_EOGOverlayManager : MonoBehaviour
 {
