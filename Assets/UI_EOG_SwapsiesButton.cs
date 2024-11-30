@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class UI_EOG_SwapsiesButton : MonoBehaviour
 {
-    bool IsShowMap = true;
+    bool IsShowMap = false;
     public TMPro.TextMeshProUGUI _wiredText;
     public UI_EOGOverlayManager _wiredOverlayManager;
     

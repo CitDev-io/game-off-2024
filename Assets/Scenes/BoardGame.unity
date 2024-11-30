@@ -3645,6 +3645,7 @@ GameObject:
   - component: {fileID: 1122379661}
   - component: {fileID: 1122379660}
   - component: {fileID: 1122379663}
+  - component: {fileID: 1122379664}
   m_Layer: 5
   m_Name: SwapsiesButton
   m_TagString: Untagged
@@ -3728,6 +3729,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1122379664}
+        m_TargetAssemblyTypeName: UI_GenericSFXTrigger, Assembly-CSharp
+        m_MethodName: PlaySfx
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Button_Click
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1122379661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3780,6 +3793,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _wiredText: {fileID: 1672732845}
   _wiredOverlayManager: {fileID: 920702673}
+--- !u!114 &1122379664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1122379658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac17505b83ca14709b36d0aa025a7cc2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1163950104
 GameObject:
   m_ObjectHideFlags: 0
@@ -4001,7 +4026,7 @@ CanvasGroup:
   m_GameObject: {fileID: 1202687025}
   m_Enabled: 1
   m_Alpha: 0
-  m_Interactable: 1
+  m_Interactable: 0
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
 --- !u!1 &1231975129
@@ -5120,6 +5145,7 @@ GameObject:
   - component: {fileID: 1470523100}
   - component: {fileID: 1470523099}
   - component: {fileID: 1470523102}
+  - component: {fileID: 1470523103}
   m_Layer: 5
   m_Name: Exit Game
   m_TagString: Untagged
@@ -5191,6 +5217,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 1470523103}
+        m_TargetAssemblyTypeName: UI_GenericSFXTrigger, Assembly-CSharp
+        m_MethodName: PlaySfx
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Button_Click
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 1470523102}
         m_TargetAssemblyTypeName: ChangeScene, Assembly-CSharp
         m_MethodName: SwapToScene
@@ -5251,6 +5289,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9b576206a4cb3bc489c92bc36550eaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1470523103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1470523097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac17505b83ca14709b36d0aa025a7cc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1487837935

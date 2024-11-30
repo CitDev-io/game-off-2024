@@ -24,6 +24,7 @@ public class UI_CaptainOverlayManager : MonoBehaviour
     public Coroutine Announce(string message) {
         // can do logic here and ask for more than just message if we want
         if (!_isAnnouncing) {
+            FindAnyObjectByType<GameController_DDOL>().PlaySound("Incoming_Terraformer");
             _isAnnouncing = true;
             _currentAnnouncement = StartCoroutine(RunAnnouncementScrawl(message));
         } else {
@@ -47,6 +48,7 @@ public class UI_CaptainOverlayManager : MonoBehaviour
     }
     
     IEnumerator AppearOnScreen() {
+        FindAnyObjectByType<GameController_DDOL>().PlaySound("Incoming_Transmission");
         wired_VisualRootElement.gameObject.SetActive(true);
         yield return null;
     }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Overlays;
 using UnityEngine;
 // using UnityEditor;
 // using UnityEditor.Overlays;
@@ -58,6 +59,7 @@ public class UI_EOGOverlayManager : MonoBehaviour
     IEnumerator FadeIn() {
         float duration = 1f;
         float t = 0f;
+        OverlayCanvasGroup.interactable = true;
         while (t < duration) {
             t += Time.deltaTime;
             OverlayCanvasGroup.alpha = Mathf.Lerp(0, 1, t / duration);
@@ -68,6 +70,7 @@ public class UI_EOGOverlayManager : MonoBehaviour
     IEnumerator FadeOut() {
         float duration = 1f;
         float t = 0f;
+        OverlayCanvasGroup.interactable = false;
         while (t < duration) {
             t += Time.deltaTime;
             OverlayCanvasGroup.alpha = Mathf.Lerp(1, 0, t / duration);

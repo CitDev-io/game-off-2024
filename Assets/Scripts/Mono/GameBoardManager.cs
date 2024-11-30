@@ -451,6 +451,7 @@ public class GameBoardManager : MonoBehaviour
                 foreach (UI_AnchorTag at in ats) {
 
                     // terraformer being recalled right here.
+                    FindAnyObjectByType<GameController_DDOL>().PlaySound("Retrieve_Terraformer");
                     Destroy(at.gameObject);
                 }
             }
@@ -476,6 +477,7 @@ public class GameBoardManager : MonoBehaviour
         if (StagedTile == null) return;
         Confirmations++;
 
+        FindAnyObjectByType<GameController_DDOL>().PlaySound("Confirm_Selection");
         TripAckCheck();
     }
 
@@ -484,6 +486,7 @@ public class GameBoardManager : MonoBehaviour
         if (StagedTile == null) return;
         Confirmations--;
 
+        FindAnyObjectByType<GameController_DDOL>().PlaySound("Cancel_Tile");
         if (Confirmations > -1) {
             TripAckCheck();
         } else {
@@ -516,17 +519,20 @@ public class GameBoardManager : MonoBehaviour
 
         if (TemporarilyGlobalTileInHand == null) return;
 
+        FindAnyObjectByType<GameController_DDOL>().PlaySound("Confirm_Selection");
         StageUnityTileAt(TemporarilyGlobalTileInHand, coords);
     }
 
     public void AI_TileSpotClick(GridPosition coords) {
         if (TemporarilyGlobalTileInHand == null) return;
 
+        FindAnyObjectByType<GameController_DDOL>().PlaySound("Confirm_Selection");
         StageUnityTileAt(TemporarilyGlobalTileInHand, coords);
     }
 
     public void AI_AssignTerraformerToAnchor(int anchorIndex) {
         if (StagedTile == null) return;
+        
         StagedTile.AssignTerraformerToAnchorFacade(anchorIndex, GridGameInstance.scoreboard.GetCurrentTurnPlayer().slot);
     }
 
