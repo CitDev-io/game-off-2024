@@ -105,6 +105,7 @@ public class UI_EOGOverlayManager : MonoBehaviour
         float duration = 1f;
         float t = 0f;
         OverlayCanvasGroup.interactable = true;
+        OverlayCanvasGroup.blocksRaycasts = true;
         while (t < duration) {
             t += Time.deltaTime;
             OverlayCanvasGroup.alpha = Mathf.Lerp(0, 1, t / duration);
@@ -116,6 +117,7 @@ public class UI_EOGOverlayManager : MonoBehaviour
         float duration = 1f;
         float t = 0f;
         OverlayCanvasGroup.interactable = false;
+        OverlayCanvasGroup.blocksRaycasts = false;
         while (t < duration) {
             t += Time.deltaTime;
             OverlayCanvasGroup.alpha = Mathf.Lerp(1, 0, t / duration);

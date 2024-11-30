@@ -123,19 +123,30 @@ public class GameBoardManager : MonoBehaviour
         // yield return new WaitForSeconds(1.5f);
         // TripAckCheck();
         yield return new WaitForSeconds(3f);
-        var pss = FindObjectsOfType<UI_DotSpot>()
+        // var randomizedSpots = FindObjectsOfType<UI_DotSpot>()
+        //     .Where(d => d.visibility)
+        //     .OrderBy(d => Guid.NewGuid())
+        //     .ToList();
+
+        var populatedSpots = FindObjectsOfType<UI_DotSpot>()
             .Where(d => d.visibility)
-            .OrderBy(d => Guid.NewGuid())
+            .OrderByDescending(d => GridGameInstance.SurveyPosition(d.coords).ExtendedNeighborhoodCount())
             .ToList();
-        GridPosition pos = pss.First().coords;
+        GridPosition pos = populatedSpots.First().coords;
+
+
         AI_TileSpotClick(pos);
         yield return new WaitForSeconds(1.5f);
         UIINGRESS_OnPlayerAccept();
         yield return new WaitForSeconds(1.5f);
         if (Confirmations == 1) {
             // TODO: Stop picking farms so damn much
-            if (FindObjectsOfType<UI_TileGPDropZone>().Count() > 0) {
-                int anchorId = FindObjectsOfType<UI_TileGPDropZone>()
+            List<UI_TileGPDropZone> farmlessDropZones = FindObjectsOfType<UI_TileGPDropZone>()
+                .Where(d => TemporarilyGlobalTileInHand.GetTypeOfAnchorId(d.GetAnchorId()) != EdgeType.FARM)
+                .ToList();
+
+            if (farmlessDropZones.Count() > 0) {
+                int anchorId = farmlessDropZones
                     .OrderBy(d => Guid.NewGuid())
                     .First().GetAnchorId();
                 AI_AssignTerraformerToAnchor((int)anchorId);
@@ -336,7 +347,7 @@ public class GameBoardManager : MonoBehaviour
         yield return StartCoroutine(ProcessAndInvokeScoringEvents(SecretObjectiveScoringEvents));
 
         List<ScoringEvent> EndOfGameScoringEvents = GridGameInstance.GetScoringEvents_EndGame();
-        yield return StartCoroutine(ProcessAndInvokeScoringEvents(EndOfGameScoringEvents));
+        yield return StartCoroutine(ProcessAndInvokeScoringEvents(EndOfGameScoringEvents, true));
 
         // cancel out of any turn that might be active
         CancelStagingInput();
@@ -349,6 +360,7 @@ public class GameBoardManager : MonoBehaviour
         FindFirstObjectByType<UI_EOGOverlayManager>().Present();
         wired_UI_EndOfGameButtonsPanel.alpha = 1;
         wired_UI_EndOfGameButtonsPanel.interactable = true;
+        wired_UI_EndOfGameButtonsPanel.blocksRaycasts = true;
     }
 
     public void INS_DoEOG() {
@@ -388,7 +400,7 @@ public class GameBoardManager : MonoBehaviour
         UIOnComplete.Invoke();
     }
 
-    IEnumerator ProcessAndInvokeScoringEvents(List<ScoringEvent> events) {
+    IEnumerator ProcessAndInvokeScoringEvents(List<ScoringEvent> events, bool yieldToAnnouncements = false) {
         List<ScoringEvent> eventsToPerform = events
             .Where(e => e.PrivacyFilter == PlayerSlot.NEUTRAL || e.PrivacyFilter == PlayerSlot.PLAYER1)
             .ToList();
@@ -408,18 +420,23 @@ public class GameBoardManager : MonoBehaviour
                         yield return StartCoroutine(CaptainsQuarters(e));
                         break;
                     case ScoringEventType.INCOMPLETE:
+                        continue;
                     default:
                         break;
                 }
 
-                if (e.Description != "" && e.Description != null) {
-                    FindAnyObjectByType<UI_AnnouncementOverlayManager>().Announce(e.Description);
+                if (e.Description != "" && e.Description != null && e.EventType != ScoringEventType.INCOMPLETE) {
+                    if (yieldToAnnouncements) {
+                        yield return FindAnyObjectByType<UI_AnnouncementOverlayManager>().Announce(e.Description);
+                    } else {
+                        FindAnyObjectByType<UI_AnnouncementOverlayManager>().Announce(e.Description);
+                    }
                 }
 
             }
             e.ScoringAction.Invoke(); // COMMIT the scoring action
         }
-        yield return new WaitForSeconds(1.5f * eventsToPerform.Count);
+        // yield return new WaitForSeconds(Mathf.Min(1.5f * eventsToPerform.Count, 3f));
     }
 
     IEnumerator CaptainOpening() {

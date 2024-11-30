@@ -47,6 +47,21 @@ public class Tile
             return edgeType;
     }
 
+    public EdgeType GetTypeOfAnchorId(int anchorId) {
+        int groupId = Placements.ToList().IndexOf(anchorId);
+        if (Roads.Exists(r => r.RoadGroupId == groupId)) {
+            return EdgeType.ROAD;
+        }
+        if (anchorId == 4 && obelisk != null) {
+            return EdgeType.OBELISK;
+        }
+
+        EdgeType edgeType = Edges.Where(e => e.EdgeGroupId == groupId).First().type == MicroEdgeType.FARM
+            ? EdgeType.FARM
+            : EdgeType.CITY;
+            return edgeType;
+    }
+
     public bool FitsWithOtherToThe(Tile otherTile, CardinalDirection direction)
     {
         CardinalDirection oppositeDirection = (CardinalDirection)(((int)direction + 2) % 4);

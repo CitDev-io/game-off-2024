@@ -296,10 +296,11 @@ public class CoreCartridge {
             " and ",
             PlayersWithMostTerraformers.Select(s => s.ToString())
         );
-
+        ScoringEventType type = ScoringEventType.FARMSCORED;
         string Description = $"Farm Scored: {Earners} earned {ScoreEarned} points!";
         if (PlayersWithMostTerraformers.Count == 0) {
             Description = "Farm Worth " + ScoreEarned + " Unclaimed!";
+            type = ScoringEventType.INCOMPLETE;
         }
         foreach(PlayerSlot ps in PlayersWithMostTerraformers) {
             NetScoreChangeByPlayer.Add(ps, ScoreEarned);
@@ -313,7 +314,7 @@ public class CoreCartridge {
                 () => {},
                 RelatedTiles,
                 RelatedGamepieces,
-                ScoringEventType.FARMSCORED,
+                type,
                 NetScoreChangeByPlayer,
                 Description
             ));
@@ -409,7 +410,7 @@ public class CoreCartridge {
         
         List<PlayerSlot> PlayersWithMostTerraformers = GetPlayersWithMostTerraformers(RelatedGamepieces);
 
-        int ScoreEarned = 8;
+        int ScoreEarned = 9;
         string Earners = string.Join(
             " and ",
             PlayersWithMostTerraformers.Select(s => s.ToString())

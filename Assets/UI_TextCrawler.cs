@@ -14,7 +14,7 @@ public class UI_TextCrawler : MonoBehaviour
     public float CHECK_QUEUE_TIMEOUT = 0.25f;
     string SpellItOut = "";
     Coroutine _runningCoroutine;
-    public MessageCompletedDelegate OnMessageCompleted;
+    public MessageCompletedDelegate OnMessageStarted;
 
     void Start() {
         StartCoroutine(Crawl());
@@ -41,9 +41,9 @@ public class UI_TextCrawler : MonoBehaviour
                         index++;
                     }
                 }
+                OnMessageStarted?.Invoke();
                 _CrawlText.text = targetMessage;
                 yield return new WaitForSeconds(DISPLAY_DURATION);
-                OnMessageCompleted?.Invoke();
             }
             yield return new WaitForSeconds(CHECK_QUEUE_TIMEOUT);
         }
