@@ -81,7 +81,27 @@ public class GameBoardManager : MonoBehaviour
         // game intro stuff
         // setup scoreboard etc
 
-        // ok and when you're ready....
+        StartCoroutine(OpeningSequence());
+    }
+    IEnumerator OpeningSequence() {
+        CurrentPlayer = GridGameInstance.scoreboard.GetCurrentTurnPlayer().slot;
+        DisableTileHighlightsForCurrentPlayer();
+        _ui_UpdateObjectiveBoard();
+        UpdateDrawnTile();
+        UpdateClickGrid();
+        wired_UI_SecretPanel.alpha = 0;
+        wired_UI_PlaytimePanel.alpha = 0;
+        CameraControlTo(
+            new Vector3(0, 0, -8),
+            ZOOMED_WAY_OUT_CAMERA_FOV
+        );
+        yield return StartCoroutine(CaptainOpening());
+        wired_UI_SecretPanel.alpha = 1;
+        wired_UI_PlaytimePanel.alpha = 1;
+        CameraControlTo(
+            new Vector3(0, 0, -8),
+            DEFAULT_CAMERA_FOV
+        );
         StartTurnPerformanceForPlayer(GridGameInstance.scoreboard.GetCurrentTurnPlayer());
     }
 
@@ -417,6 +437,14 @@ public class GameBoardManager : MonoBehaviour
         yield return new WaitForSeconds(2.5f * eventsToPerform.Count);
     }
 
+    IEnumerator CaptainOpening() {
+        string message = "The alliance to settle a new home world has...totally collapsed (whoops!).\n\n";
+        message += "Now, rival factions are racing to shape the planet’s future, one Terra Tile at a time, each with their own secret agenda.\n\n";
+        message += "Choose your side wisely, terraform your tiles cleverly, and try not to ruin another perfectly habitable planet. Our future is in your hands (no pressure).";
+        yield return FindAnyObjectByType<UI_CaptainOverlayManager>().Announce(message, 8);
+
+        yield return new WaitForSeconds(0.5f); // captain script still chillin.. if he wants to do anything else... pausing....
+    }
     IEnumerator CaptainsQuarters(ScoringEvent e) {
         string message = "CONGRATULATIONS!\n\nYou've been promoted to "; //RANK 1\nDIRTLING (DRT)\n\nYou really showed initiative out there!";
         switch(GridGameInstance.scoreboard.Stats[e.PrivacyFilter].Rank) {
