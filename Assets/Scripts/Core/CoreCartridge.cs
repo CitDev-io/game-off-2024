@@ -31,6 +31,10 @@ public class CoreCartridge {
         OnPlayerTurnChange += OnTurnStart_AISpy;
     }
 
+    public bool IsGameOver() {
+        return TheBag.TilesRemaining() == 0;
+    }
+
     public int TilesLeft() {
         return TheBag.TilesRemaining();
     }
@@ -79,6 +83,10 @@ public class CoreCartridge {
         List<ScoringEvent> Events = new List<ScoringEvent>();
 
         Events.AddRange(SCORE_OwnedFarms);
+        // end of game objective checks
+
+        
+
 
         return Events;
     }

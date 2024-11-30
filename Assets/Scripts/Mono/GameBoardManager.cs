@@ -4,6 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEditor;
+
+[CustomEditor(typeof(GameBoardManager))]
+public class GameBoardManagerEditor : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        DrawDefaultInspector();
+
+        GameBoardManager myComponent = (GameBoardManager)target;
+        if (GUILayout.Button("INS_DoEOG"))
+        {
+            myComponent.INS_DoEOG();
+        }
+    }
+}
 
 public class GameBoardManager : MonoBehaviour
 {
@@ -24,6 +40,7 @@ public class GameBoardManager : MonoBehaviour
     public CanvasGroup wired_UI_CaptainPanel;
     public CanvasGroup wired_UI_AnnouncementPanel;
     public CanvasGroup wired_UI_PlaytimePanel;
+    public CanvasGroup wired_UI_EndOfGameButtonsPanel;
 
     public float DEFAULT_CAMERA_FOV = 45f;
     public float ZOOMED_CAMERA_FOV = 25f;
@@ -83,7 +100,14 @@ public class GameBoardManager : MonoBehaviour
         DisableTileHighlightsForCurrentPlayer();
         _ui_UpdateObjectiveBoard();
 
+        bool GameIsOver = GridGameInstance.IsGameOver();
+        if (GameIsOver) {
+            StartCoroutine(BRIDGE_DoEndOfGameSequence());
+            return;
+        }
+
         Debug.Log("STARTING TURN FOR PLAYER: " + pa.slot + " - " + pa.type);
+
         UpdateDrawnTile();
         
         if (pa.type == PlayerType.CPU) {
@@ -303,12 +327,28 @@ public class GameBoardManager : MonoBehaviour
         }
     }
 
-    // void BRIDGE_DoEndOfGameSequence() {
-        
-    //     throw new NotImplementedException("No End Of Game Sequence");
-    //     // List<ScoringEvent> EndOfGameScoringEvents = GridGameInstance.GetEndGameScoringEvents();
-    //     // EnactScoringEvents(EndOfGameScoringEvents);
-    // }
+    IEnumerator BRIDGE_DoEndOfGameSequence() {
+        List<ScoringEvent> SecretObjectiveScoringEvents = GridGameInstance.GetScoringEvents_ObjectiveCheck();
+        yield return StartCoroutine(ProcessAndInvokeScoringEvents(SecretObjectiveScoringEvents));
+
+        List<ScoringEvent> EndOfGameScoringEvents = GridGameInstance.GetScoringEvents_EndGame();
+        yield return StartCoroutine(ProcessAndInvokeScoringEvents(EndOfGameScoringEvents));
+
+        // cancel out of any turn that might be active
+        CancelStagingInput();
+        // hide objectives and control panel and tile in hand
+        wired_UI_SecretPanel.alpha = 0;
+        wired_UI_PlaytimePanel.alpha = 0;
+        wired_UI_CaptainPanel.alpha = 0;
+        wired_UI_AnnouncementPanel.alpha = 0;
+
+        FindFirstObjectByType<UI_EOGOverlayManager>().Present(GridGameInstance.scoreboard);
+        wired_UI_EndOfGameButtonsPanel.alpha = 1;
+    }
+
+    public void INS_DoEOG() {
+        StartCoroutine(BRIDGE_DoEndOfGameSequence());
+    }
 
     IEnumerator BRIDGE_DoEndOfTurnSequence(Action UIOnComplete) {
         // board scoring events
@@ -432,6 +472,7 @@ public class GameBoardManager : MonoBehaviour
     }
 
     public void UIINGRESS_OnPlayerAccept() {
+        if (GridGameInstance.IsGameOver()) return;
         if (StagedTile == null) return;
         Confirmations++;
 
@@ -439,6 +480,7 @@ public class GameBoardManager : MonoBehaviour
     }
 
     public void UIINGRESS_OnPlayerBackStep() {
+        if (GridGameInstance.IsGameOver()) return;
         if (StagedTile == null) return;
         Confirmations--;
 
@@ -450,6 +492,7 @@ public class GameBoardManager : MonoBehaviour
     }
 
     public void RotateTileInHand() {
+        if (GridGameInstance.IsGameOver()) return;
         if (TemporarilyGlobalTileInHand == null) return;
         if (GridGameInstance.scoreboard.GetCurrentTurnPlayer().type != PlayerType.HUMAN) return;
         TemporarilyGlobalTileInHand.Rotate();
@@ -460,6 +503,7 @@ public class GameBoardManager : MonoBehaviour
     }
 
     public void RotateStagedTile() {
+        if (GridGameInstance.IsGameOver()) return;
         if (StagedTile == null) return;
         if (GridGameInstance.scoreboard.GetCurrentTurnPlayer().type != PlayerType.HUMAN) return;
         StagedTile.RotateWorkableOnly();
@@ -467,6 +511,7 @@ public class GameBoardManager : MonoBehaviour
 
     public void OnDotClick(GridPosition coords)
     {
+        if (GridGameInstance.IsGameOver()) return;
         if (GridGameInstance.scoreboard.GetCurrentTurnPlayer().type != PlayerType.HUMAN) return;
 
         if (TemporarilyGlobalTileInHand == null) return;

@@ -70,7 +70,7 @@ public class SO_RECRUIT_Road : SecretObjective {
             new List<GamepieceTileAssignment>(),
             ScoringEventType.SECRET_OBJECTIVE,
             scoreEarned,
-            "Secret Objective Completed: " + ObjectiveName
+            "Secret Objective Completed: " + ObjectiveName + "\nREWARD: 3 Points"
         );
     }
 
@@ -125,7 +125,7 @@ public class SO_RECRUIT_City : SecretObjective {
             new List<GamepieceTileAssignment>(),
             ScoringEventType.SECRET_OBJECTIVE,
             scoreEarned,
-            "Secret Objective Completed: " + ObjectiveName
+            "Secret Objective Completed: " + ObjectiveName + "\nREWARD: 3 Points"
         );
     }
 
@@ -180,7 +180,7 @@ public class SO_RECRUIT_Farm : SecretObjective {
             new List<GamepieceTileAssignment>(),
             ScoringEventType.SECRET_OBJECTIVE,
             scoreEarned,
-            "Secret Objective Completed: " + ObjectiveName
+            "Secret Objective Completed: " + ObjectiveName + "\nREWARD: 3 Points"
         );
     }
 
@@ -237,7 +237,7 @@ public class SO_RECRUIT_Obelisk : SecretObjective {
             new List<GamepieceTileAssignment>(),
             ScoringEventType.SECRET_OBJECTIVE,
             scoreEarned,
-            "Secret Objective Completed: " + ObjectiveName
+            "Secret Objective Completed: " + ObjectiveName + "\nREWARD: 3 Points"
         );
     }
 
@@ -291,7 +291,7 @@ public class SO_T1_NoTots : SecretObjective {
             new List<GamepieceTileAssignment>(),
             ScoringEventType.SECRET_OBJECTIVE,
             scoreEarned,
-            "Secret Objective Completed: " + ObjectiveName
+            "Secret Objective Completed: " + ObjectiveName + "\nREWARD: 6 Points"
         );
     }
 
@@ -345,7 +345,7 @@ public class SO_T1_TotStreak : SecretObjective {
             new List<GamepieceTileAssignment>(),
             ScoringEventType.SECRET_OBJECTIVE,
             scoreEarned,
-            "Secret Objective Completed: " + ObjectiveName
+            "Secret Objective Completed: " + ObjectiveName + "\nREWARD: 6 Points"
         );
     }
 
@@ -400,7 +400,7 @@ public class SO_T1_CitySize : SecretObjective {
             new List<GamepieceTileAssignment>(),
             ScoringEventType.SECRET_OBJECTIVE,
             scoreEarned,
-            "Secret Objective Completed: " + ObjectiveName
+            "Secret Objective Completed: " + ObjectiveName + "\nREWARD: 6 Points"
         );
     }
 
@@ -459,7 +459,7 @@ public class SO_T1_RoadSize : SecretObjective {
             new List<GamepieceTileAssignment>(),
             ScoringEventType.SECRET_OBJECTIVE,
             scoreEarned,
-            "Secret Objective Completed: " + ObjectiveName
+            "Secret Objective Completed: " + ObjectiveName + "\nREWARD: 6 Points"
         );
     }
 
@@ -518,7 +518,7 @@ public class SO_T1_HelpOppoRoad : SecretObjective {
             new List<GamepieceTileAssignment>(),
             ScoringEventType.SECRET_OBJECTIVE,
             scoreEarned,
-            "Secret Objective Completed: " + ObjectiveName
+            "Secret Objective Completed: " + ObjectiveName + "\nREWARD: 6 Points"
         );
     }
 
@@ -573,7 +573,7 @@ public class SO_T1_PointsScoredTurn : SecretObjective {
             new List<GamepieceTileAssignment>(),
             ScoringEventType.SECRET_OBJECTIVE,
             scoreEarned,
-            "Secret Objective Completed: " + ObjectiveName
+            "Secret Objective Completed: " + ObjectiveName + "\nREWARD: 6 Points"
         );
     }
 
@@ -626,7 +626,7 @@ public class SO_T1_AnyComplete : SecretObjective {
             new List<GamepieceTileAssignment>(),
             ScoringEventType.SECRET_OBJECTIVE,
             scoreEarned,
-            "Secret Objective Completed: " + ObjectiveName
+            "Secret Objective Completed: " + ObjectiveName + "\nREWARD: 6 Points"
         );
     }
 
@@ -691,7 +691,7 @@ public class SO_T1_SharePOI : SecretObjective {
             new List<GamepieceTileAssignment>(),
             ScoringEventType.SECRET_OBJECTIVE,
             scoreEarned,
-            "Secret Objective Completed: " + ObjectiveName
+            "Secret Objective Completed: " + ObjectiveName + "\nREWARD: 6 Points"
         );
     }
 
@@ -752,7 +752,7 @@ public class SO_T2_AnyComplete : SecretObjective {
             new List<GamepieceTileAssignment>(),
             ScoringEventType.SECRET_OBJECTIVE,
             scoreEarned,
-            "Secret Objective Completed: " + ObjectiveName
+            "Secret Objective Completed: " + ObjectiveName + "\nREWARD: 7 Points"
         );
     }
 
@@ -814,7 +814,7 @@ public class SO_T2_PointsScoredTurn : SecretObjective {
             new List<GamepieceTileAssignment>(),
             ScoringEventType.SECRET_OBJECTIVE,
             scoreEarned,
-            "Secret Objective Completed: " + ObjectiveName
+            "Secret Objective Completed: " + ObjectiveName + "\nREWARD: 7 Points"
         );
     }
 
@@ -868,7 +868,7 @@ public class SO_T2_RoadCitySize : SecretObjective {
             new List<GamepieceTileAssignment>(),
             ScoringEventType.SECRET_OBJECTIVE,
             scoreEarned,
-            "Secret Objective Completed: " + ObjectiveName
+            "Secret Objective Completed: " + ObjectiveName + "\nREWARD: 7 Points"
         );
     }
 
@@ -931,7 +931,7 @@ public class SO_T2_CityWithShield : SecretObjective {
             new List<GamepieceTileAssignment>(),
             ScoringEventType.SECRET_OBJECTIVE,
             scoreEarned,
-            "Secret Objective Completed: " + ObjectiveName
+            "Secret Objective Completed: " + ObjectiveName + "\nREWARD: 7 Points"
         );
     }
 
@@ -989,7 +989,7 @@ public class SO_T3_ObeliskCapture : SecretObjective {
             new List<GamepieceTileAssignment>(),
             ScoringEventType.SECRET_OBJECTIVE,
             scoreEarned,
-            "Secret Objective Completed: " + ObjectiveName
+            "Secret Objective Completed: " + ObjectiveName + "\nREWARD: 8 Points"
         );
     }
 
@@ -1047,7 +1047,7 @@ public class SO_T3_PointsScoredTurn : SecretObjective {
             new List<GamepieceTileAssignment>(),
             ScoringEventType.SECRET_OBJECTIVE,
             scoreEarned,
-            "Secret Objective Completed: " + ObjectiveName
+            "Secret Objective Completed: " + ObjectiveName + "\nREWARD: 8 Points"
         );
     }
 
@@ -1101,7 +1101,7 @@ public class SO_T3_RoadCitySize : SecretObjective {
             new List<GamepieceTileAssignment>(),
             ScoringEventType.SECRET_OBJECTIVE,
             scoreEarned,
-            "Secret Objective Completed: " + ObjectiveName
+            "Secret Objective Completed: " + ObjectiveName + "\nREWARD: 8 Points"
         );
     }
 
@@ -1166,7 +1166,7 @@ public class SO_T3_ShareWin : SecretObjective {
             new List<GamepieceTileAssignment>(),
             ScoringEventType.SECRET_OBJECTIVE,
             scoreEarned,
-            "Secret Objective Completed: " + ObjectiveName
+            "Secret Objective Completed: " + ObjectiveName + "\nREWARD: 8 Points"
         );
     }
 
