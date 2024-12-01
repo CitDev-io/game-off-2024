@@ -30,7 +30,7 @@ jobs:
         uses: tsickert/discord-webhook@v5.3.0
         with:
           webhook-url: https://discord.com/api/webhooks/1304296004555767892/SBpA_0_rLBRNY5qZ-mzb4gOhAQHjoBvInt3hKoe0Fm2SUbx8nwZPRvVY6pZG-jphFssE
-          content: ":wrench: **New build started** WebGL build started on `develop` branch for the game-off-2024 project. This will take time. CPP doesn't transpile to WASM quickly.."
+          content: ":wrench: **New build started** WebGL build started on `develop` branch for the Starshaper! This will take time. CPP doesn't transpile to WASM quickly.."
       
       # Build
       - name: Unity WebGL Build
@@ -53,7 +53,7 @@ jobs:
         env:
           BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
           CHANNEL: webgl
-          ITCH_GAME: game-off-2024
+          ITCH_GAME: starshaper
           ITCH_USER: citizendevelopers
           PACKAGE: build
 
@@ -62,7 +62,7 @@ jobs:
         uses: tsickert/discord-webhook@v5.3.0
         with:
           webhook-url: https://discord.com/api/webhooks/1304296004555767892/SBpA_0_rLBRNY5qZ-mzb4gOhAQHjoBvInt3hKoe0Fm2SUbx8nwZPRvVY6pZG-jphFssE
-          content: ":white_check_mark: **WebGL build complete** a new build is available at https://citizendevelopers.itch.io/game-off-2024"
+          content: ":white_check_mark: **WebGL build complete** a new build is available at https://citizendevelopers.itch.io/starshaper"
       # Step 3: Notify only if Build fails
       - name: Notify on Failure
         if: failure() # Runs only if the Build step failed
