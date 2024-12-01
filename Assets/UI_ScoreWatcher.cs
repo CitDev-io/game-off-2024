@@ -25,14 +25,14 @@ public class UI_ScoreWatcher : MonoBehaviour
     {
         scoreText.text = gameBoardManager.GridGameInstance.scoreboard.GetScoreForPlayerSlot(slotWatch).ToString();
         int tfCount = gameBoardManager.GridGameInstance.scoreboard.Stats[slotWatch].TerraformerCount;
-        string color = slotWatch == PlayerSlot.PLAYER1 ? "Blue" : "Pink";
-        TF1.sprite = (tfCount >= 1) ? Resources.Load<Sprite>("Images/Terraformer" + color) : Resources.Load<Sprite>("Images/Terraformer" + color + "Greyed");
-        TF2.sprite = (tfCount >= 2) ? Resources.Load<Sprite>("Images/Terraformer" + color) : Resources.Load<Sprite>("Images/Terraformer" + color + "Greyed");
-        TF3.sprite = (tfCount >= 3) ? Resources.Load<Sprite>("Images/Terraformer" + color) : Resources.Load<Sprite>("Images/Terraformer" + color + "Greyed");
-        TF4.sprite = (tfCount >= 4) ? Resources.Load<Sprite>("Images/Terraformer" + color) : Resources.Load<Sprite>("Images/Terraformer" + color + "Greyed");
-        TF5.sprite = (tfCount >= 5) ? Resources.Load<Sprite>("Images/Terraformer" + color) : Resources.Load<Sprite>("Images/Terraformer" + color + "Greyed");
-        TF6.sprite = (tfCount >= 6) ? Resources.Load<Sprite>("Images/Terraformer" + color) : Resources.Load<Sprite>("Images/Terraformer" + color + "Greyed");
-        TF7.sprite = (tfCount >= 7) ? Resources.Load<Sprite>("Images/Terraformer" + color) : Resources.Load<Sprite>("Images/Terraformer" + color + "Greyed");
+
+        TF1.sprite = (tfCount >= 1) ? Resources.Load<Sprite>("Images/Terraformer") : Resources.Load<Sprite>("Images/TerraformerGreyed");
+        TF2.sprite = (tfCount >= 2) ? Resources.Load<Sprite>("Images/Terraformer") : Resources.Load<Sprite>("Images/TerraformerGreyed");
+        TF3.sprite = (tfCount >= 3) ? Resources.Load<Sprite>("Images/Terraformer") : Resources.Load<Sprite>("Images/TerraformerGreyed");
+        TF4.sprite = (tfCount >= 4) ? Resources.Load<Sprite>("Images/Terraformer") : Resources.Load<Sprite>("Images/TerraformerGreyed");
+        TF5.sprite = (tfCount >= 5) ? Resources.Load<Sprite>("Images/Terraformer") : Resources.Load<Sprite>("Images/TerraformerGreyed");
+        TF6.sprite = (tfCount >= 6) ? Resources.Load<Sprite>("Images/Terraformer") : Resources.Load<Sprite>("Images/TerraformerGreyed");
+        TF7.sprite = (tfCount >= 7) ? Resources.Load<Sprite>("Images/Terraformer") : Resources.Load<Sprite>("Images/TerraformerGreyed");
         if (gameBoardManager.CurrentPlayer == slotWatch)
         {
             transform.parent.localPosition = new Vector3(50f, transform.parent.localPosition.y, transform.parent.localPosition.z);

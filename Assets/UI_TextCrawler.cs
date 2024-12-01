@@ -16,8 +16,17 @@ public class UI_TextCrawler : MonoBehaviour
     Coroutine _runningCoroutine;
     public MessageCompletedDelegate OnMessageComplete;
     public bool QueueIsEmpty = true;
+
+    public bool skipIt = false;
+
     void Start() {
         StartCoroutine(Crawl());
+    }
+
+    void Update() {
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            skipIt = true;
+        }
     }
 
     public void ClearQueue() {
@@ -31,19 +40,34 @@ public class UI_TextCrawler : MonoBehaviour
                 string targetMessage = MessageQueue.Dequeue();
                 SpellItOut = "";
                 if (targetMessage.Length > 0) {
+                    skipIt = false;
                     int index = 0;
                     foreach(char letter in targetMessage) {
                         SpellItOut += letter;
                         _CrawlText.text = SpellItOut;
                         if (index % 3 == 0) {
-                            yield return new WaitForSeconds(CRAWL_SPEED);
+                            if (!skipIt) {
+                                yield return new WaitForSeconds(CRAWL_SPEED);
+                            }
                         }
                         index++;
                     }
                 }
+                if (skipIt) {
+                    skipIt = false;
+                }
                 _CrawlText.text = targetMessage;
                 OnMessageComplete?.Invoke();
-                yield return new WaitForSeconds(DISPLAY_DURATION);
+                float timer = 0f;
+                while (timer < DISPLAY_DURATION) {
+                    timer += Time.deltaTime;
+                    if (!skipIt) {
+                        yield return null;
+                    } else {
+                        timer = DISPLAY_DURATION;
+                        skipIt = false;
+                    }
+                }
             } else {
                 QueueIsEmpty = true;
             }
