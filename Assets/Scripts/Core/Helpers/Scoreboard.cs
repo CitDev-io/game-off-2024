@@ -44,6 +44,16 @@ public class PlayerStatSheet {
         {EdgeType.FARM, 0},
         {EdgeType.OBELISK, 0}
     };
+
+    public Dictionary<ScoringEventType, int> ScoreByEventType = new() {
+        {ScoringEventType.ROADCOMPLETED, 0},
+        {ScoringEventType.CITYCOMPLETED, 0},
+        {ScoringEventType.OBELISKCOMPLETED, 0},
+        {ScoringEventType.FARMSCORED, 0},
+        {ScoringEventType.INCOMPLETE, 0},
+        {ScoringEventType.SECRET_OBJECTIVE, 0},
+        {ScoringEventType.PROMOTION, 0}
+    };
 }
 
 public class Scoreboard {
@@ -155,7 +165,7 @@ public class Scoreboard {
 
     public void CommitScoringEvent(ScoringEvent se) {
         foreach(PlayerSlot ps in se.NetScoreChangeByPlayer.Keys) {
-            AddScoreForPlayerSlot(ps, se.NetScoreChangeByPlayer[ps]);
+            AddScoreForPlayerSlot(ps, se.NetScoreChangeByPlayer[ps], se.EventType);
         }
         foreach(GamepieceTileAssignment gta in se.RelatedGamepieces) {
             CollectGamepiece(gta.Type, gta.Team);
@@ -184,8 +194,9 @@ public class Scoreboard {
         return Stats[ps].Score;
     }
     
-    public void AddScoreForPlayerSlot(PlayerSlot ps, int scoreIncrease) {
+    public void AddScoreForPlayerSlot(PlayerSlot ps, int scoreIncrease, ScoringEventType sourceType) {
         Stats[ps].Score += scoreIncrease;
+        Stats[ps].ScoreByEventType[sourceType] += scoreIncrease;
     }
 
     public PlayerAssignment GetNextTurnPlayer() {

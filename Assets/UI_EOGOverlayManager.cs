@@ -75,17 +75,17 @@ public class UI_EOGOverlayManager : MonoBehaviour
         }
 
         wired_P1_Rank.text = s.Stats[PlayerSlot.PLAYER1].Rank.ToString();
-        wired_P1_OBJ.text = s.Stats[PlayerSlot.PLAYER1].ObjectivesCompleted.ToString();
-        wired_P1_OBE.text = s.Stats[PlayerSlot.PLAYER1].ScoredPOITypes[EdgeType.OBELISK].ToString();
-        wired_P1_ROA.text = s.Stats[PlayerSlot.PLAYER1].ScoredPOITypes[EdgeType.ROAD].ToString();
-        wired_P1_CIT.text = s.Stats[PlayerSlot.PLAYER1].ScoredPOITypes[EdgeType.CITY].ToString();
+        wired_P1_OBJ.text = s.Stats[PlayerSlot.PLAYER1].ScoreByEventType[ScoringEventType.SECRET_OBJECTIVE].ToString();
+        wired_P1_OBE.text = s.Stats[PlayerSlot.PLAYER1].ScoreByEventType[ScoringEventType.OBELISKCOMPLETED].ToString();
+        wired_P1_ROA.text = s.Stats[PlayerSlot.PLAYER1].ScoreByEventType[ScoringEventType.ROADCOMPLETED].ToString();
+        wired_P1_CIT.text = s.Stats[PlayerSlot.PLAYER1].ScoreByEventType[ScoringEventType.CITYCOMPLETED].ToString();
         wired_P1_PTS.text = s.Stats[PlayerSlot.PLAYER1].Score.ToString();
 
         wired_P2_Rank.text = s.Stats[PlayerSlot.PLAYER2].Rank.ToString();
-        wired_P2_OBJ.text = s.Stats[PlayerSlot.PLAYER2].ObjectivesCompleted.ToString();
-        wired_P2_OBE.text = s.Stats[PlayerSlot.PLAYER2].ScoredPOITypes[EdgeType.OBELISK].ToString();
-        wired_P2_ROA.text = s.Stats[PlayerSlot.PLAYER2].ScoredPOITypes[EdgeType.ROAD].ToString();
-        wired_P2_CIT.text = s.Stats[PlayerSlot.PLAYER2].ScoredPOITypes[EdgeType.CITY].ToString();
+        wired_P2_OBJ.text = s.Stats[PlayerSlot.PLAYER2].ScoreByEventType[ScoringEventType.SECRET_OBJECTIVE].ToString();
+        wired_P2_OBE.text = s.Stats[PlayerSlot.PLAYER2].ScoreByEventType[ScoringEventType.OBELISKCOMPLETED].ToString();
+        wired_P2_ROA.text = s.Stats[PlayerSlot.PLAYER2].ScoreByEventType[ScoringEventType.ROADCOMPLETED].ToString();
+        wired_P2_CIT.text = s.Stats[PlayerSlot.PLAYER2].ScoreByEventType[ScoringEventType.CITYCOMPLETED].ToString();
         wired_P2_PTS.text = s.Stats[PlayerSlot.PLAYER2].Score.ToString();
 
         if (_toggleCoroutine != null) {
