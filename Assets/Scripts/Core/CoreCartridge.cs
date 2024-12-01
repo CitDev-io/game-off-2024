@@ -109,6 +109,7 @@ public class CoreCartridge {
             );
 
             if (DoneWithRecruitMissions) {
+                UnityEngine.Debug.Log("Player " + p + " is done with recruit missions");
                 ev.Add(new ScoringEvent(
                     () => {
                         scoreboard.Stats[p].Rank = SecretObjectiveRank.DIRTLING;

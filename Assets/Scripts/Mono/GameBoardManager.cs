@@ -404,7 +404,7 @@ public class GameBoardManager : MonoBehaviour
         List<ScoringEvent> eventsToPerform = events
             .Where(e => e.PrivacyFilter == PlayerSlot.NEUTRAL || e.PrivacyFilter == PlayerSlot.PLAYER1)
             .ToList();
-        foreach(ScoringEvent e in eventsToPerform) {
+        foreach(ScoringEvent e in events) {
             if (eventsToPerform.Contains(e)) {
                 Debug.Log("PROCESSING " + e.EventType + " EVENT:");
                 Debug.Log(e.Description);
