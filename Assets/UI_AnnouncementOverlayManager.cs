@@ -11,16 +11,19 @@ public class UI_AnnouncementOverlayManager : MonoBehaviour
 
     bool _isAnnouncing = false;
     float _countUpToClose = 0f;
-    void Awake() {
-        wired_TextCrawler.OnMessageStarted += RenewTimer;
-    }
-
-    void RenewTimer() {
-        _countUpToClose = 0f;
-    }
 
     Coroutine _currentAnnouncement;
     Coroutine _movementCoroutine;
+
+    public Coroutine AwaitCrawlerComplete() {
+        return StartCoroutine(AwaitCrawler());
+    }
+
+    IEnumerator AwaitCrawler() {
+        while (!wired_TextCrawler.QueueIsEmpty) {
+            yield return null;
+        }
+    }
 
     public Coroutine Announce(string message) {
         // can do logic here and ask for more than just message if we want
@@ -43,16 +46,21 @@ public class UI_AnnouncementOverlayManager : MonoBehaviour
         _movementCoroutine = StartCoroutine(AppearOnScreen());
         wired_TextCrawler._CrawlText.text = "";
         wired_TextCrawler.EnqueueMessage(startingMessage);
-        _countUpToClose = 0f;
-        while (_countUpToClose < IV_CloseAfterSec) {
-            _countUpToClose += Time.deltaTime;
+    
+        while (!wired_TextCrawler.QueueIsEmpty) {
             yield return null;
         }
-        if (_movementCoroutine != null) {
-            StopCoroutine(_movementCoroutine);
+
+        _isAnnouncing = false;
+        yield return new WaitForSeconds(0.45f);
+        if (!_isAnnouncing) {
+            if (_movementCoroutine != null) {
+                StopCoroutine(_movementCoroutine);
+            }
+            _movementCoroutine = StartCoroutine(DisappearFromScreen());
+
         }
-        _movementCoroutine = StartCoroutine(DisappearFromScreen());
-        yield return _movementCoroutine;
+
     }
     
     IEnumerator AppearOnScreen() {

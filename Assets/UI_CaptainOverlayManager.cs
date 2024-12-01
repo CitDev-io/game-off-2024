@@ -12,7 +12,7 @@ public class UI_CaptainOverlayManager : MonoBehaviour
     bool _isAnnouncing = false;
     float _countUpToClose = 0f;
     void Awake() {
-        wired_TextCrawler.OnMessageStarted += RenewTimer;
+        wired_TextCrawler.OnMessageComplete += RenewTimer;
     }
 
     void RenewTimer() {

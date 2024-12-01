@@ -346,8 +346,8 @@ public class GameBoardManager : MonoBehaviour
         List<ScoringEvent> SecretObjectiveScoringEvents = GridGameInstance.GetScoringEvents_ObjectiveCheck();
         yield return StartCoroutine(ProcessAndInvokeScoringEvents(SecretObjectiveScoringEvents));
 
-        List<ScoringEvent> EndOfGameScoringEvents = GridGameInstance.GetScoringEvents_EndGame();
-        yield return StartCoroutine(ProcessAndInvokeScoringEvents(EndOfGameScoringEvents, true));
+        // List<ScoringEvent> EndOfGameScoringEvents = GridGameInstance.GetScoringEvents_EndGame();
+        // yield return StartCoroutine(ProcessAndInvokeScoringEvents(EndOfGameScoringEvents, true));
 
         // cancel out of any turn that might be active
         CancelStagingInput();
@@ -400,7 +400,7 @@ public class GameBoardManager : MonoBehaviour
         UIOnComplete.Invoke();
     }
 
-    IEnumerator ProcessAndInvokeScoringEvents(List<ScoringEvent> events, bool yieldToAnnouncements = false) {
+    IEnumerator ProcessAndInvokeScoringEvents(List<ScoringEvent> events) {
         List<ScoringEvent> eventsToPerform = events
             .Where(e => e.PrivacyFilter == PlayerSlot.NEUTRAL || e.PrivacyFilter == PlayerSlot.PLAYER1)
             .ToList();
@@ -426,14 +426,11 @@ public class GameBoardManager : MonoBehaviour
                 }
 
                 if (e.Description != "" && e.Description != null && e.EventType != ScoringEventType.INCOMPLETE) {
-                    if (yieldToAnnouncements) {
-                        yield return FindAnyObjectByType<UI_AnnouncementOverlayManager>().Announce(e.Description);
-                    } else {
-                        FindAnyObjectByType<UI_AnnouncementOverlayManager>().Announce(e.Description);
-                    }
+                    FindAnyObjectByType<UI_AnnouncementOverlayManager>().Announce(e.Description);
                 }
 
             }
+            yield return FindAnyObjectByType<UI_AnnouncementOverlayManager>().AwaitCrawlerComplete();
             e.ScoringAction.Invoke(); // COMMIT the scoring action
         }
         // yield return new WaitForSeconds(Mathf.Min(1.5f * eventsToPerform.Count, 3f));

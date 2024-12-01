@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum UITileStatus {
@@ -110,6 +111,9 @@ public class UI_UnityTile : MonoBehaviour
             List<CardinalDirection> DirectionOfExistingTile = registeredTile.GetCardinalDirectionsForGroupIndexId(groupId);
 
             bool eligibleToPlaceTf = true;
+            if (registeredTile.GetTypeOfAnchorId(anchorIdForGroup) == EdgeType.FARM) {
+                eligibleToPlaceTf = false;
+            }
             foreach(CardinalDirection cdirPossible in DirectionOfExistingTile) {
                 bool AnchorIsForRoad = registeredTile.Roads
                     .Any(e => e.RoadGroupId == groupId && registeredTile.LocalToNormalizedDirection(e.localizedDirection) == cdirPossible);

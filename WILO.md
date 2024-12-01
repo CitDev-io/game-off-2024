@@ -146,4 +146,14 @@ late
 
  - offcenter promotion announcement for now to make stuff look less busy
 
+# top priorities
+
+ - Hidden objective icons
+ - tom and winston
+ - TF drop in/drop out
+ - Icon for POI Type indicator when TF dropzone selected
+ - First obelisk TIP announcement
+ - "FARM" -> "LAND"
+ - Victory Screen - add LAND. Points by type, not count.
  
+

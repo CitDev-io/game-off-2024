@@ -14,8 +14,8 @@ public class UI_TextCrawler : MonoBehaviour
     public float CHECK_QUEUE_TIMEOUT = 0.25f;
     string SpellItOut = "";
     Coroutine _runningCoroutine;
-    public MessageCompletedDelegate OnMessageStarted;
-
+    public MessageCompletedDelegate OnMessageComplete;
+    public bool QueueIsEmpty = true;
     void Start() {
         StartCoroutine(Crawl());
     }
@@ -41,9 +41,11 @@ public class UI_TextCrawler : MonoBehaviour
                         index++;
                     }
                 }
-                OnMessageStarted?.Invoke();
                 _CrawlText.text = targetMessage;
+                OnMessageComplete?.Invoke();
                 yield return new WaitForSeconds(DISPLAY_DURATION);
+            } else {
+                QueueIsEmpty = true;
             }
             yield return new WaitForSeconds(CHECK_QUEUE_TIMEOUT);
         }
@@ -52,6 +54,7 @@ public class UI_TextCrawler : MonoBehaviour
         if (MessageQueue.Contains(message)) {
             return;
         }
+        QueueIsEmpty = false;
         MessageQueue.Enqueue(message);
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 public delegate void PlayerAssignmentDelegate(PlayerAssignment p);
@@ -103,15 +104,13 @@ public class CoreCartridge {
 
         foreach(PlayerSlot p in Players) {
             bool DoneWithRecruitMissions = (
-                scoreboard.Stats[p].Objectives.All(o => o.Rank == SecretObjectiveRank.RECRUIT)
-                && scoreboard.Stats[p].Rank == SecretObjectiveRank.RECRUIT
+                scoreboard.Stats[p].Rank == SecretObjectiveRank.RECRUIT
                 && scoreboard.Stats[p].RookieObjectiveCompleted > 1
             );
 
             if (DoneWithRecruitMissions) {
                 ev.Add(new ScoringEvent(
                     () => {
-                        // rank up
                         scoreboard.Stats[p].Rank = SecretObjectiveRank.DIRTLING;
 
                         var Tier1ObjectiveList = new List<SecretObjective> {
@@ -119,7 +118,7 @@ public class CoreCartridge {
                             new SO_T1_TotStreak(),
                             new SO_T1_CitySize(),
                             new SO_T1_RoadSize(),
-                            new SO_T1_HelpOppoRoad(),
+                            // new SO_T1_HelpOppoRoad(),
                             new SO_T1_PointsScoredTurn(),
                             new SO_T1_AnyComplete(),
                             new SO_T1_SharePOI()
@@ -353,10 +352,10 @@ public class CoreCartridge {
             " and ",
             PlayersWithMostTerraformers.Select(s => s.ToString())
         );
-
-        string Description = $"City Complete: {Earners} earned {ScoreEarned} points!";
+        PlayerSlot playslot = scoreboard.GetCurrentTurnPlayer().slot;
+        string Description = $"{playslot} Completed a City!\nClaimed by {Earners}\n\n2pts x {ac.GetUniqueTileCount()} tiles.\nWorth {ScoreEarned} points!";
         if (PlayersWithMostTerraformers.Count == 0) {
-            Description = "City Complete!";
+            Description = $"{playslot} Completed a City! No one claimed it.\n\n2pts x {ac.GetUniqueTileCount()} tiles.\nWorth " + ScoreEarned + " points.";
         }
         foreach(PlayerSlot ps in PlayersWithMostTerraformers) {
             NetScoreChangeByPlayer.Add(ps, ScoreEarned);
@@ -415,10 +414,10 @@ public class CoreCartridge {
             " and ",
             PlayersWithMostTerraformers.Select(s => s.ToString())
         );
-
-        string Description = $"Obelisk Complete: {Earners} earned {ScoreEarned} points!";
+        PlayerSlot playslot = scoreboard.GetCurrentTurnPlayer().slot;
+        string Description = $"{playslot} Completed an Obelisk!\nClaimed by {Earners}\n\nWorth {ScoreEarned} points!";
         if (PlayersWithMostTerraformers.Count == 0) {
-            Description = "Obelisk Complete!";
+            Description = $"{playslot} Completed an Obelisk!\nNo one claimed it.\n\nWorth " + ScoreEarned + " points.";
         }
         foreach(PlayerSlot ps in PlayersWithMostTerraformers) {
             NetScoreChangeByPlayer.Add(ps, ScoreEarned);
@@ -468,9 +467,10 @@ public class CoreCartridge {
             PlayersWithMostTerraformers.Select(s => s.ToString())
         );
 
-        string Description = $"Road Complete: {Earners} earned {ScoreEarned} points!";
+        PlayerSlot playslot = scoreboard.GetCurrentTurnPlayer().slot;
+        string Description = $"{playslot} Completed a Road!\nClaimed by {Earners}\n\n1pts x {ar.GetUniqueTileCount()} tiles.\nWorth {ScoreEarned} points!";
         if (PlayersWithMostTerraformers.Count == 0) {
-            Description = "Road Complete!";
+            Description = $"{playslot} Completed a Road!\nNo one claimed it.\n\n1pts x {ar.GetUniqueTileCount()} tiles.\nWorth " + ScoreEarned + " points.";
         }
         foreach(PlayerSlot ps in PlayersWithMostTerraformers) {
             NetScoreChangeByPlayer.Add(ps, ScoreEarned);

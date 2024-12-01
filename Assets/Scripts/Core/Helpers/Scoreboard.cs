@@ -136,9 +136,10 @@ public class Scoreboard {
         List<SecretObjective> recruitMissions = new List<SecretObjective> {
             new SO_RECRUIT_Road(),
             new SO_RECRUIT_City(),
-            new SO_RECRUIT_Farm(),
+            new SO_RECRUIT_Obelisk(),
+            new SO_RECRUIT_HelpOppoRoad()
+            // new SO_RECRUIT_Farm(),
             // new SO_T2_TFCollected()
-            new SO_RECRUIT_Obelisk()
             // new SO_T2_AnyComplete(),
             // new SO_T2_PointsScoredTurn(),
             // new SO_T2_RoadCitySize(),
