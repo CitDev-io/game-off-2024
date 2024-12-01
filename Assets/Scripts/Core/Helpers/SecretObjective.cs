@@ -34,7 +34,7 @@ public enum SecretObjectiveRank {
 
 public class SO_RECRUIT_Road : SecretObjective {
     public SO_RECRUIT_Road() {
-        SpritePath = "Images/RoadBlue";
+        SpritePath = "ObjectiveRank0";
         ObjectiveName = "Claim and Complete a Road";
         ObjectiveOrders = "Place a Tot on a road of any length and complete it";
         SuccessText = "Your work has been extraordinary! You have successfully claimed a road! Keep up the good work!";
@@ -89,7 +89,7 @@ public class SO_RECRUIT_Road : SecretObjective {
 
 public class SO_RECRUIT_City : SecretObjective {
     public SO_RECRUIT_City() {
-        SpritePath = "Images/CityBlue";
+        SpritePath = "ObjectiveRank0";
         ObjectiveName = "Complete a City";
         ObjectiveOrders = "Place the final tile on a city of any size and complete it";
         SuccessText = "Your work has been extraordinary! You have successfully claimed a city! Keep up the good work!";
@@ -144,7 +144,7 @@ public class SO_RECRUIT_City : SecretObjective {
 
 public class SO_RECRUIT_Farm : SecretObjective {
     public SO_RECRUIT_Farm() {
-        SpritePath = "Images/LandBlue";
+        SpritePath = "ObjectiveRank0";
         ObjectiveName = "Claim a Field Touching a City";
         ObjectiveOrders = "Place a Tot on a field of any size touching a city";
         SuccessText = "Your work has been extraordinary! You have establish a presence on a farm! Keep up the good work!";
@@ -201,7 +201,7 @@ public class SO_RECRUIT_Farm : SecretObjective {
 
 public class SO_RECRUIT_Obelisk : SecretObjective {
     public SO_RECRUIT_Obelisk() {
-        SpritePath = "Images/ObeliskBlue";
+        SpritePath = "ObjectiveRank0";
         ObjectiveName = "Claim an Obelisk";
         ObjectiveOrders = "Place a Tot on an obelisk";
         SuccessText = "Your work has been extraordinary! You have successfully claimed an obelisk! Keep up the good work!";
@@ -256,7 +256,7 @@ public class SO_RECRUIT_Obelisk : SecretObjective {
 
 public class SO_T1_NoTots : SecretObjective {
     public SO_T1_NoTots() {
-        SpritePath = "Images/TerraformerPinkGreyed";
+        SpritePath = "ObjectiveRank1";
         ObjectiveName = "Place 3 Tiles in a row W/O Claiming";
         ObjectiveOrders = "Place 3 tiles without claiming any points of interest";
         SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
@@ -310,7 +310,7 @@ public class SO_T1_NoTots : SecretObjective {
 
 public class SO_T1_TotStreak : SecretObjective {
     public SO_T1_TotStreak() {
-        SpritePath = "Images/TerraformerPink";
+        SpritePath = "ObjectiveRank1";
         ObjectiveName = "Place 3 Straight Tiles W/ a Terratot";
         ObjectiveOrders = "Place 3 tiles with Terratots in a row";
         SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
@@ -364,7 +364,7 @@ public class SO_T1_TotStreak : SecretObjective {
 
 public class SO_T1_CitySize : SecretObjective {
     public SO_T1_CitySize() {
-        SpritePath = "Images/CityBlue";
+        SpritePath = "ObjectiveRank1";
         ObjectiveName = "Complete a 3+ Tile City";
         ObjectiveOrders = "Complete a city of 3 or more tiles";
         SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
@@ -423,7 +423,7 @@ public class SO_T1_CitySize : SecretObjective {
 
 public class SO_T1_RoadSize : SecretObjective {
     public SO_T1_RoadSize() {
-        SpritePath = "Images/RoadBlue";
+        SpritePath = "ObjectiveRank1";
         ObjectiveName = "Complete a 3+ Tile Road";
         ObjectiveOrders = "Complete a road of 3 or more tiles";
         SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
@@ -482,7 +482,7 @@ public class SO_T1_RoadSize : SecretObjective {
 
 public class SO_RECRUIT_HelpOppoRoad : SecretObjective {
     public SO_RECRUIT_HelpOppoRoad() {
-        SpritePath = "Images/RoadBlue";
+        SpritePath = "ObjectiveRank0";
         ObjectiveName = "Add to an Opponent's Road";
         ObjectiveOrders = "Add a tile to an opponent's road";
         SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
@@ -538,7 +538,7 @@ public class SO_RECRUIT_HelpOppoRoad : SecretObjective {
 
 public class SO_T1_PointsScoredTurn : SecretObjective {
     public SO_T1_PointsScoredTurn() {
-        SpritePath = "Images/RoadBlue";
+        SpritePath = "ObjectiveRank1";
         ObjectiveName = "Score 6 Points in a Turn";
         ObjectiveOrders = "Score 6 points in a turn";
         SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
@@ -589,7 +589,7 @@ public class SO_T1_PointsScoredTurn : SecretObjective {
 
 public class SO_T1_AnyComplete : SecretObjective {
     public SO_T1_AnyComplete() {
-        SpritePath = "Images/GroundBlue";
+        SpritePath = "ObjectiveRank1";
         ObjectiveName = "Complete any 3 Roads/Cities/Obelisks";
         ObjectiveOrders = "Place the final tile to complete 3 in any combination: Roads, Cities, or Obelisks";
         SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
@@ -653,7 +653,7 @@ public class SO_T1_AnyComplete : SecretObjective {
 
 public class SO_T1_SharePOI : SecretObjective {
     public SO_T1_SharePOI() {
-        SpritePath = "Images/GroundBlue";
+        SpritePath = "ObjectiveRank1";
         ObjectiveName = "Share a Road or City with the Enemy";
         ObjectiveOrders = "Combine a claimed road or city with the enemy";
         SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
@@ -715,7 +715,7 @@ public class SO_T1_SharePOI : SecretObjective {
 
 public class SO_T2_AnyComplete : SecretObjective {
     public SO_T2_AnyComplete() {
-        SpritePath = "Images/GroundBlue";
+        SpritePath = "ObjectiveRank2";
         ObjectiveName = "Complete any 4 Roads/Cities/Obelisks";
         ObjectiveOrders = "Place the final tile to complete 4 in any combination: Roads, Cities, or Obelisks";
         SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
@@ -779,7 +779,7 @@ public class SO_T2_AnyComplete : SecretObjective {
 
 public class SO_T2_PointsScoredTurn : SecretObjective {
     public SO_T2_PointsScoredTurn() {
-        SpritePath = "Images/RoadBlue";
+        SpritePath = "ObjectiveRank2";
         ObjectiveName = "Score 8 Points in a Turn";
         ObjectiveOrders = "Score 8 points in a turn";
         SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
@@ -831,7 +831,7 @@ public class SO_T2_PointsScoredTurn : SecretObjective {
 
 public class SO_T2_RoadCitySize : SecretObjective {
     public SO_T2_RoadCitySize() {
-        SpritePath = "Images/RoadBlue";
+        SpritePath = "ObjectiveRank2";
         ObjectiveName = "Complete a 4+ Tile Road or City";
         ObjectiveOrders = "Complete a 4+ Tile Road or City";
         SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
@@ -895,9 +895,9 @@ public class SO_T2_RoadCitySize : SecretObjective {
 
 public class SO_T2_CityWithShield : SecretObjective {
     public SO_T2_CityWithShield() {
-        SpritePath = "Images/CityBlue";
-        ObjectiveName = "Complete a City with a Shield";
-        ObjectiveOrders = "Complete a City with a Shield";
+        SpritePath = "ObjectiveRank2";
+        ObjectiveName = "Complete a City with a Planet Icon";
+        ObjectiveOrders = "Complete a City with a Planet Icon";
         SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
         Rank = SecretObjectiveRank.LANDSCRAPER;
         Tier = 0;
@@ -953,7 +953,7 @@ public class SO_T2_CityWithShield : SecretObjective {
 
 public class SO_T2_TFCollected : SecretObjective {
     public SO_T2_TFCollected() {
-        SpritePath = "Images/CityBlue";
+        SpritePath = "ObjectiveRank2";
         ObjectiveName = "Collect 2+ Terraformers in a Turn";
         ObjectiveOrders = "Collect 2+ Terraformers in a Turn";
         SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
@@ -1004,7 +1004,7 @@ public class SO_T2_TFCollected : SecretObjective {
 
 public class SO_T3_ObeliskCapture : SecretObjective {
     public SO_T3_ObeliskCapture() {
-        SpritePath = "Images/ObeliskBlue";
+        SpritePath = "ObjectiveRank3";
         ObjectiveName = "Claim and Collect an Obelisk";
         ObjectiveOrders = "Claim and Collect an Obelisk";
         SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
@@ -1063,7 +1063,7 @@ public class SO_T3_ObeliskCapture : SecretObjective {
 
 public class SO_T3_PointsScoredTurn : SecretObjective {
     public SO_T3_PointsScoredTurn() {
-        SpritePath = "Images/RoadBlue";
+        SpritePath = "ObjectiveRank3";
         ObjectiveName = "Score 10+ Points in a Turn";
         ObjectiveOrders = "Score 10+ points in a turn";
         SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
@@ -1115,7 +1115,7 @@ public class SO_T3_PointsScoredTurn : SecretObjective {
 
 public class SO_T3_RoadCitySize : SecretObjective {
     public SO_T3_RoadCitySize() {
-        SpritePath = "Images/RoadBlue";
+        SpritePath = "ObjectiveRank3";
         ObjectiveName = "Complete a 5+ Tile Road or City";
         ObjectiveOrders = "Complete a 5+ Tile Road or City";
         SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
@@ -1179,7 +1179,7 @@ public class SO_T3_RoadCitySize : SecretObjective {
 
 public class SO_T3_ShareWin : SecretObjective {
     public SO_T3_ShareWin() {
-        SpritePath = "Images/GroundBlue";
+        SpritePath = "ObjectiveRank3";
         ObjectiveName = "Complete and Win a Shared Road or City";
         ObjectiveOrders = "Complete and Win a Shared Road or City";
         SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
