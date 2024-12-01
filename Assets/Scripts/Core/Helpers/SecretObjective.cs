@@ -895,7 +895,7 @@ public class SO_T2_RoadCitySize : SecretObjective {
 
 public class SO_T2_CityWithShield : SecretObjective {
     public SO_T2_CityWithShield() {
-        SpritePath = "ObjectiveRank2";
+        SpritePath = "Planet";
         ObjectiveName = "Complete a City with a Planet Icon";
         ObjectiveOrders = "Complete a City with a Planet Icon";
         SuccessText = "Your work has been extraordinary! Keep the bad guys guessing!";
